@@ -1,0 +1,53 @@
+<div class="home">
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-tag">Colección 2026</span>
+      <h1 class="hero-title">Estilo que<br/><span class="hero-gradient">habla por ti</span></h1>
+      <p class="hero-sub">Descubre las últimas tendencias en moda urbana. Ropa que define tu actitud.</p>
+      <a href="#catalogo" class="hero-btn">Explorar ahora</a>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-shape"></div>
+      <div class="hero-shape hero-shape-2"></div>
+    </div>
+  </section>
+
+  <section id="catalogo" class="catalogo">
+    <div class="catalogo-header">
+      <h2 class="catalogo-title">{{ selectedCategoria || 'Todos los productos' }}</h2>
+      <div class="categoria-chips">
+        <button
+          *ngFor="let cat of categorias"
+          class="chip"
+          [class.chip-active]="selectedCategoria === cat"
+          (click)="filterBy(cat)"
+        >
+          {{ cat }}
+        </button>
+        <button
+          *ngIf="selectedCategoria"
+          class="chip chip-clear"
+          (click)="selectedCategoria = ''"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="loader"></div>
+      <p>Cargando productos...</p>
+    </div>
+
+    <div *ngIf="!loading && filteredProductos.length === 0" class="empty">
+      <p>No hay productos en esta categoría.</p>
+    </div>
+
+    <div *ngIf="!loading" class="productos-grid">
+      <app-product-card
+        *ngFor="let p of filteredProductos"
+        [producto]="p"
+      />
+    </div>
+  </section>
+</div>

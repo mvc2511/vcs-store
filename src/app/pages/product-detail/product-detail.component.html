@@ -1,0 +1,51 @@
+<div class="detail">
+  <div class="detail-container">
+    <a routerLink="/" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Volver al catálogo
+    </a>
+
+    <div *ngIf="loading" class="loading">
+      <div class="loader"></div>
+    </div>
+
+    <div *ngIf="!loading && producto() as p" class="detail-content">
+      <div class="detail-gallery">
+        <img [src]="p.imagen_url" [alt]="p.nombre" class="detail-image" />
+      </div>
+      <div class="detail-info">
+        <span class="detail-category">{{ p.categoria }}</span>
+        <h1 class="detail-name">{{ p.nombre }}</h1>
+
+        <div class="detail-price-row">
+          <span class="detail-price">{{ p.precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          <span class="detail-stock" [class.low-stock]="p.stock <= 5">
+            {{ p.stock > 0 ? (p.stock <= 5 ? 'Últimas ' + p.stock + ' unidades' : 'En stock') : 'Agotado' }}
+          </span>
+        </div>
+
+        <p class="detail-description">{{ p.descripcion }}</p>
+
+        <div class="selector-group">
+          <label class="selector-label">Cantidad</label>
+          <div class="cantidad-control">
+            <button (click)="cantidad.set(Math.max(1, cantidad() - 1))">-</button>
+            <span>{{ cantidad() }}</span>
+            <button (click)="cantidad.set(cantidad() + 1)">+</button>
+          </div>
+        </div>
+
+        <button
+          class="add-btn"
+          (click)="addToCart()"
+          [disabled]="p.stock === 0"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
