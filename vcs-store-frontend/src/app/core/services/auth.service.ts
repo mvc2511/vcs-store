@@ -68,6 +68,23 @@ export class AuthService {
     if (error) console.error('Error OAuth:', error.message);
   }
 
+  async signInWithEmail(email: string, password: string) {
+    const { error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+  }
+
+  async signUpWithEmail(email: string, password: string) {
+    const { error } = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    if (error) throw error;
+  }
+
   async logout() {
     await this.supabase.auth.signOut();
   }

@@ -1,8 +1,7 @@
 # TODO - VC'S Store
 
 ## 🔄 En Progreso
-- [ ] Login con correo y contraseña (email/password)
-- [ ] Login combinado Google + Email
+- [ ] Login combinado Google + Email (unificar la misma cuenta)
 
 ## ⏸️ Bloqueado / Suspendido
 - **Stripe:** Código existente pero columnas incorrectas vs schema real. No priorizado.
@@ -28,6 +27,7 @@
 - [x] Success: página dinámica (Stripe / COD)
 - [x] Auth service con Signals
 - [x] Login con Google OAuth
+- [x] Login con correo y contraseña (email/password)
 - [x] AuthGuard + AdminGuard
 - [x] NuevoProductoComponent (formulario con upload)
 - [x] CategoriasComponent (listar, crear, eliminar)

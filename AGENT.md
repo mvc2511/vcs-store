@@ -3,7 +3,7 @@
 **Última actualización:** 2026-05-17
 
 ## 🎯 Próximo paso inmediato
-Implementar login con correo y contraseña (email/password).
+Login combinado Google + Email (intercambio de sesiones).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -21,6 +21,7 @@ Implementar login con correo y contraseña (email/password).
 - [x] Catálogo público (grid + detalle producto)
 - [x] Carrito con Signals + persistencia localStorage
 - [x] Login con Google OAuth
+- [x] Login con correo y contraseña (email/password)
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
 - [x] Rutas públicas: /, /producto/:id, /cart
@@ -32,8 +33,7 @@ Implementar login con correo y contraseña (email/password).
 - [x] Contra Entrega: endpoint POST /api/checkout/cod + botón + éxito dinámica
 
 ## 🔄 Pendiente
-- [ ] Login con correo y contraseña (email/password)
-- [ ] Login combinado Google + Email
+- [ ] Login combinado Google + Email (unificar la misma cuenta)
 - [ ] Despliegue (Netlify + Koyeb)
 - [ ] Panel admin de órdenes
 
@@ -76,6 +76,25 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 3. Si se crea un endpoint nuevo, agregarlo a CONTEXT.md sección 4
 4. Si se cambia el esquema, actualizar CONTEXT.md sección 5 y este AGENT.md
 5. Al completar una feature, pasar de "Pendiente" a "Completado" en TODO.md y AGENT.md
+
+## 🛣️ Roadmap futuro — GitHub Ruleset (activar en orden)
+
+Cuando el proyecto esté listo para producción, activar estas reglas en GitHub Settings → Rules → Ruleset (branch `main`):
+
+**Fase 1 — Antes del deploy (prioridad)**
+- [ ] Require status checks to pass (una vez que tengas CI: npm test + pytest)
+- [ ] Require a pull request before merging (si trabajas con otro dev)
+
+**Fase 2 — Producción activa**
+- [ ] Require signed commits (opcional, seguridad criptográfica)
+- [ ] Dismiss stale approvals (solo si usas PRs)
+- [ ] Require conversation resolution (solo si usas PRs)
+
+**No agregar (overkill para 1 dev + IA):**
+- Code Owners (sin equipo no filtra nada)
+- Require deployments (innecesario sin staging automático)
+
+---
 
 ## 📦 Comandos útiles
 - Frontend: `npm run start` (localhost:4200)
