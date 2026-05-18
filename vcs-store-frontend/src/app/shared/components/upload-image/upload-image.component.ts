@@ -32,7 +32,7 @@ import { StorageService } from '../../services/storage.service';
           <small>PNG, JPG, WEBP</small>
         </div>
 
-        <img *ngIf="preview()" [src]="preview()" alt="Vista previa" class="preview-img" />
+        <img *ngIf="preview()" [src]="preview()" alt="Vista previa del producto" class="preview-img" loading="lazy" />
 
         <div *ngIf="cargando()" class="upload-overlay">
           <div class="spinner"></div>

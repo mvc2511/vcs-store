@@ -62,7 +62,6 @@
 }
 
 .form-group input:focus {
-  outline: none;
   border-color: var(--primary);
 }
 
@@ -136,12 +135,18 @@
   color: var(--text-secondary);
 }
 
-.login-toggle a {
+.login-toggle .link-btn {
+  background: none;
+  border: none;
   color: var(--primary);
   font-weight: 600;
+  font-size: 0.85rem;
+  font-family: inherit;
   text-decoration: none;
+  cursor: pointer;
+  padding: 0;
 }
 
-.login-toggle a:hover {
+.login-toggle .link-btn:hover {
   text-decoration: underline;
 }

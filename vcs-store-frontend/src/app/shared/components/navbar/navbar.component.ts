@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class NavbarComponent implements OnInit {
   cartService = inject(CartService);
   authService = inject(AuthService);
+  router = inject(Router);
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
