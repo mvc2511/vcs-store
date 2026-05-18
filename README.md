@@ -17,6 +17,9 @@ Estos son los comandos que usarás cada vez que:
 Ejecuta estos comandos en orden para reflejar cambios en tu aplicación:
 
 ```bash
+# 0. Detener el contenedor
+docker stop vcs-backend-container
+
 # 1. Detiene y elimina el contenedor actual
 docker rm -f vcs-backend-container
 
