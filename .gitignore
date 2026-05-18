@@ -1,0 +1,40 @@
+# === Frontend (Angular) ===
+/dist
+/tmp
+/out-tsc
+/bazel-out
+/node_modules
+npm-debug.log
+yarn-error.log
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+.history/*
+
+# === Backend (Python) ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+*.egg-info/
+dist/
+build/
+*.egg
+
+# === IDEs ===
+.idea/
+*.sublime-workspace
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Project ===
+.git-frontend-backup/
+.git-backend-backup/
