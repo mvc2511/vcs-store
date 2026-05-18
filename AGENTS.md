@@ -74,8 +74,8 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 1. Todo cambio en la base de datos debe reflejarse PRIMERO en `database.sql` y LUEGO aplicarse en Supabase
 2. No modificar manualmente la base de datos sin actualizar `database.sql`
 3. Si se crea un endpoint nuevo, agregarlo a CONTEXT.md sección 4
-4. Si se cambia el esquema, actualizar CONTEXT.md sección 5 y este AGENT.md
-5. Al completar una feature, pasar de "Pendiente" a "Completado" en TODO.md y AGENT.md
+4. Si se cambia el esquema, actualizar CONTEXT.md sección 5 y este AGENTS.md
+5. Al completar una feature, pasar de "Pendiente" a "Completado" en TODO.md y AGENTS.md
 
 ## 🛣️ Roadmap futuro — GitHub Ruleset (activar en orden)
 

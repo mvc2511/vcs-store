@@ -41,6 +41,6 @@
 
 ### Documentación
 - [x] CONTEXT.md — arquitectura general actualizada
-- [x] AGENT.md — estado para agentes de IA
+- [x] AGENTS.md — estado para agentes de IA
 - [x] TODO.md — tracking de tareas
 - [x] database.sql — schema limpio y re-ejecutable
