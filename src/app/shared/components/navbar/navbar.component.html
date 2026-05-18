@@ -24,6 +24,23 @@
         </span>
       </a>
 
+      <a
+        *ngIf="authService.perfil()?.rol === 'admin'"
+        routerLink="/admin/productos/nuevo"
+        routerLinkActive="active"
+        class="nav-link admin-link"
+      >
+        + Producto
+      </a>
+      <a
+        *ngIf="authService.perfil()?.rol === 'admin'"
+        routerLink="/admin/categorias"
+        routerLinkActive="active"
+        class="nav-link admin-link"
+      >
+        Categorías
+      </a>
+
       <div *ngIf="!authService.isLoggedIn()" class="auth-section">
         <button class="login-btn" (click)="authService.loginWithGoogle()">
           <svg width="18" height="18" viewBox="0 0 48 48">

@@ -12,6 +12,9 @@ export class AuthService {
   private sessionTokenSignal = signal<string | null>(null);
   readonly sessionToken = this.sessionTokenSignal.asReadonly();
 
+  private perfilSignal = signal<{ rol: string } | null>(null);
+  readonly perfil = this.perfilSignal.asReadonly();
+
   constructor() {
     this.supabase = createClient(
       environment.supabaseUrl,
@@ -23,6 +26,7 @@ export class AuthService {
       this.userSignal.set(user);
       this.isLoggedIn.set(!!user);
       this.sessionTokenSignal.set(session?.access_token ?? null);
+      if (user) this.cargarPerfil();
     });
 
     this.supabase.auth.onAuthStateChange((_event, session) => {
@@ -30,7 +34,28 @@ export class AuthService {
       this.userSignal.set(user);
       this.isLoggedIn.set(!!user);
       this.sessionTokenSignal.set(session?.access_token ?? null);
+      if (user) this.cargarPerfil();
+      else this.perfilSignal.set(null);
     });
+  }
+
+  async cargarPerfil(): Promise<{ rol: string } | null> {
+    const user = this.userSignal();
+    if (!user) return null;
+
+    const { data, error } = await this.supabase
+      .from('perfiles')
+      .select('rol')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error al cargar perfil:', error.message);
+      return null;
+    }
+
+    this.perfilSignal.set(data as { rol: string } | null);
+    return this.perfilSignal();
   }
 
   async loginWithGoogle() {

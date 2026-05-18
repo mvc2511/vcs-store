@@ -170,3 +170,8 @@
   color: var(--secondary);
   background: rgba(255, 107, 107, 0.06);
 }
+
+.admin-link {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
