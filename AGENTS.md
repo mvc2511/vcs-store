@@ -1,6 +1,6 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-17
+**Última actualización:** 2026-05-18
 
 ## 🎯 Próximo paso inmediato
 Login combinado Google + Email (intercambio de sesiones).
