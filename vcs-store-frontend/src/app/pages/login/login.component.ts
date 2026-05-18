@@ -35,14 +35,22 @@ export class LoginComponent {
     this.loading.set(true);
     try {
       if (this.esRegistro()) {
-        await this.authService.signUpWithEmail(this.email, this.password);
-        this.error.set('Revisa tu correo para confirmar el registro');
+        const err = await this.authService.signUpWithEmail(this.email, this.password);
+        if (err) {
+          this.error.set(err);
+        } else {
+          this.error.set('Revisa tu correo para confirmar el registro');
+        }
       } else {
-        await this.authService.signInWithEmail(this.email, this.password);
-        this.router.navigate(['/']);
+        const err = await this.authService.signInWithEmail(this.email, this.password);
+        if (err) {
+          this.error.set(err);
+        } else {
+          this.router.navigate(['/']);
+        }
       }
     } catch (err: any) {
-      this.error.set(err?.message || 'Error al iniciar sesión');
+      this.error.set('Ocurrió un error inesperado. Intenta de nuevo.');
     } finally {
       this.loading.set(false);
     }

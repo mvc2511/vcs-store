@@ -97,11 +97,12 @@ BEGIN
         NEW.id,
         COALESCE(NEW.email, ''),
         CASE
-            WHEN rol_texto = 'admin' THEN 'admin'::usuario_rol
-            WHEN rol_texto = 'moderador' THEN 'moderador'::usuario_rol
-            ELSE 'cliente'::usuario_rol
+            WHEN rol_texto = 'admin' THEN 'admin'::public.usuario_rol
+            WHEN rol_texto = 'moderador' THEN 'moderador'::public.usuario_rol
+            ELSE 'cliente'::public.usuario_rol
         END
-    );
+    )
+    ON CONFLICT (id) DO NOTHING;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
