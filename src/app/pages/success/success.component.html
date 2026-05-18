@@ -5,8 +5,15 @@
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     </div>
-    <h1 class="success-title">¡Pago Exitoso!</h1>
-    <p class="success-sub">Gracias por tu compra. Recibirás un correo con los detalles de tu pedido.</p>
+    <h1 class="success-title">¡Pedido Registrado!</h1>
+    <p class="success-sub">
+      <ng-container *ngIf="esCOD; else pagoMsg">
+        Tu pedido está en proceso. Pagarás contra entrega cuando recibas tus productos. Te contactaremos para coordinar la entrega.
+      </ng-container>
+      <ng-template #pagoMsg>
+        Gracias por tu compra. Recibirás un correo con los detalles de tu pedido.
+      </ng-template>
+    </p>
     <a routerLink="/" class="success-btn">Seguir comprando</a>
   </div>
 </div>

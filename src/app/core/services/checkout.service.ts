@@ -11,15 +11,27 @@ export class CheckoutService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
-  enviarCarritoAlBackend(carrito: any[]): Observable<any> {
-    const token = this.authService.sessionToken();
-
-    const headers = new HttpHeaders(
+  private getHeaders(token: string | null): HttpHeaders {
+    return new HttpHeaders(
       token ? { Authorization: `Bearer ${token}` } : {}
     );
+  }
 
-    return this.http.post(`${environment.apiUrl}/api/checkout/create-session`, carrito, {
-      headers,
-    });
+  enviarCarritoAlBackend(carrito: any[]): Observable<any> {
+    const token = this.authService.sessionToken();
+    return this.http.post(
+      `${environment.apiUrl}/api/checkout/create-session`,
+      carrito,
+      { headers: this.getHeaders(token) }
+    );
+  }
+
+  crearOrdenCOD(items: { producto_id: number; cantidad: number }[]): Observable<any> {
+    const token = this.authService.sessionToken();
+    return this.http.post(
+      `${environment.apiUrl}/api/checkout/cod`,
+      { items },
+      { headers: this.getHeaders(token) }
+    );
   }
 }

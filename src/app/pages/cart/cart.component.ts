@@ -3,6 +3,8 @@ import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../shared/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
+import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environments';
 
 @Component({
   selector: 'app-cart',
@@ -15,9 +17,13 @@ export class CartComponent {
   protected Math = Math;
   cartService = inject(CartService);
   private checkoutService = inject(CheckoutService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   loading = signal(false);
+  loadingCOD = signal(false);
+
+  private readonly WHATSAPP_NUMBER = environment.whatsappNumber;
 
   updateQuantity(productoId: number, cantidad: number): void {
     this.cartService.updateQuantity(productoId, cantidad);
@@ -29,6 +35,42 @@ export class CartComponent {
 
   clearCart(): void {
     this.cartService.clearCart();
+  }
+
+  onWhatsApp(): void {
+    const items = this.cartService.cartItems();
+    let mensaje = 'Hola, quiero hacer un pedido:%0A';
+    items.forEach((item) => {
+      mensaje += `- ${item.producto.nombre} x${item.cantidad} - $${(
+        item.producto.precio * item.cantidad
+      ).toLocaleString()}%0A`;
+    });
+    mensaje += `%0ATotal: $${this.cartService.totalPrice().toLocaleString()}`;
+    window.open(
+      `https://wa.me/${this.WHATSAPP_NUMBER}?text=${mensaje}`,
+      '_blank'
+    );
+  }
+
+  onCOD(): void {
+    this.loadingCOD.set(true);
+    const items = this.cartService.cartItems().map((item) => ({
+      producto_id: item.producto.id,
+      cantidad: item.cantidad,
+    }));
+
+    this.checkoutService.crearOrdenCOD(items).subscribe({
+      next: () => {
+        this.cartService.clearCart();
+        this.loadingCOD.set(false);
+        this.router.navigate(['/success'], { queryParams: { tipo: 'cod' } });
+      },
+      error: (err) => {
+        console.error('Error en COD:', err);
+        alert('Error al crear la orden. Intenta de nuevo.');
+        this.loadingCOD.set(false);
+      },
+    });
   }
 
   async onCheckout(): Promise<void> {
