@@ -80,9 +80,11 @@ Actualizar AGENTS.md y TODO.md con estado completado.
 
 ---
 
-## Flujo de trabajo
+## Flujo de trabajo (OBLIGATORIO antes de cada commit)
 
-### 1. Antes del commit: analizar cambios
+Cada commit debe ir precedido de la actualización de los archivos de estado del proyecto. **No hacer commit sin sincronizar AGENTS.md, TODO.md y CONTEXT.md.**
+
+### 1. Analizar cambios
 
 ```bash
 git status
@@ -114,7 +116,27 @@ Identificar en `CONTEXT.md`:
 - **5. Base de Datos** — esquema y RLS (sección 5, líneas 63-151)
 - **7. Estado de Implementación** (sección 7, líneas 174-195)
 
-### 3. Determinar el tipo de cambio
+### 3. Actualizar archivos de estado ANTES del commit
+
+Según **🔧 Reglas para cambios futuros** de `AGENTS.md` (líneas 73-78), **antes de escribir el mensaje de commit**:
+
+| # | Regla original | Acción obligatoria |
+|---|----------------|--------------------|
+| 1 | DB changes → `database.sql` primero | Editar `vcs-store-database/database.sql` ANTES de aplicar en Supabase |
+| 2 | No modificar DB sin `database.sql` | Verificar que el schema SQL esté actualizado para comitearlo junto al código |
+| 3 | Endpoint nuevo → CONTEXT.md sección 4 | Agregar el endpoint a `CONTEXT.md` sección 4 (líneas 53-59) |
+| 4 | Cambio esquema → CONTEXT.md sección 5 + AGENTS.md | Actualizar sección 5 en `CONTEXT.md` y sección `🗄️ Base de Datos` en `AGENTS.md` |
+| 5 | Feature completada → TODO.md y AGENTS.md | Mover de "🔄 Pendiente" a "✅ Completado" en `AGENTS.md` (líneas 17-38) y de "🔄 En Progreso" a "✅ Completado" en `TODO.md` |
+
+**Acciones obligatorias antes de cada commit, sin excepción:**
+- [ ] Si el cambio completa una feature → mover en `AGENTS.md` de Pendiente a Completado
+- [ ] Si el cambio completa una feature → mover en `TODO.md` de "En Progreso" a "Completado"
+- [ ] Si el cambio es un fix o mejora → verificar que el estado en `AGENTS.md` y `TODO.md` no quede desactualizado
+- [ ] Si cambian rutas, endpoints o esquemas → actualizar `CONTEXT.md` (secciones 3, 4, 5 o 7)
+- [x] Actualizar `Última actualización` en `AGENTS.md` (línea 3)
+- [x] Hacer `git add` de los archivos de estado modificados junto con el código
+
+### 4. Determinar el tipo de cambio
 
 | Si el cambio... | Tipo |
 |----------------|------|
@@ -127,7 +149,7 @@ Identificar en `CONTEXT.md`:
 | Actualiza AGENTS.md, CONTEXT.md, TODO.md o README | `docs` |
 | Cambia build, dependencias, config | `chore` |
 
-### 4. Generar el mensaje de commit
+### 5. Escribir mensaje de commit
 
 ```
 <tipo>: <título ≤ 50 caracteres>
@@ -135,23 +157,13 @@ Identificar en `CONTEXT.md`:
 <descripción obligatoria con qué y por qué>
 ```
 
-### 5. Actualizar archivos de estado según reglas
+### 6. Verificar que todo esté staged
 
-Siguiendo **🔧 Reglas para cambios futuros** de `AGENTS.md` (líneas 73-78):
-
-| # | Regla original | Acción |
-|---|----------------|--------|
-| 1 | DB changes → `database.sql` primero | Si hay cambios en DB, editar `vcs-store-database/database.sql` ANTES de aplicar en Supabase |
-| 2 | No modificar DB sin `database.sql` | Verificar que el schema SQL esté actualizado y commitearlo junto al código |
-| 3 | Endpoint nuevo → CONTEXT.md sección 4 | Agregar el endpoint a la lista de `Endpoints activos` en `CONTEXT.md` sección 4 (líneas 53-59) |
-| 4 | Cambio esquema → CONTEXT.md sección 5 + AGENTS.md | Actualizar la sección 5 (`Base de Datos`) en `CONTEXT.md` y la sección `🗄️ Base de Datos` en `AGENTS.md` |
-| 5 | Feature completada → TODO.md y AGENTS.md | Mover de "🔄 Pendiente" a "✅ Completado" en `AGENTS.md` (líneas 17-38) y de "🔄 En Progreso" a "✅ Completado" en `TODO.md` |
-
-**Siempre al finalizar:**
-- Mover items completados en `AGENTS.md` (secciones ✅ Completado / 🔄 Pendiente)
-- Mover items completados en `TODO.md` (secciones 🔄 En Progreso / ✅ Completado)
-- Actualizar `CONTEXT.md` sección 7 (Estado de Implementación) si aplica
-- Actualizar `Última actualización` en `AGENTS.md` (línea 3)
+```bash
+# Los archivos de estado deben aparecer aquí si se modificaron
+git diff --cached --name-only
+# Debe incluir AGENTS.md, TODO.md y/o CONTEXT.md si aplica
+```
 
 ---
 
