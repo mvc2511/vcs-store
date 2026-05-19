@@ -103,11 +103,6 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'videos',
-    loadComponent: () =>
-      import('./pages/videos/videos.component').then((m) => m.VideosComponent),
-  },
-  {
     path: '**',
     redirectTo: '',
   },
