@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 import stripe
 from fastapi import APIRouter, Depends, HTTPException
@@ -20,6 +21,8 @@ class CODItem(BaseModel):
 
 class CODRequest(BaseModel):
     items: list[CODItem]
+    punto_entrega_id: int
+    telefono_contacto: str
 
 
 @router.post("/cod", status_code=201)
@@ -30,7 +33,7 @@ async def crear_orden_cod(
     ids = [item.producto_id for item in req.items]
     resp = (
         supabase_admin.table("productos")
-        .select("id, nombre, precio")
+        .select("id, nombre, precio, stock")
         .in_("id", ids)
         .execute()
     )
@@ -41,6 +44,14 @@ async def crear_orden_cod(
             status_code=400,
             detail="Uno o más productos no existen",
         )
+
+    for item in req.items:
+        prod = productos_bd[item.producto_id]
+        if prod["stock"] < item.cantidad:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Stock insuficiente para '{prod['nombre']}'. Disponible: {prod['stock']}",
+            )
 
     total = 0.0
     detalles = []
@@ -60,6 +71,8 @@ async def crear_orden_cod(
             "user_id": usuario["user_id"],
             "total": total,
             "estado": "pendiente",
+            "punto_entrega_id": req.punto_entrega_id,
+            "telefono_contacto": req.telefono_contacto,
         })
         .execute()
     )
@@ -68,6 +81,11 @@ async def crear_orden_cod(
         raise HTTPException(status_code=500, detail="Error al crear la orden")
 
     orden_id = orden_resp.data[0]["id"]
+
+    for item in req.items:
+        supabase_admin.table("productos").update({
+            "stock": productos_bd[item.producto_id]["stock"] - item.cantidad
+        }).eq("id", item.producto_id).execute()
 
     for detalle in detalles:
         detalle["orden_id"] = orden_id
