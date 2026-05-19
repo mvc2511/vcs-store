@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional
 
@@ -27,8 +27,11 @@ class ProductoUpdate(BaseModel):
 
 
 @router.get("")
-async def listar_productos():
-    resp = supabase_admin.table("productos").select("*, categorias(nombre)").order("id", desc=True).execute()
+async def listar_productos(search: Optional[str] = Query(None)):
+    query = supabase_admin.table("productos").select("*, categorias(nombre)")
+    if search:
+        query = query.ilike("nombre", f"%{search}%")
+    resp = query.order("id", desc=True).execute()
     return resp.data
 
 
