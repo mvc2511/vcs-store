@@ -71,6 +71,12 @@ Stripe: reactivar y corregir columnas (según prioridad).
 - [x] Success page con resumen completo (productos, total, punto entrega, fecha/hora)
 - [x] Tracking visual de orden con barra de progreso (pendiente→confirmado→preparando→enviado→entregado)
 - [x] Login combinado Google + Email (intercambio entre sesiones)
+- [x] Rediseño Login VYRO: password strength, Google OAuth, alerts, responsive
+- [x] Rediseño Mis Pedidos VYRO: progress tracker animado, badges estados suaves
+- [x] Toast Service: Signal + Observable, 4 tipos (success/error/info/warning)
+- [x] Toast Container: standalone, SVG icons, slideIn animation, responsive
+- [x] Animaciones globales (_animations.scss): fadeIn, slideUp, stagger, shimmer, etc.
+- [x] SCSS consistente en todos los componentes con paleta VYRO
 - [x] Despliegue (Netlify + Render) — funcional con Docker + cron-job
 
 ## ⛔ Suspendido / No implementado

@@ -2,29 +2,53 @@
 // VYRO — Typography
 // ═══════════════════════════════════════════════
 
-// ─── Satoshi Font (via @font-face) ────────────
-// Self-hosted: https://fonts-cdn.vercel.app/api/fonts
-// Alternative: Google Fonts 'Space Grotesk'
+// ─── Space Grotesk Font (via Google Fonts) ────
+// Modern, bold sans-serif perfect for headings
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-@font-face {
-  font-family: 'Satoshi';
-  src: url('https://fonts-cdn.vercel.app/api/font/Satoshi/variable/Satoshi-Variable.woff2') format('woff2');
-  font-weight: 300 900;
-  font-display: swap;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Satoshi';
-  src: url('https://fonts-cdn.vercel.app/api/font/Satoshi/variable/Satoshi-VariableItalic.woff2') format('woff2');
-  font-weight: 300 900;
-  font-display: swap;
-  font-style: italic;
-}
+// ─── Inter Font (via Google Fonts) ────────────
+// Clean, modern sans-serif for body copy
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 // ─── Typography Scale ──────────────────────────
 // Based on 1.25 ratio (Major Third)
 // Base: 16px
+
+// ─── Heading Styles ────────────────────────────
+h1, .h1 {
+  font-family: $vyro-font-heading;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: $vyro-text;
+}
+
+h2, .h2 {
+  font-family: $vyro-font-heading;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: $vyro-text;
+}
+
+h3, .h3 {
+  font-family: $vyro-font-heading;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: $vyro-text;
+}
+
+h4, .h4 {
+  font-family: $vyro-font-heading;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: $vyro-text;
+}
 
 // ─── Utility Classes ──────────────────────────
 .text-xs {
@@ -99,4 +123,17 @@
 
 .font-bold {
   font-weight: 700;
+}
+
+// ─── Uppercase Styling ────────────────────────
+.uppercase-display {
+  text-transform: uppercase;
+  font-family: $vyro-font-heading;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }

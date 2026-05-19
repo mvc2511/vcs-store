@@ -4,11 +4,12 @@ import { filter } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { SeoService } from './core/services/seo.service';
 import { CartMergeModalComponent } from './shared/components/cart-merge-modal/cart-merge-modal.component';
+import { ToastContainerComponent } from './shared/components/toast-container.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, CartMergeModalComponent],
+  imports: [RouterOutlet, NavbarComponent, CartMergeModalComponent, ToastContainerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

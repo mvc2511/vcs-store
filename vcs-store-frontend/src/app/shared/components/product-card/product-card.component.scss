@@ -1,111 +1,261 @@
-@import 'index';
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+// ═══════════════════════════════════════════════════════════════
+// VYRO Product Card — Minimalista + Editorial
+// ═══════════════════════════════════════════════════════════════
 
 .card {
-  background: var(--vyro-surface);
-  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  background: $vyro-surface;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-lg;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  @include transition(all);
+
+  &:hover {
+    border-color: $vyro-text;
+    box-shadow: $vyro-shadow-md;
+
+    .card-image {
+      transform: scale(1.03);
+    }
+
+    .card-overlay {
+      opacity: 1;
+    }
+  }
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px $vyro-accent;
+  }
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
+// ─────────────────────────────────────────────────────────────
+// Image Wrapper
+// ─────────────────────────────────────────────────────────────
 
 .card-image-wrap {
   position: relative;
   display: block;
   overflow: hidden;
   aspect-ratio: 3 / 4;
-  background: var(--vyro-silver);
+  background: $vyro-silver;
+  @include transition(background);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: -4px;
+  }
 }
 
 .card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  object-position: center;
+  @include transition(transform);
 }
 
-.card:hover .card-image {
-  transform: scale(1.06);
+// ─────────────────────────────────────────────────────────────
+// Overlay (al hover)
+// ─────────────────────────────────────────────────────────────
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba($vyro-text, 0.05);
+  opacity: 0;
+  @include transition(opacity);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.card-overlay-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $vyro-text;
+  opacity: 0;
+  @include transition(opacity);
+}
+
+.card:hover .card-overlay-text {
+  opacity: 1;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Stock Badge
+// ─────────────────────────────────────────────────────────────
 
 .stock-badge {
   position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  background: var(--vyro-text);
-  color: var(--vyro-surface);
+  top: $vyro-space-md;
+  left: $vyro-space-md;
+  padding: $vyro-space-xs $vyro-space-md;
+  background: rgba($vyro-text, 0.95);
+  color: $vyro-surface;
   font-size: 0.65rem;
-  font-weight: 600;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
+  border-radius: $vyro-radius-sm;
+  z-index: 2;
+
+  &.stock-warning {
+    background: rgba($vyro-warning, 0.95);
+    color: white;
+  }
+
+  &.stock-out {
+    background: rgba($vyro-error, 0.95);
+    color: white;
+  }
 }
 
+// ─────────────────────────────────────────────────────────────
+// Card Body
+// ─────────────────────────────────────────────────────────────
+
 .card-body {
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: $vyro-space-lg;
 }
 
 .card-category {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--vyro-accent);
-  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: $vyro-accent;
+  margin-bottom: $vyro-space-xs;
 }
 
 .card-title {
-  margin: 0.35rem 0 0.75rem;
+  margin: 0 0 $vyro-space-md;
   font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
+  color: $vyro-text;
+  flex-grow: 1;
+
+  a {
+    color: inherit;
+    @include transition(color);
+
+    &:hover {
+      color: $vyro-accent;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $vyro-accent;
+      outline-offset: 2px;
+    }
+  }
 }
 
-.card-title a {
-  color: var(--vyro-text);
-  transition: color 0.2s;
-}
-
-.card-title a:hover {
-  color: var(--vyro-accent);
-}
+// ─────────────────────────────────────────────────────────────
+// Card Footer (Price + Action)
+// ─────────────────────────────────────────────────────────────
 
 .card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: $vyro-space-md;
+  margin-top: auto;
+  padding-top: $vyro-space-md;
+  border-top: 1px solid $vyro-border;
 }
 
 .card-price {
-  font-size: 1.1rem;
+  font-family: $vyro-font-heading;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: var(--vyro-text);
+  color: $vyro-accent;
+  letter-spacing: -0.01em;
 }
+
+// ─────────────────────────────────────────────────────────────
+// Add to Cart Button
+// ─────────────────────────────────────────────────────────────
 
 .card-btn {
-  width: 38px;
-  height: 38px;
-  border: none;
-  border-radius: 50%;
-  background: var(--vyro-accent);
-  color: var(--vyro-text);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  background: $vyro-surface;
+  color: $vyro-text;
   cursor: pointer;
+  flex-shrink: 0;
+  @include transition(all);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $vyro-accent;
+    background: color-mix(in srgb, $vyro-accent 8%, transparent);
+    color: $vyro-accent;
+    transform: scale(1.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-color: $vyro-accent;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
-.card-btn:hover:not(:disabled) {
-  transform: scale(1.12);
-  box-shadow: 0 4px 14px rgba(198, 169, 105, 0.35);
-}
+// ─────────────────────────────────────────────────────────────
+// Responsive
+// ─────────────────────────────────────────────────────────────
 
-.card-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+@media (max-width: $vyro-bp-mobile) {
+  .card-body {
+    padding: $vyro-space-md;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .card-price {
+    font-size: 1rem;
+  }
+
+  .card-btn {
+    width: 36px;
+    height: 36px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
 }

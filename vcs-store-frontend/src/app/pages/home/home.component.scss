@@ -1,308 +1,541 @@
+@import '../../shared/styles/variables';
+@import '../../shared/styles/mixins';
+
+// ═══════════════════════════════════════════════════════════════════
+// VYRO Home Component — Editorial Urban Boutique Design
+// ═══════════════════════════════════════════════════════════════════
+
 .home {
   overflow-x: hidden;
+  background: $vyro-bg;
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// HERO SECTION
+// ═══════════════════════════════════════════════════════════════════
 
 .hero {
   position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem;
+  background: linear-gradient(135deg, $vyro-bg 0%, rgba($vyro-gray, 0.3) 100%);
+  overflow: hidden;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-inner {
+  position: relative;
+  max-width: 1400px;
+  width: 100%;
+  padding: $vyro-space-3xl $vyro-space-lg;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  gap: $vyro-space-3xl;
   align-items: center;
-  min-height: 70vh;
+  z-index: 2;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: 1fr;
+    gap: $vyro-space-2xl;
+    padding: $vyro-space-2xl $vyro-space-lg;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: $vyro-space-xl $vyro-space-md;
+  }
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
+
+  @media (max-width: $vyro-bp-tablet) {
+    text-align: center;
+  }
 }
 
-.hero-tag {
+.hero-badge {
   display: inline-block;
-  background: var(--vyro-accent);
-  color: var(--vyro-text);
-  font-size: 0.7rem;
+  padding: $vyro-space-xs $vyro-space-lg;
+  background: color-mix(in srgb, $vyro-accent 15%, transparent);
+  color: $vyro-accent;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  margin-bottom: 1.5rem;
+  letter-spacing: 0.08em;
+  border-radius: $vyro-radius-full;
+  border: 1px solid color-mix(in srgb, $vyro-accent 30%, transparent);
+  margin-bottom: $vyro-space-xl;
+  @include transition(all);
+
+  &:hover {
+    background: color-mix(in srgb, $vyro-accent 25%, transparent);
+  }
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-family: $vyro-font-heading;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
   line-height: 1.1;
-  font-weight: 800;
-  color: var(--vyro-text);
-  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  color: $vyro-text;
+  margin-bottom: $vyro-space-xl;
+  word-spacing: 100vw;
 }
 
 .hero-accent {
-  color: var(--vyro-accent);
+  color: $vyro-accent;
+  display: block;
 }
 
-.hero-sub {
-  font-size: 1.05rem;
-  color: var(--vyro-text-secondary);
-  line-height: 1.7;
-  max-width: 420px;
-  margin-bottom: 2rem;
+.hero-subtitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.8;
+  color: $vyro-text-secondary;
+  max-width: 480px;
+  margin-bottom: $vyro-space-2xl;
+
+  @media (max-width: $vyro-bp-tablet) {
+    margin: 0 auto $vyro-space-2xl;
+  }
 }
 
-.hero-btn {
-  display: inline-block;
-  padding: 0.85rem 2rem;
-  background: var(--vyro-text);
-  color: var(--vyro-surface);
-  font-weight: 600;
-  border-radius: 999px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.hero-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(17, 17, 17, 0.15);
-}
+// ─────────────────────────────────────────────────────────────
+// Hero Visual — Geometric Shapes (Subtle, Modern)
+// ─────────────────────────────────────────────────────────────
 
 .hero-visual {
   position: relative;
-  height: 400px;
+  height: 500px;
+
+  @media (max-width: $vyro-bp-tablet) {
+    display: none;
+  }
 }
 
 .hero-shape {
   position: absolute;
-  width: 350px;
-  height: 350px;
-  border-radius: 50%;
-  background: var(--vyro-accent);
-  opacity: 0.12;
-  top: 10%;
-  right: 10%;
-  filter: blur(60px);
-  animation: float 6s ease-in-out infinite;
+  border-radius: $vyro-radius-full;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+  opacity: 0.08;
+
+  &:first-of-type {
+    width: 400px;
+    height: 400px;
+    background: $vyro-accent;
+    top: -20%;
+    right: -10%;
+  }
 }
 
 .hero-shape-2 {
-  width: 200px;
-  height: 200px;
-  top: auto;
-  bottom: 20%;
-  right: 40%;
-  animation-delay: -3s;
-  opacity: 0.08;
+  width: 300px;
+  height: 300px;
+  background: $vyro-text;
+  bottom: 10%;
+  right: 20%;
+  animation-delay: -2s;
+  opacity: 0.05;
+}
+
+.hero-shape-3 {
+  width: 250px;
+  height: 250px;
+  background: $vyro-gray;
+  top: 30%;
+  left: 0;
+  animation-delay: -4s;
+  opacity: 0.06;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
 }
 
-#catalogo {
-  scroll-margin-top: 80px;
-}
+// ═══════════════════════════════════════════════════════════════════
+// CATÁLOGO SECTION
+// ═══════════════════════════════════════════════════════════════════
 
 .catalogo {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem 1.5rem 4rem;
+  padding: $vyro-space-3xl $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    padding: $vyro-space-2xl $vyro-space-lg;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: $vyro-space-xl $vyro-space-md;
+  }
 }
 
+// ─────────────────────────────────────────────────────────────
+// Catálogo Header
+// ─────────────────────────────────────────────────────────────
+
 .catalogo-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: $vyro-space-2xl;
+  align-items: flex-start;
+  margin-bottom: $vyro-space-2xl;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: 1fr;
+    gap: $vyro-space-lg;
+  }
+}
+
+.header-left {
+  @media (max-width: $vyro-bp-tablet) {
+    text-align: center;
+  }
 }
 
 .catalogo-title {
-  font-size: 1.5rem;
+  font-family: $vyro-font-heading;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 700;
-  color: var(--vyro-text);
-  white-space: nowrap;
+  letter-spacing: -0.015em;
+  color: $vyro-text;
+  margin-bottom: $vyro-space-sm;
+  line-height: 1.1;
 }
 
-.search-bar {
+.catalogo-subtitle {
+  font-size: 0.9rem;
+  color: $vyro-text-secondary;
+  font-weight: 500;
+}
+
+.header-search {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.85rem;
-  border: 1.5px solid var(--vyro-border);
-  border-radius: 999px;
-  background: var(--vyro-surface);
-  width: 280px;
-  min-width: 200px;
-  transition: border-color 0.2s;
-}
+  gap: $vyro-space-sm;
+  padding: $vyro-space-md $vyro-space-lg;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  background: $vyro-surface;
+  width: 100%;
+  max-width: 350px;
+  @include transition(border-color, box-shadow);
 
-.search-bar:focus-within {
-  border-color: var(--vyro-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vyro-accent) 12%, transparent);
+  @media (max-width: $vyro-bp-tablet) {
+    max-width: 100%;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: $vyro-text-secondary;
+    flex-shrink: 0;
+  }
+
+  &:focus-within {
+    border-color: $vyro-accent;
+    box-shadow: 0 0 0 3px rgba($vyro-accent, 0.08);
+  }
 }
 
 .search-input {
   border: none;
   background: transparent;
   outline: none;
-  font-size: 0.85rem;
-  color: var(--vyro-text);
+  font-size: 0.95rem;
+  color: $vyro-text;
   width: 100%;
+  font-family: inherit;
+
+  &::placeholder {
+    color: $vyro-text-secondary;
+  }
 }
 
-.search-input::placeholder {
-  color: var(--vyro-text-secondary);
-}
+// ─────────────────────────────────────────────────────────────
+// Filter Bar (Sticky)
+// ─────────────────────────────────────────────────────────────
 
-.filter-bar {
+.filter-bar-sticky {
+  position: sticky;
+  top: 70px; // navbar height
+  z-index: 20;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--vyro-bg);
-  padding: 0.75rem 0;
+  gap: $vyro-space-md;
+  margin-bottom: $vyro-space-2xl;
+  padding: $vyro-space-md 0;
+  background: rgba($vyro-bg, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba($vyro-border, 0.5);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: $vyro-bp-mobile) {
+    top: 64px;
+    padding: $vyro-space-sm 0;
+  }
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $vyro-border;
+    border-radius: $vyro-radius-full;
+
+    &:hover {
+      background: $vyro-text;
+    }
+  }
 }
 
 .categoria-chips {
   display: flex;
+  gap: $vyro-space-sm;
   flex-wrap: wrap;
-  gap: 0.5rem;
   flex: 1;
-}
-
-.sort-select {
-  padding: 0.4rem 0.75rem;
-  border: 1.5px solid var(--vyro-border);
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-  font-family: inherit;
-  background: var(--vyro-surface);
-  color: var(--vyro-text);
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
-  white-space: nowrap;
-}
-
-.sort-select:focus {
-  border-color: var(--vyro-accent);
+  min-width: 0;
 }
 
 .chip {
-  padding: 0.4rem 1rem;
-  border: 1.5px solid var(--vyro-border);
-  background: var(--vyro-surface);
-  border-radius: 999px;
-  font-size: 0.8rem;
+  flex-shrink: 0;
+  padding: $vyro-space-sm $vyro-space-lg;
+  border: 1px solid $vyro-border;
+  background: $vyro-surface;
+  border-radius: $vyro-radius-full;
+  font-size: 0.85rem;
   font-weight: 500;
-  color: var(--vyro-text-secondary);
-  transition: all 0.2s;
+  color: $vyro-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  @include transition(all);
+  white-space: nowrap;
+
+  &:hover {
+    border-color: $vyro-accent;
+    color: $vyro-accent;
+    background: color-mix(in srgb, $vyro-accent 5%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+
+  &.chip-active {
+    background: $vyro-accent;
+    border-color: $vyro-accent;
+    color: $vyro-text;
+    font-weight: 600;
+  }
+
+  &.chip-clear {
+    border-color: $vyro-text-secondary;
+    color: $vyro-text-secondary;
+    font-size: 0.8rem;
+
+    &:hover {
+      border-color: $vyro-error;
+      color: $vyro-error;
+      background: color-mix(in srgb, $vyro-error 5%, transparent);
+    }
+  }
 }
 
-.chip:hover {
-  border-color: var(--vyro-accent);
-  color: var(--vyro-accent);
+.sort-select {
+  flex-shrink: 0;
+  padding: $vyro-space-sm $vyro-space-md;
+  border: 1px solid $vyro-border;
+  background: $vyro-surface;
+  border-radius: $vyro-radius-md;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $vyro-text;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  outline: none;
+  @include transition(all);
+
+  &:hover {
+    border-color: $vyro-accent;
+  }
+
+  &:focus {
+    border-color: $vyro-accent;
+    box-shadow: 0 0 0 3px rgba($vyro-accent, 0.08);
+  }
+
+  option {
+    background: $vyro-surface;
+    color: $vyro-text;
+    text-transform: uppercase;
+  }
 }
 
-.chip-active {
-  background: var(--vyro-accent);
-  border-color: var(--vyro-accent);
-  color: var(--vyro-text);
-}
+// ─────────────────────────────────────────────────────────────
+// Loading State — Skeleton Grid
+// ─────────────────────────────────────────────────────────────
 
-.chip-clear {
-  border-color: var(--vyro-text-secondary);
-  color: var(--vyro-text-secondary);
-}
-
-.loading {
-  padding: 4rem 0;
+.loading-state {
+  padding: $vyro-space-2xl 0;
 }
 
 .skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $vyro-space-2xl;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: $vyro-space-lg;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-md;
+  }
 }
 
 .skeleton-card {
-  background: var(--vyro-surface);
-  border-radius: var(--radius-md);
+  background: $vyro-surface;
+  border-radius: $vyro-radius-lg;
   overflow: hidden;
+  border: 1px solid $vyro-border;
 }
 
 .skeleton-img {
   aspect-ratio: 3 / 4;
-  background: linear-gradient(90deg, var(--vyro-border) 25%, rgba(255,255,255,0.3) 50%, var(--vyro-border) 75%);
+  background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: skeleton-shimmer 2s infinite;
 }
 
 .skeleton-body {
-  padding: 1rem;
+  padding: $vyro-space-lg;
 }
 
 .skeleton-line {
-  height: 0.75rem;
-  background: linear-gradient(90deg, var(--vyro-border) 25%, rgba(255,255,255,0.3) 50%, var(--vyro-border) 75%);
+  height: 12px;
+  background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: var(--radius-sm);
-  margin-bottom: 0.6rem;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: $vyro-radius-sm;
+  margin-bottom: $vyro-space-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
-.skeleton-cat { width: 40%; }
-.skeleton-title { width: 70%; }
-.skeleton-price { width: 30%; margin-bottom: 0; }
+.skeleton-cat { width: 45%; }
+.skeleton-title { width: 80%; }
+.skeleton-price { width: 35%; margin-bottom: 0; }
 
-@keyframes shimmer {
+@keyframes skeleton-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-.empty {
+// ─────────────────────────────────────────────────────────────
+// Empty State
+// ─────────────────────────────────────────────────────────────
+
+.empty-state {
   text-align: center;
-  padding: 3rem;
-  color: var(--vyro-text-secondary);
+  padding: $vyro-space-3xl $vyro-space-lg;
+  color: $vyro-text-secondary;
 }
+
+.empty-icon {
+  margin-bottom: $vyro-space-lg;
+  opacity: 0.4;
+  display: flex;
+  justify-content: center;
+
+  svg {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.empty-title {
+  font-family: $vyro-font-heading;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $vyro-text;
+  margin-bottom: $vyro-space-sm;
+}
+
+.empty-text {
+  font-size: 1rem;
+  margin-bottom: $vyro-space-2xl;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Productos Grid — Responsive 4-3-2-1
+// ─────────────────────────────────────────────────────────────
 
 .productos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $vyro-space-2xl;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: $vyro-space-lg;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-md;
+  }
 
   > * {
-    animation: fadeInUp 0.4s ease both;
+    animation: fadeInUp 0.5s ease both;
   }
 }
 
-@media (max-width: 768px) {
-  .hero {
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding: 3rem 1.5rem;
-    min-height: auto;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  .hero-sub {
-    margin: 0 auto 2rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  .hero-visual {
-    display: none;
-  }
-  .catalogo-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .search-bar {
-    width: 100%;
-  }
-  .filter-bar {
-    top: auto;
-    position: static;
+}
+
+// ─────────────────────────────────────────────────────────────
+// ID anchor para scroll smooth
+// ─────────────────────────────────────────────────────────────
+
+#catalogo {
+  scroll-margin-top: 140px;
+
+  @media (max-width: $vyro-bp-mobile) {
+    scroll-margin-top: 120px;
   }
 }
