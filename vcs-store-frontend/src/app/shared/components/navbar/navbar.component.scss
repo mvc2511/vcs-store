@@ -1,11 +1,13 @@
+@import 'index';
+
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(245, 245, 242, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--vyro-border);
 }
 
 .navbar-inner {
@@ -21,58 +23,61 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  font-size: 1.25rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 
-.brand-icon {
-  background: var(--gradient);
-  color: #fff;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-right: 4px;
-}
-
-.brand-text { color: var(--text); }
-
-.brand-accent {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.brand-text {
+  color: var(--vyro-text);
+  text-transform: uppercase;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .nav-link {
-  padding: 0.5rem 1rem;
+  position: relative;
+  padding: 0.5rem 0.85rem;
   border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  color: var(--vyro-text-secondary);
+  font-size: 0.875rem;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: color 0.2s;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: calc(100% - 1.7rem);
+  height: 2px;
+  background: var(--vyro-accent);
+  border-radius: 2px;
+  transition: transform 0.25s ease;
 }
 
 .nav-link:hover {
-  color: var(--text);
-  background: #f0f0f5;
+  color: var(--vyro-text);
+}
+
+.nav-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .nav-link.active {
-  color: var(--primary);
-  background: rgba(108, 63, 236, 0.08);
+  color: var(--vyro-text);
+  font-weight: 600;
+}
+
+.nav-link.active::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .cart-link {
@@ -82,21 +87,22 @@
   padding: 0.5rem;
 }
 
+.cart-link::after { display: none; }
+
 .cart-badge {
   position: absolute;
   top: 2px;
-  right: 2px;
-  background: var(--secondary);
-  color: #fff;
-  font-size: 0.65rem;
+  right: 0;
+  background: var(--vyro-accent);
+  color: var(--vyro-text);
+  font-size: 0.6rem;
   font-weight: 700;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-family: 'Inter', sans-serif;
 }
 
 .auth-section {
@@ -109,19 +115,18 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 1rem;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
+  border: 1.5px solid var(--vyro-border);
+  background: transparent;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--vyro-text);
   transition: all 0.2s;
 }
 
 .login-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--vyro-accent);
+  color: var(--vyro-accent);
 }
 
 .user-section {
@@ -131,17 +136,17 @@
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border);
+  border: 2px solid var(--vyro-border);
 }
 
 .user-name {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--vyro-text);
   display: none;
 }
 
@@ -150,39 +155,37 @@
 }
 
 .logout-btn {
-  width: 34px;
-  height: 34px;
-  border: 1.5px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--vyro-border);
   background: transparent;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   transition: all 0.2s;
 }
 
 .logout-btn:hover {
-  border-color: var(--secondary);
-  color: var(--secondary);
-  background: rgba(255, 107, 107, 0.06);
+  border-color: var(--vyro-text);
+  color: var(--vyro-text);
 }
 
 .admin-link {
-  color: var(--primary) !important;
-  font-weight: 600 !important;
+  color: var(--vyro-accent) !important;
 }
 
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   width: 36px;
   height: 36px;
   align-items: center;
   justify-content: center;
   background: none;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   cursor: pointer;
   padding: 0;
@@ -191,30 +194,31 @@
 
 .hamburger-line {
   display: block;
-  width: 18px;
-  height: 2px;
-  background: var(--text);
+  width: 16px;
+  height: 1.5px;
+  background: var(--vyro-text);
   border-radius: 2px;
-  transition: all 0.25s;
+  transition: all 0.3s ease;
 }
 
 .hamburger-line.open:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
+  transform: translateY(6.5px) rotate(45deg);
 }
 
 .hamburger-line.open:nth-child(2) {
   opacity: 0;
+  transform: translateX(-4px);
 }
 
 .hamburger-line.open:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
+  transform: translateY(-6.5px) rotate(-45deg);
 }
 
 .mobile-menu {
   display: none;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  padding: 0.75rem;
+  border-top: 1px solid var(--vyro-border);
+  background: var(--vyro-bg);
+  padding: 0.5rem;
 }
 
 @media (max-width: 767px) {
@@ -227,18 +231,18 @@
   display: block;
   padding: 0.7rem 0.85rem;
   border-radius: var(--radius-sm);
-  color: var(--text);
+  color: var(--vyro-text);
   font-weight: 500;
   font-size: 0.9rem;
   transition: background 0.15s;
 }
 
 .mob-link:hover {
-  background: #f0f0f5;
+  background: var(--vyro-border);
 }
 
 .mob-auth {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--vyro-border);
   margin-top: 0.5rem;
   padding-top: 0.5rem;
 }
@@ -250,7 +254,7 @@
   padding: 0.7rem 0.85rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .mob-avatar {
@@ -258,7 +262,7 @@
   height: 30px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border);
+  border: 2px solid var(--vyro-border);
 }
 
 .mob-logout {
@@ -270,12 +274,12 @@
   text-align: left;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--secondary);
+  color: var(--vyro-accent);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .mob-logout:hover {
-  background: rgba(255, 107, 107, 0.06);
+  background: color-mix(in srgb, var(--vyro-accent) 8%, transparent);
 }
