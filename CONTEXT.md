@@ -304,6 +304,6 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Docker Compose (backend + frontend) | ✅ |
 | Frontend multi-stage Dockerfile (node → nginx) | ✅ |
 | Migraciones idempotentes (puntos-entrega, carrito-entrega) | ✅ |
-| Login Google + Email combinado | ⏳ Pendiente |
+| Login Google + Email combinado | ✅ |
 | Stripe (Checkout + Webhooks) | ❌ Suspendido |
 | Despliegue (Netlify + Render) | ✅ Completado |

@@ -1,7 +1,6 @@
 # TODO - VC'S Store
 
 ## 🔄 Pendiente
-- [ ] Login combinado Google + Email (intercambio entre sesiones)
 - [ ] Stripe: reactivar y corregir columnas a schema actual
 
 ## ✅ Completado
@@ -15,6 +14,7 @@
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Success page con resumen completo de la orden (productos, total, punto entrega, fecha/hora)
 - [x] Tracking visual de orden: barra de progreso en mis-pedidos
+- [x] Login combinado Google + Email (intercambio entre sesiones)
 
 ### Despliegue
 - [x] Despliegue Netlify (frontend) + Render (backend) — funcional con Docker + cron-job

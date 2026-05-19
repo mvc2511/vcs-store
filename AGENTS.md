@@ -1,6 +1,6 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-18
+**Última actualización:** 2026-05-19
 
 ## 🎯 Próximo paso inmediato
 Stripe: reactivar y corregir columnas (según prioridad).
@@ -70,6 +70,7 @@ Stripe: reactivar y corregir columnas (según prioridad).
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Success page con resumen completo (productos, total, punto entrega, fecha/hora)
 - [x] Tracking visual de orden con barra de progreso (pendiente→confirmado→preparando→enviado→entregado)
+- [x] Login combinado Google + Email (intercambio entre sesiones)
 - [x] Despliegue (Netlify + Render) — funcional con Docker + cron-job
 
 ## ⛔ Suspendido / No implementado
