@@ -27,8 +27,10 @@ ALTER TABLE public.ordenes
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
 -- 4. Cambiar estado de VARCHAR a ENUM
---    (la columna ya existe como VARCHAR, necesitamos cambiar el tipo)
---    Nota: esto requiere que todos los valores actuales sean válidos en el ENUM
+--    Primero quitar el default VARCHAR, cambiar el tipo, luego poner default ENUM
+ALTER TABLE public.ordenes
+    ALTER COLUMN estado DROP DEFAULT;
+
 ALTER TABLE public.ordenes
     ALTER COLUMN estado TYPE orden_estado
     USING estado::orden_estado;
