@@ -16,13 +16,19 @@ DROP POLICY IF EXISTS "Permitir lectura publica de categorias" ON public.categor
 DROP POLICY IF EXISTS "Permitir lectura publica de productos" ON public.productos;
 DROP POLICY IF EXISTS "Usuarios pueden ver solo sus propias ordenes" ON public.ordenes;
 DROP POLICY IF EXISTS "Admins pueden ver todas las ordenes" ON public.ordenes;
+DROP POLICY IF EXISTS "Usuarios pueden ver su propio carrito" ON public.carrito;
+DROP POLICY IF EXISTS "Usuarios pueden insertar su propio carrito" ON public.carrito;
+DROP POLICY IF EXISTS "Usuarios pueden actualizar su propio carrito" ON public.carrito;
+DROP POLICY IF EXISTS "Usuarios pueden eliminar su propio carrito" ON public.carrito;
 
 DROP POLICY IF EXISTS "Subir imagenes a productos" ON storage.objects;
 DROP POLICY IF EXISTS "Leer imagenes de productos" ON storage.objects;
 
 DROP TABLE IF EXISTS public.detalles_orden;
 DROP TABLE IF EXISTS public.ordenes;
+DROP TABLE IF EXISTS public.carrito;
 DROP TABLE IF EXISTS public.puntos_entrega;
+DROP TABLE IF EXISTS public.carrito;
 DROP TABLE IF EXISTS public.productos;
 DROP TABLE IF EXISTS public.categorias;
 DROP TABLE IF EXISTS public.perfiles;
@@ -78,10 +84,13 @@ CREATE TABLE public.productos (
 CREATE TABLE public.ordenes (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
+    user_email VARCHAR(255),
     total DECIMAL(10, 2) NOT NULL,
     estado orden_estado DEFAULT 'pendiente',
     punto_entrega_id INT REFERENCES public.puntos_entrega(id) ON DELETE SET NULL,
     telefono_contacto VARCHAR(20),
+    fecha_entrega DATE,
+    hora_entrega VARCHAR(50),
     stripe_session_id VARCHAR(255),
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -94,6 +103,16 @@ CREATE TABLE public.detalles_orden (
     producto_id INT REFERENCES public.productos(id) ON DELETE SET NULL,
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10, 2) NOT NULL
+);
+
+-- carrito: Carro de compras persistente por usuario
+CREATE TABLE public.carrito (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL,
+    producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- =============================================================================
@@ -135,6 +154,7 @@ ALTER TABLE public.productos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.puntos_entrega ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ordenes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.detalles_orden ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.carrito ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
 CREATE POLICY "Permitir lectura publica de perfiles"
@@ -159,6 +179,19 @@ CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
 CREATE POLICY "Admins pueden ver todas las ordenes"
     ON public.ordenes FOR SELECT TO service_role USING (true);
 
+-- Aislamiento de carrito: cada usuario ve, inserta, actualiza y elimina solo su propio carrito
+CREATE POLICY "Usuarios pueden ver su propio carrito"
+    ON public.carrito FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios pueden insertar su propio carrito"
+    ON public.carrito FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios pueden actualizar su propio carrito"
+    ON public.carrito FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios pueden eliminar su propio carrito"
+    ON public.carrito FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
 -- =============================================================================
 -- 6. PRIVILEGIOS (Principio de Mínimo Privilegio)
 -- =============================================================================
@@ -172,6 +205,8 @@ GRANT SELECT ON public.puntos_entrega TO anon;
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT ON public.perfiles TO authenticated;
 GRANT SELECT ON public.puntos_entrega TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
+GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 
 -- service_role (backend FastAPI - supabase_admin)
 GRANT SELECT ON public.perfiles TO service_role;
@@ -185,6 +220,8 @@ GRANT SELECT, INSERT ON public.detalles_orden TO service_role;
 GRANT USAGE ON SEQUENCE public.detalles_orden_id_seq TO service_role;
 GRANT SELECT ON public.puntos_entrega TO service_role;
 GRANT USAGE ON SEQUENCE public.puntos_entrega_id_seq TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO service_role;
+GRANT USAGE ON SEQUENCE public.carrito_id_seq TO service_role;
 
 -- =============================================================================
 -- 7. CATÁLOGO SEMILLA (Datos dummy para desarrollo)
