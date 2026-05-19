@@ -33,7 +33,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Carrito persistente:** Sincronizado con backend via `/api/carrito`. Merge modal al login si hay conflicto local vs servidor.
 - **Rutas protegidas:** `AdminGuard` + `AuthGuard` (CanActivateFn) para zonas administrativas y checkout.
 - **Lazy loading:** Todas las rutas cargan asíncronamente.
-- **Upload de imágenes:** Procesamiento local con FileReader → spinner → subida a Storage → URL inyectada en formulario.
+- **Upload de imágenes:** Preview local con FileReader, subida a Storage diferida al submit del formulario (evita basura en bucket).
 - **Consumo de APIs:** JWT de Supabase en header `Authorization: Bearer <token>`.
 - **Responsive:** Navbar con hamburger menu en mobile, tablas se convierten a cards, grids colapsan a 1 columna.
 
@@ -45,8 +45,9 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/producto/:id` | ProductDetailComponent | - |
 | `/cart` | CartComponent (fecha/hora entrega) | - |
 | `/login` | LoginComponent (soporta ?returnUrl) | - |
-| `/mis-pedidos` | MisPedidosComponent (historial + cancelar + fecha/hora) | AuthGuard |
-| `/success` | SuccessComponent | AuthGuard |
+| `/mis-pedidos` | MisPedidosComponent (historial + cancelar + fecha/hora + barra progreso) | AuthGuard |
+| `/success` | SuccessComponent (resumen completo con productos y entrega) | AuthGuard |
+| `/perfil` | PerfilComponent (editar nombre, cambiar contraseña) | AuthGuard |
 | `/admin` | AdminLayoutComponent → redirect a /admin/productos | AdminGuard |
 | `/admin/productos` | AdminProductosComponent (lista con editar/eliminar) | AdminGuard |
 | `/admin/productos/nuevo` | ProductoFormComponent (crear) | AdminGuard |

@@ -1,10 +1,21 @@
 # TODO - VC'S Store
 
-## 🔄 En Progreso
+## 🔄 Pendiente
 - [ ] Login combinado Google + Email (intercambio entre sesiones)
 - [ ] Stripe: reactivar y corregir columnas a schema actual
 
 ## ✅ Completado
+### UX y Funcionalidad
+- [x] Subida de imagen solo al hacer submit (evita basura en Storage)
+- [x] Search bar + chips layout fijo (2 filas + sticky)
+- [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
+- [x] Columna `nombre` en `perfiles` + trigger actualizado
+- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly
+- [x] Navbar: link "Mi Perfil" en desktop y mobile
+- [x] Ordenar productos por precio (menor→mayor, mayor→menor)
+- [x] Success page con resumen completo de la orden (productos, total, punto entrega, fecha/hora)
+- [x] Tracking visual de orden: barra de progreso en mis-pedidos
+
 ### Despliegue
 - [x] Despliegue Netlify (frontend) + Render (backend) — funcional con Docker + cron-job
 

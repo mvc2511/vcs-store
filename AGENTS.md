@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-19
+**Última actualización:** 2026-05-18
 
 ## 🎯 Próximo paso inmediato
-Despliegue funcionando en Netlify (frontend) + Render (backend).
+Login combinado Google + Email o Stripe (según prioridad).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -62,6 +62,15 @@ Despliegue funcionando en Netlify (frontend) + Render (backend).
 - [ ] Stripe: reactivar y corregir columnas a schema actual
 
 ## ✅ Completado
+- [x] Subida de imagen diferida al submit (UploadImage emite File, upload en ProductoForm.onSubmit)
+- [x] Search bar + chips layout fijo (2 filas: título+search, filter-bar sticky)
+- [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
+- [x] Columna `nombre` en `perfiles` + trigger `handle_new_user` actualizado
+- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly
+- [x] Navbar: link "Mi Perfil" en desktop y mobile
+- [x] Ordenar productos por precio (menor→mayor, mayor→menor)
+- [x] Success page con resumen completo (productos, total, punto entrega, fecha/hora)
+- [x] Tracking visual de orden con barra de progreso (pendiente→confirmado→preparando→enviado→entregado)
 - [x] Despliegue (Netlify + Render) — funcional con Docker + cron-job
 
 ## ⛔ Suspendido / No implementado
