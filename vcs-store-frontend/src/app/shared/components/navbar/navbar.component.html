@@ -16,6 +16,16 @@
       </a>
 
       <a
+        routerLink="/videos"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        class="nav-link desktop-only"
+        [attr.aria-current]="router.isActive('/videos' , true) ? 'page' : null"
+      >
+        Videos
+      </a>
+
+      <a
         *ngIf="authService.perfil()?.rol === 'admin'"
         routerLink="/admin"
         routerLinkActive="active"
@@ -82,6 +92,7 @@
 
   <div class="mobile-menu" [class.open]="menuOpen()" *ngIf="menuOpen()">
     <a routerLink="/" class="mob-link" (click)="closeMenu()">Catálogo</a>
+    <a routerLink="/videos" class="mob-link" (click)="closeMenu()">Videos</a>
     <a *ngIf="authService.perfil()?.rol === 'admin'" routerLink="/admin" class="mob-link" (click)="closeMenu()">Admin</a>
 
     <a *ngIf="authService.isLoggedIn()" routerLink="/mis-pedidos" class="mob-link" (click)="closeMenu()">Mis Pedidos</a>
