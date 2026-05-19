@@ -11,7 +11,10 @@ app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://store.mariano-ventura.dev",
+        "https://www.mariano-ventura.dev",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,13 +59,13 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://vcsstore.com/sitemap.xml
+Sitemap: https://store.mariano-ventura.dev/sitemap.xml
 """
 
 
 @app.get("/sitemap.xml", response_class=Response)
 async def sitemap():
-    base_url = "https://vcsstore.com"
+    base_url = "https://store.mariano-ventura.dev"
     urls = [
         f"""  <url>
     <loc>{base_url}/</loc>
