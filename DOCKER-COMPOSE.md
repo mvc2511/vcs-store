@@ -311,3 +311,89 @@ services:
 
 Pero en la práctica es más rápido correr `npm run start` local y solo dockerizar
 el frontend para producción/preview.
+
+---
+
+## Referencia rápida de comandos
+
+### Docker Compose (nuevo flujo — recomendado)
+
+```bash
+# Desarrollo diario
+docker compose up -d backend             # Solo backend (hot reload con override)
+docker compose up -d                     # Backend + Frontend
+docker compose up -d --build             # Reconstruir imágenes y levantar
+docker compose down                      # Bajar todo
+docker compose logs -f                   # Logs de ambos servicios
+docker compose logs -f backend           # Logs solo backend
+docker compose ps                        # Estado de los servicios
+docker compose exec backend sh           # Terminal dentro del contenedor
+```
+
+### Docker legacy (solo si no usás Compose)
+
+```bash
+# Construir
+docker build -t vcs-store-backend .
+
+# Correr
+docker run -d -p 8000:8000 --env-file .env --name vcs-backend-container vcs-store-backend
+
+# Detener / eliminar
+docker stop vcs-backend-container
+docker rm vcs-backend-container
+
+# Logs
+docker logs vcs-backend-container
+
+# Listar contenedores
+docker ps
+docker ps -a
+```
+
+---
+
+## ¿Qué comando usar en cada caso?
+
+| Situación | Comando | Por qué |
+|-----------|---------|---------|
+| **Arrancar el proyecto por primera vez** | `docker compose up -d --build` | Construye imágenes y levanta todo |
+| **Desarrollo — cambiás código Python** | `docker compose up -d backend` | Usa el override: hot reload + volumen. No necesita rebuild |
+| **Desarrollo — frontend** | `npm run start` (local) | Hot reload nativo de Angular es más rápido que Docker |
+| **Agregaste dependencia (npm / pip)** | `docker compose up -d --build` | Necesita reconstruir la imagen |
+| **Cambiaste `.env`** | `docker compose down; docker compose up -d` | Las variables se leen al arrancar el contenedor |
+| **Ver logs** | `docker compose logs -f` | Muestra backend + frontend en una terminal |
+| **Ver solo backend** | `docker compose logs -f backend` | Menos ruido |
+| **Previsualizar producción** | `docker compose up -d --build` | Build completo + nginx servirá el frontend |
+| **Bajar todo** | `docker compose down` | Elimina containers + red |
+| **Terminal dentro del backend** | `docker compose exec backend sh` | Para debuggear, ver archivos, etc. |
+| **Solo legacy (sin override)** | `docker build` + `docker stop/rm/run` | Solo si no tenés `docker-compose.yml` |
+
+### Árbol de decisión
+
+```
+¿Qué estás haciendo?
+│
+├── Desarrollo de código
+│   ├── Backend (.py)      → docker compose up -d backend   (hot reload)
+│   └── Frontend (.ts)     → npm run start                  (ng serve local)
+│
+├── Cambiaste dependencias
+│   ├── requirements.txt   → docker compose up -d --build
+│   └── package.json       → docker compose up -d --build
+│
+├── Cambiaste .env
+│   └── docker compose down; docker compose up -d
+│
+├── Probás producción
+│   └── docker compose up -d --build
+│
+└── Terminaste de trabajar
+    └── docker compose down
+```
+
+### Regla de oro
+
+> **Si cambiás código fuente**: `docker compose up -d backend` (no hace rebuild, usa override)
+>
+> **Si cambiás configuración** (Dockerfile, requirements, package.json, .env): `docker compose up -d --build` (rebuild obligatorio)
