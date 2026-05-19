@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #F5F5F2;
+        font-family: 'Satoshi', 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- VYRO Brand Intro (main composition) -->
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+      style="width:1920px;height:1080px;position:relative;overflow:hidden;"
+    >
+      <!-- Background glow -->
+      <div class="clip" data-start="0" data-duration="8" data-track-index="1"
+           style="position:absolute;width:600px;height:600px;border-radius:50%;background:#C6A969;opacity:0.08;top:-150px;right:-100px;filter:blur(80px);">
+      </div>
+      <div class="clip" data-start="0" data-duration="8" data-track-index="2"
+           style="position:absolute;width:400px;height:400px;border-radius:50%;background:#C6A969;opacity:0.06;bottom:-80px;left:-80px;filter:blur(60px);">
+      </div>
+
+      <!-- Underline -->
+      <div id="underline" class="clip" data-start="0.5" data-duration="1.2" data-track-index="3"
+           style="position:absolute;top:50%;left:50%;width:0;height:2px;background:#C6A969;transform:translate(-50%,-80px);">
+      </div>
+
+      <!-- Wordmark -->
+      <h1 id="wordmark" class="clip" data-start="1.8" data-duration="0.8" data-track-index="4"
+          style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:120px;font-weight:700;letter-spacing:0.08em;color:#111;text-transform:uppercase;opacity:0;">
+        VYRO
+      </h1>
+
+      <!-- Tagline -->
+      <p id="tagline" class="clip" data-start="2.8" data-duration="0.6" data-track-index="5"
+         style="position:absolute;top:50%;left:50%;transform:translate(-50%,40px);font-size:22px;font-weight:400;letter-spacing:0.15em;color:#BFC3C9;text-transform:uppercase;opacity:0;">
+        Moda Urbana · Estilo Único
+      </p>
+
+      <!-- CTA -->
+      <div id="cta" class="clip" data-start="4" data-duration="4" data-track-index="6"
+           style="position:absolute;bottom:120px;left:50%;transform:translateX(-50%);opacity:0;">
+        <span style="display:inline-block;padding:14px 40px;border:2px solid #111;border-radius:999px;font-size:16px;font-weight:600;color:#111;letter-spacing:0.04em;">
+          vyro.boutique
+        </span>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#underline", { width: "200px", duration: 0.8, ease: "power2.out" }, 0)
+        .to("#wordmark", { opacity: 1, y: -10, duration: 0.6, ease: "power2.out" }, 1.2)
+        .to("#tagline", { opacity: 1, y: -5, duration: 0.5, ease: "power2.out" }, 2)
+        .to("#cta", { opacity: 1, y: -5, duration: 0.5, ease: "power2.out" }, 3.2);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

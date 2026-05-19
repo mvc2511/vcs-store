@@ -113,16 +113,20 @@
 .v-cta p {
   font-size: 0.9rem;
   color: var(--vyro-text-secondary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.v-code {
+.v-cta-btn {
   display: inline-block;
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 2rem;
   background: var(--vyro-text);
-  color: var(--vyro-bg);
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  font-family: monospace;
-  word-break: break-all;
+  color: var(--vyro-surface);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s;
+}
+
+.v-cta-btn:hover {
+  transform: translateY(-2px);
 }
