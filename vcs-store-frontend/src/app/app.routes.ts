@@ -85,6 +85,13 @@ export const routes: Routes = [
             (m) => m.CategoriasComponent
           ),
       },
+      {
+        path: 'puntos-entrega',
+        loadComponent: () =>
+          import('./pages/admin/puntos-entrega/puntos-entrega.component').then(
+            (m) => m.PuntosEntregaComponent
+          ),
+      },
     ],
   },
   {
