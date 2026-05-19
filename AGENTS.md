@@ -31,6 +31,11 @@ Login combinado Google + Email (intercambio de sesiones).
 - [x] Upload de imágenes a Storage (FileReader → bucket)
 - [x] WhatsApp: botón en carrito que genera mensaje con productos
 - [x] Contra Entrega: endpoint POST /api/checkout/cod + botón + éxito dinámica
+- [x] Admin full CRUD: productos (listar/crear/editar/eliminar) + categorías (listar/crear/editar/eliminar)
+- [x] Admin dark layout con sidebar navegable
+- [x] Edición inline de categorías
+- [x] Confirmación modal al eliminar productos
+- [x] Navbar: link único "Admin" para admins
 
 ## 🔄 Pendiente
 - [ ] Login combinado Google + Email (unificar la misma cuenta)

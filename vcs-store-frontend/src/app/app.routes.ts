@@ -34,20 +34,43 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'admin/productos/nuevo',
+    path: 'admin',
     loadComponent: () =>
-      import('./pages/admin/nuevo-producto/nuevo-producto.component').then(
-        (m) => m.NuevoProductoComponent
+      import('./pages/admin/admin-layout/admin-layout.component').then(
+        (m) => m.AdminLayoutComponent
       ),
     canActivate: [adminGuard],
-  },
-  {
-    path: 'admin/categorias',
-    loadComponent: () =>
-      import('./pages/admin/categorias/categorias.component').then(
-        (m) => m.CategoriasComponent
-      ),
-    canActivate: [adminGuard],
+    children: [
+      { path: '', redirectTo: 'productos', pathMatch: 'full' },
+      {
+        path: 'productos',
+        loadComponent: () =>
+          import('./pages/admin/productos/admin-productos.component').then(
+            (m) => m.AdminProductosComponent
+          ),
+      },
+      {
+        path: 'productos/nuevo',
+        loadComponent: () =>
+          import('./pages/admin/producto-form/producto-form.component').then(
+            (m) => m.ProductoFormComponent
+          ),
+      },
+      {
+        path: 'productos/:id/editar',
+        loadComponent: () =>
+          import('./pages/admin/producto-form/producto-form.component').then(
+            (m) => m.ProductoFormComponent
+          ),
+      },
+      {
+        path: 'categorias',
+        loadComponent: () =>
+          import('./pages/admin/categorias/categorias.component').then(
+            (m) => m.CategoriasComponent
+          ),
+      },
+    ],
   },
   {
     path: '**',
