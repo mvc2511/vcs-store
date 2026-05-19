@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../shared/services/supabase.service';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { Producto } from '../../shared/models/product.model';
@@ -7,7 +8,7 @@ import { Producto } from '../../shared/models/product.model';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgIf, NgFor, ProductCardComponent, CurrencyPipe],
+  imports: [NgIf, NgFor, ProductCardComponent, CurrencyPipe, FormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
@@ -16,6 +17,7 @@ export class HomeComponent implements OnInit {
   productos: Producto[] = [];
   categorias: string[] = [];
   selectedCategoria = '';
+  searchQuery = '';
   loading = true;
 
   ngOnInit(): void {
@@ -32,10 +34,19 @@ export class HomeComponent implements OnInit {
   }
 
   get filteredProductos(): Producto[] {
-    if (!this.selectedCategoria) return this.productos;
-    return this.productos.filter(
-      (p) => p.categoria === this.selectedCategoria
-    );
+    let result = this.productos;
+    if (this.selectedCategoria) {
+      result = result.filter((p) => p.categoria === this.selectedCategoria);
+    }
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(q) ||
+          p.descripcion.toLowerCase().includes(q)
+      );
+    }
+    return result;
   }
 
   filterBy(categoria: string): void {

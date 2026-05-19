@@ -26,6 +26,14 @@ export const routes: Routes = [
       import('./pages/cart/cart.component').then((m) => m.CartComponent),
   },
   {
+    path: 'mis-pedidos',
+    loadComponent: () =>
+      import('./pages/mis-pedidos/mis-pedidos.component').then(
+        (m) => m.MisPedidosComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'success',
     loadComponent: () =>
       import('./pages/success/success.component').then(
