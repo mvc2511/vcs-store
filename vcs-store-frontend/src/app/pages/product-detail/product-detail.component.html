@@ -29,9 +29,9 @@
         <div class="selector-group">
           <label class="selector-label">Cantidad</label>
           <div class="cantidad-control">
-            <button (click)="cantidad.set(Math.max(1, cantidad() - 1))">-</button>
+            <button (click)="cantidad.set(Math.max(1, cantidad() - 1))" aria-label="Reducir cantidad">-</button>
             <span>{{ cantidad() }}</span>
-            <button (click)="cantidad.set(cantidad() + 1)">+</button>
+            <button (click)="cantidad.set(cantidad() + 1)" aria-label="Aumentar cantidad">+</button>
           </div>
         </div>
 

@@ -221,23 +221,48 @@
 }
 
 .loading {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: var(--vyro-text-secondary);
+  padding: 4rem 0;
 }
 
-.loader {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--vyro-border);
-  border-top-color: var(--vyro-accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin: 0 auto 1rem;
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.skeleton-card {
+  background: var(--vyro-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.skeleton-img {
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(90deg, var(--vyro-border) 25%, rgba(255,255,255,0.3) 50%, var(--vyro-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-body {
+  padding: 1rem;
+}
+
+.skeleton-line {
+  height: 0.75rem;
+  background: linear-gradient(90deg, var(--vyro-border) 25%, rgba(255,255,255,0.3) 50%, var(--vyro-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.6rem;
+}
+
+.skeleton-cat { width: 40%; }
+.skeleton-title { width: 70%; }
+.skeleton-price { width: 30%; margin-bottom: 0; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .empty {
@@ -250,6 +275,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
+
+  > * {
+    animation: fadeInUp 0.4s ease both;
+  }
 }
 
 @media (max-width: 768px) {
