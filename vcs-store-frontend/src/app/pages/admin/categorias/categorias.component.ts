@@ -169,6 +169,17 @@ interface Categoria {
       color: var(--text-secondary);
       font-size: 0.88rem;
     }
+
+    @media (max-width: 767px) {
+      .page-head h1 { font-size: 1.2rem; }
+      .cat-form { padding: 0.85rem; }
+      .form-row { flex-direction: column; gap: 0.5rem; }
+      .form-row input { width: 100%; }
+      .form-row .btn-primary { width: 100%; justify-content: center; }
+      .cat-item { padding: 0.65rem 0.85rem; gap: 0.5rem; }
+      .cat-name { font-size: 0.85rem; }
+      .edit-row { max-width: 100%; }
+    }
   `],
 })
 export class CategoriasComponent implements OnInit {

@@ -247,6 +247,24 @@ interface Categoria {
       transition: all 0.2s;
     }
     .btn-outline:hover { color: var(--text); border-color: var(--text-secondary); }
+
+    @media (max-width: 767px) {
+      .page { max-width: 100%; }
+      .page-head { flex-direction: column; gap: 0.75rem; }
+      .page-head h1 { font-size: 1.2rem; }
+      .p-form { padding: 1rem; }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .field.full { grid-column: 1; }
+      .form-acts { justify-content: stretch; }
+      .form-acts .btn-primary { width: 100%; justify-content: center; }
+      .card-exito { padding: 2rem 1rem; }
+      .exito-acts { flex-direction: column; gap: 0.5rem; }
+      .exito-acts .btn-primary,
+      .exito-acts .btn-outline { width: 100%; text-align: center; justify-content: center; }
+    }
   `],
 })
 export class ProductoFormComponent implements OnInit {

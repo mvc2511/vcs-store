@@ -31,7 +31,7 @@ interface Producto {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          Nuevo Producto
+          <span class="btn-label">Nuevo Producto</span>
         </a>
       </div>
 
@@ -42,7 +42,7 @@ interface Producto {
 
       <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
 
-      <div class="table-wrap" *ngIf="!loading">
+      <div class="table-wrap" *ngIf="!loading && productos.length > 0">
         <table class="data-table" *ngIf="productos.length > 0">
           <thead>
             <tr>
@@ -56,7 +56,7 @@ interface Producto {
           </thead>
           <tbody>
             <tr *ngFor="let p of productos">
-              <td class="col-img">
+              <td class="col-img" data-label="">
                 <div class="thumb" *ngIf="p.imagen_url; else noImg">
                   <img [src]="p.imagen_url" [alt]="p.nombre" loading="lazy" />
                 </div>
@@ -66,15 +66,15 @@ interface Producto {
                   </div>
                 </ng-template>
               </td>
-              <td class="col-name">
+              <td class="col-name" data-label="Nombre">
                 <span class="pname">{{ p.nombre }}</span>
               </td>
-              <td class="col-price">{{ p.precio | currency:'ARS':'symbol-narrow':'1.2-2' }}</td>
-              <td class="col-stock">
+              <td class="col-price" data-label="Precio">{{ p.precio | currency:'ARS':'symbol-narrow':'1.2-2' }}</td>
+              <td class="col-stock" data-label="Stock">
                 <span class="stock" [class.low]="p.stock < 5">{{ p.stock }}</span>
               </td>
-              <td class="col-cat">{{ p.categorias?.nombre || '—' }}</td>
-              <td class="col-acts">
+              <td class="col-cat" data-label="Categoría">{{ p.categorias?.nombre || '—' }}</td>
+              <td class="col-acts" data-label="">
                 <div class="row-acts">
                   <a [routerLink]="['/admin/productos', p.id, 'editar']" class="act-btn" title="Editar">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -87,13 +87,13 @@ interface Producto {
             </tr>
           </tbody>
         </table>
+      </div>
 
-        <div *ngIf="productos.length === 0" class="empty-state">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          <h3>No hay productos</h3>
-          <p>Agregá tu primer producto al catálogo.</p>
-          <a routerLink="/admin/productos/nuevo" class="btn-primary">Agregar Producto</a>
-        </div>
+      <div *ngIf="!loading && productos.length === 0" class="empty-state">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <h3>No hay productos</h3>
+        <p>Agregá tu primer producto al catálogo.</p>
+        <a routerLink="/admin/productos/nuevo" class="btn-primary">Agregar Producto</a>
       </div>
     </div>
 
@@ -118,15 +118,8 @@ interface Producto {
       margin-bottom: 1.5rem;
       gap: 1rem;
     }
-    .page-head h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    .page-desc {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-top: 0.15rem;
-    }
+    .page-head h1 { font-size: 1.5rem; font-weight: 700; }
+    .page-desc { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.15rem; }
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -141,6 +134,7 @@ interface Producto {
       text-decoration: none;
       white-space: nowrap;
       transition: opacity 0.2s;
+      flex-shrink: 0;
     }
     .btn-primary:hover { opacity: 0.9; }
     .load-state {
@@ -203,10 +197,7 @@ interface Producto {
       overflow: hidden;
       background: var(--bg);
     }
-    .thumb img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
     .thumb-empty {
       display: flex;
       align-items: center;
@@ -225,15 +216,8 @@ interface Producto {
       background: rgba(16, 185, 129, 0.08);
       color: #059669;
     }
-    .stock.low {
-      background: rgba(255, 107, 107, 0.08);
-      color: var(--secondary);
-    }
-    .row-acts {
-      display: flex;
-      gap: 0.15rem;
-      justify-content: flex-end;
-    }
+    .stock.low { background: rgba(255, 107, 107, 0.08); color: var(--secondary); }
+    .row-acts { display: flex; gap: 0.15rem; justify-content: flex-end; }
     .act-btn {
       width: 30px; height: 30px;
       border: none; border-radius: 6px;
@@ -270,8 +254,9 @@ interface Producto {
       border-radius: var(--radius-md);
       padding: 1.75rem;
       max-width: 360px;
-      width: 90%;
+      width: calc(100% - 2rem);
       box-shadow: var(--shadow-lg);
+      margin: 1rem;
     }
     .modal-card h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
     .modal-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.25rem; }
@@ -301,6 +286,73 @@ interface Producto {
     }
     .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-danger:hover:not(:disabled) { opacity: 0.9; }
+
+    @media (max-width: 767px) {
+      .page-head { flex-direction: column; gap: 0.75rem; }
+      .page-head h1 { font-size: 1.25rem; }
+      .btn-label { display: none; }
+      .btn-primary {
+        padding: 0.6rem;
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 4.5rem;
+        right: 1rem;
+        z-index: 999;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .data-table, .data-table thead, .data-table tbody,
+      .data-table th, .data-table td, .data-table tr {
+        display: block;
+      }
+      .data-table thead { display: none; }
+      .table-wrap { border: none; border-radius: 0; background: transparent; }
+      .data-table tr {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        margin-bottom: 0.75rem;
+        padding: 1rem;
+        position: relative;
+      }
+      .data-table tr:hover td { background: transparent; }
+      .data-table td {
+        padding: 0.3rem 0 0.3rem 40%;
+        border: none;
+        font-size: 0.85rem;
+        position: relative;
+        min-height: 1.5rem;
+      }
+      .data-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        top: 0.3rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-secondary);
+        width: 38%;
+      }
+      .col-img {
+        padding-left: 0 !important;
+        margin-bottom: 0.5rem;
+      }
+      .col-img::before { display: none; }
+      .thumb, .thumb-empty {
+        width: 48px;
+        height: 48px;
+      }
+      .col-acts { padding-left: 0 !important; }
+      .col-acts::before { display: none; }
+      .row-acts { justify-content: flex-start; }
+      .col-price { font-size: 1rem; font-weight: 600; color: var(--primary); }
+      .modal-card { margin: 1rem; width: calc(100% - 2rem); }
+    }
   `],
 })
 export class AdminProductosComponent implements OnInit {
