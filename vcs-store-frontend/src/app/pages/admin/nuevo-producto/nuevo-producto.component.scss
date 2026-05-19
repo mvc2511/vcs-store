@@ -1,0 +1,131 @@
+.admin-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--vyro-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  @include transition(color);
+
+  &:hover { color: var(--vyro-text); }
+}
+
+.producto-form {
+  background: var(--vyro-surface);
+  border: 1px solid var(--vyro-border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  &.full-width { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--vyro-text);
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 0.65rem 0.85rem;
+    border: 1.5px solid var(--vyro-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--vyro-bg);
+    color: var(--vyro-text);
+    @include transition(border-color);
+    outline: none;
+
+    &:focus { border-color: var(--vyro-text); }
+  }
+
+  textarea { resize: vertical; }
+}
+
+.error-msg {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--vyro-error);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.submit-btn {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--vyro-text);
+  color: var(--vyro-bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  @include transition(opacity);
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) { opacity: 0.85; }
+}
+
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.exito-card {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--vyro-surface);
+  border: 1px solid var(--vyro-border);
+  border-radius: var(--radius-md);
+
+  h2 {
+    margin: 1rem 0 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .submit-btn { max-width: 280px; margin: 0 auto; }
+}

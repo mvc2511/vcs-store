@@ -10,7 +10,7 @@ import { Producto } from '../../shared/models/product.model';
   standalone: true,
   imports: [NgIf, NgFor, ProductCardComponent, CurrencyPipe, FormsModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
   private supabase = inject(SupabaseService);

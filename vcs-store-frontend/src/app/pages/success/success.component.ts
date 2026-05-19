@@ -24,7 +24,7 @@ interface OrdenData {
   standalone: true,
   imports: [NgIf, NgFor, RouterLink, CurrencyPipe, DatePipe],
   templateUrl: './success.component.html',
-  styleUrl: './success.component.css',
+  styleUrl: './success.component.scss',
 })
 export class SuccessComponent implements OnInit {
   orden: OrdenData | null = null;

@@ -10,7 +10,7 @@ import { CartMergeModalComponent } from './shared/components/cart-merge-modal/ca
   standalone: true,
   imports: [RouterOutlet, NavbarComponent, CartMergeModalComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
   private router = inject(Router);

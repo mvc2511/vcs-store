@@ -1,0 +1,102 @@
+// ═══════════════════════════════════════════════
+// VYRO — Typography
+// ═══════════════════════════════════════════════
+
+// ─── Satoshi Font (via @font-face) ────────────
+// Self-hosted: https://fonts-cdn.vercel.app/api/fonts
+// Alternative: Google Fonts 'Space Grotesk'
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('https://fonts-cdn.vercel.app/api/font/Satoshi/variable/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('https://fonts-cdn.vercel.app/api/font/Satoshi/variable/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: italic;
+}
+
+// ─── Typography Scale ──────────────────────────
+// Based on 1.25 ratio (Major Third)
+// Base: 16px
+
+// ─── Utility Classes ──────────────────────────
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1.333;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.428;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.555;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.text-2xl {
+  font-size: 1.563rem;
+  line-height: 1.28;
+}
+
+.text-3xl {
+  font-size: 1.953rem;
+  line-height: 1.2;
+}
+
+.text-4xl {
+  font-size: 2.441rem;
+  line-height: 1.1;
+}
+
+// ─── Letter Spacing ───────────────────────────
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.tracking-normal {
+  letter-spacing: 0;
+}
+
+.tracking-wide {
+  letter-spacing: 0.05em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.1em;
+}
+
+// ─── Font Weight ──────────────────────────────
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
