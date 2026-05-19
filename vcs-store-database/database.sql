@@ -11,25 +11,30 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP FUNCTION IF EXISTS public.handle_new_user();
 
 DROP POLICY IF EXISTS "Permitir lectura publica de perfiles" ON public.perfiles;
+DROP POLICY IF EXISTS "Permitir lectura publica de puntos de entrega" ON public.puntos_entrega;
 DROP POLICY IF EXISTS "Permitir lectura publica de categorias" ON public.categorias;
 DROP POLICY IF EXISTS "Permitir lectura publica de productos" ON public.productos;
 DROP POLICY IF EXISTS "Usuarios pueden ver solo sus propias ordenes" ON public.ordenes;
+DROP POLICY IF EXISTS "Admins pueden ver todas las ordenes" ON public.ordenes;
 
 DROP POLICY IF EXISTS "Subir imagenes a productos" ON storage.objects;
 DROP POLICY IF EXISTS "Leer imagenes de productos" ON storage.objects;
 
 DROP TABLE IF EXISTS public.detalles_orden;
 DROP TABLE IF EXISTS public.ordenes;
+DROP TABLE IF EXISTS public.puntos_entrega;
 DROP TABLE IF EXISTS public.productos;
 DROP TABLE IF EXISTS public.categorias;
 DROP TABLE IF EXISTS public.perfiles;
 
 DROP TYPE IF EXISTS usuario_rol;
+DROP TYPE IF EXISTS orden_estado;
 
 -- =============================================================================
 -- 2. TIPOS PERSONALIZADOS (Enums)
 -- =============================================================================
 CREATE TYPE usuario_rol AS ENUM ('cliente', 'admin', 'moderador');
+CREATE TYPE orden_estado AS ENUM ('pendiente', 'confirmado', 'preparando', 'enviado', 'entregado', 'cancelado');
 
 -- =============================================================================
 -- 3. TABLAS DEL SISTEMA
@@ -41,6 +46,13 @@ CREATE TABLE public.perfiles (
     email TEXT NOT NULL,
     rol usuario_rol DEFAULT 'cliente' NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- puntos_entrega: Lugares disponibles para recoger pedidos (Contra Entrega)
+CREATE TABLE public.puntos_entrega (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- categorias: Agrupadores lógicos del catálogo
@@ -67,9 +79,12 @@ CREATE TABLE public.ordenes (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
-    estado VARCHAR(50) DEFAULT 'pendiente',
+    estado orden_estado DEFAULT 'pendiente',
+    punto_entrega_id INT REFERENCES public.puntos_entrega(id) ON DELETE SET NULL,
+    telefono_contacto VARCHAR(20),
     stripe_session_id VARCHAR(255),
-    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- detalles_orden: Desglose de artículos por orden
@@ -117,12 +132,17 @@ CREATE TRIGGER on_auth_user_created
 ALTER TABLE public.perfiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categorias ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.productos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.puntos_entrega ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ordenes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.detalles_orden ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
 CREATE POLICY "Permitir lectura publica de perfiles"
     ON public.perfiles FOR SELECT USING (true);
+
+-- Lectura pública de puntos de entrega
+CREATE POLICY "Permitir lectura publica de puntos de entrega"
+    ON public.puntos_entrega FOR SELECT TO anon USING (true);
 
 -- Lectura pública de catálogo (rol anónimo)
 CREATE POLICY "Permitir lectura publica de categorias"
@@ -135,6 +155,10 @@ CREATE POLICY "Permitir lectura publica de productos"
 CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
     ON public.ordenes FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
+-- Admins pueden ver todas las órdenes (gestionado via backend con service_role)
+CREATE POLICY "Admins pueden ver todas las ordenes"
+    ON public.ordenes FOR SELECT TO service_role USING (true);
+
 -- =============================================================================
 -- 6. PRIVILEGIOS (Principio de Mínimo Privilegio)
 -- =============================================================================
@@ -143,20 +167,24 @@ CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
 GRANT SELECT ON public.categorias TO anon;
 GRANT SELECT ON public.productos TO anon;
 GRANT SELECT ON public.perfiles TO anon;
+GRANT SELECT ON public.puntos_entrega TO anon;
 
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT ON public.perfiles TO authenticated;
+GRANT SELECT ON public.puntos_entrega TO authenticated;
 
 -- service_role (backend FastAPI - supabase_admin)
 GRANT SELECT ON public.perfiles TO service_role;
 GRANT SELECT, INSERT, DELETE ON public.categorias TO service_role;
 GRANT USAGE ON SEQUENCE public.categorias_id_seq TO service_role;
-GRANT SELECT, INSERT ON public.productos TO service_role;
+GRANT SELECT, INSERT, UPDATE ON public.productos TO service_role;
 GRANT USAGE ON SEQUENCE public.productos_id_seq TO service_role;
-GRANT SELECT, INSERT ON public.ordenes TO service_role;
+GRANT SELECT, INSERT, UPDATE ON public.ordenes TO service_role;
 GRANT USAGE ON SEQUENCE public.ordenes_id_seq TO service_role;
 GRANT SELECT, INSERT ON public.detalles_orden TO service_role;
 GRANT USAGE ON SEQUENCE public.detalles_orden_id_seq TO service_role;
+GRANT SELECT ON public.puntos_entrega TO service_role;
+GRANT USAGE ON SEQUENCE public.puntos_entrega_id_seq TO service_role;
 
 -- =============================================================================
 -- 7. CATÁLOGO SEMILLA (Datos dummy para desarrollo)
@@ -166,6 +194,15 @@ INSERT INTO public.categorias (nombre) VALUES
 ('Pantalones y Jeans'),
 ('Chamarras y Abrigos'),
 ('Accesorios');
+
+-- Puntos de entrega para Contra Entrega
+INSERT INTO public.puntos_entrega (nombre) VALUES
+('Crucero de Dongu'),
+('Deportivo Dongu'),
+('Centro San Felipe'),
+('Crucero de San Juan'),
+('Centro de San Juan'),
+('Pickup en local de San Antonio');
 
 INSERT INTO public.productos (nombre, descripcion, precio, imagen_url, stock, categoria_id) VALUES
 ('Playera Oversize Algodón', 'Playera de corte oversize hecha 100% de algodón grueso. Color gris minimalista, ideal para un estilo streetwear.', 29.99, 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&q=80', 50, (SELECT id FROM categorias WHERE nombre = 'Camisas y Playeras')),
