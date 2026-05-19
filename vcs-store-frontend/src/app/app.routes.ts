@@ -64,6 +64,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'ordenes',
+        loadComponent: () =>
+          import('./pages/admin/admin-ordenes/admin-ordenes.component').then(
+            (m) => m.AdminOrdenesComponent
+          ),
+      },
+      {
         path: 'categorias',
         loadComponent: () =>
           import('./pages/admin/categorias/categorias.component').then(
