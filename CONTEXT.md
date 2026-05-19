@@ -9,7 +9,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | Capa | Tecnología | Hosting | Justificación |
 |------|-----------|---------|---------------|
 | **Frontend** | Angular 18 (Standalone, Signals, Lazyloading) | Netlify | Estructura robusta, estado reactivo con Signals, lazy loading nativo |
-| **Backend** | Python 3.11+ / FastAPI (Docker) | Koyeb | Alto rendimiento asíncrono, validación Pydantic, autodocumentación Swagger |
+| **Backend** | Python 3.11+ / FastAPI (Docker) | Render | Alto rendimiento asíncrono, validación Pydantic, autodocumentación Swagger |
 | **BBDD & Auth** | PostgreSQL + Supabase Auth | Supabase | DB relacional, Auth listo, Storage para imágenes, RLS nativo |
 | **Pagos** | ~~Stripe~~ (Suspendido) → WhatsApp + Contra Entrega | N/A | Modelo de negocio alternativo sin pasarela |
 | **Orquestación** | Docker Compose (dev + prod) | N/A | Un solo comando para backend + frontend |
@@ -257,7 +257,7 @@ on_auth_user_created AFTER INSERT ON auth.users
       │
       ├── (WhatsApp) ──────────────────────────> Cliente abre wa.me
       │
-      └── (Contra Entrega / Admin CRUD) ───────> FastAPI (Koyeb)
+      └── (Contra Entrega / Admin CRUD) ───────> FastAPI (Render)
                                                        │
                                                        └── (CRUD) ──> Supabase DB
 ```
@@ -303,6 +303,6 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Docker Compose (backend + frontend) | ✅ |
 | Frontend multi-stage Dockerfile (node → nginx) | ✅ |
 | Migraciones idempotentes (puntos-entrega, carrito-entrega) | ✅ |
-| Login Google + Email combinado | ❌ Pendiente |
+| Login Google + Email combinado | ⏳ Pendiente |
 | Stripe (Checkout + Webhooks) | ❌ Suspendido |
-| Despliegue (Netlify + Koyeb) | ❌ Futuro |
+| Despliegue (Netlify + Render) | ✅ Completado |

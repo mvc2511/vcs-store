@@ -1,11 +1,12 @@
 # TODO - VC'S Store
 
 ## 🔄 En Progreso
-- [ ] Login combinado Google + Email (unificar la misma cuenta)
+- [ ] Login combinado Google + Email (intercambio entre sesiones)
+- [ ] Stripe: reactivar y corregir columnas a schema actual
 
-## ⏸️ Bloqueado / Suspendido
-- **Stripe:** Código existente pero columnas incorrectas vs schema real. No priorizado.
-- Despliegue en Netlify + Koyeb (pendiente de tener features core estables)
+## ✅ Completado
+### Despliegue
+- [x] Despliegue Netlify (frontend) + Render (backend) — funcional con Docker + cron-job
 
 ## ✅ Completado
 ### Infraestructura

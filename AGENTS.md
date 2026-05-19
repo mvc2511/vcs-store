@@ -3,7 +3,7 @@
 **Última actualización:** 2026-05-19
 
 ## 🎯 Próximo paso inmediato
-Login combinado Google + Email (intercambio de sesiones).
+Despliegue funcionando en Netlify (frontend) + Render (backend).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -11,7 +11,7 @@ Login combinado Google + Email (intercambio de sesiones).
 - **Backend:** Python 3.11+ / FastAPI (Docker)
 - **Infra:** Supabase (PostgreSQL + Auth + Storage + RLS)
 - **Orquestación:** Docker Compose (backend + frontend)
-- **Hosting:** Netlify (frontend) / Koyeb (backend) — aún no desplegado
+- **Hosting:** Netlify (frontend) / Render (backend) — desplegado
 - **Pagos:** Stripe suspendido → reemplazado por WhatsApp + Contra Entrega
 - **Estado:** Funcional y en desarrollo activo
 
@@ -58,11 +58,14 @@ Login combinado Google + Email (intercambio de sesiones).
 - [x] Migraciones idempotentes (puntos-entrega, carrito-entrega)
 
 ## 🔄 Pendiente
-- [ ] Login combinado Google + Email (unificar la misma cuenta)
-- [ ] Despliegue (Netlify + Koyeb)
+- [ ] Login combinado Google + Email (intercambio entre sesiones)
+- [ ] Stripe: reactivar y corregir columnas a schema actual
+
+## ✅ Completado
+- [x] Despliegue (Netlify + Render) — funcional con Docker + cron-job
 
 ## ⛔ Suspendido / No implementado
-- **Stripe:** Código existe en checkout.py y webhooks.py pero las columnas no coinciden con el schema actual (usa `total_cents`/`status`/`product_name`/`price_cents` en vez de `total`/`estado`/`producto_id`/`precio_unitario`). Si se reactiva, corregir antes.
+- **Stripe:** Código existe en checkout.py y webhooks.py pero las columnas no coinciden con el schema actual (usa `total_cents`/`status`/`product_name`/`price_cents` en vez de `total`/`estado`/`producto_id`/`precio_unitario`). Stripe en requirements.txt para evitar error de import.
 
 ## 🗄️ Base de Datos (Supabase)
 Schema completo re-ejecutable en: `vcs-store-database/database.sql`
