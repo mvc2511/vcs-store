@@ -8,7 +8,12 @@
     <h1 class="success-title">¡Pedido Registrado!</h1>
     <p class="success-sub">
       <ng-container *ngIf="esCOD; else pagoMsg">
-        Tu pedido está en proceso. Pagarás contra entrega cuando recibas tus productos. Te contactaremos para coordinar la entrega.
+        Tu pedido está en proceso. Pagarás contra entrega cuando recibas tus productos.
+        Te contactaremos al teléfono que registraste para coordinar la entrega.
+        <span *ngIf="puntoEntregaNombre" class="success-punto">
+          <br /><br />
+          <strong>Punto de entrega:</strong> {{ puntoEntregaNombre }}
+        </span>
       </ng-container>
       <ng-template #pagoMsg>
         Gracias por tu compra. Recibirás un correo con los detalles de tu pedido.

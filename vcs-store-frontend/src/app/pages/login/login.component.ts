@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -14,12 +14,22 @@ import { AuthService } from '../../core/services/auth.service';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   esRegistro = signal(false);
   email = '';
   password = '';
   error = signal('');
   loading = signal(false);
+  returnUrl = '/';
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      if (params['returnUrl']) {
+        this.returnUrl = params['returnUrl'];
+      }
+    });
+  }
 
   toggleModo(): void {
     this.esRegistro.update((v) => !v);
@@ -46,7 +56,7 @@ export class LoginComponent {
         if (err) {
           this.error.set(err);
         } else {
-          this.router.navigate(['/']);
+          this.router.navigateByUrl(this.returnUrl);
         }
       }
     } catch (err: any) {

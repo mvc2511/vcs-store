@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CartService } from '../../shared/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -9,21 +10,30 @@ import { environment } from '../../../environments/environments';
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [NgIf, NgFor, CurrencyPipe, RouterLink],
+  imports: [NgIf, NgFor, CurrencyPipe, RouterLink, FormsModule],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css',
 })
-export class CartComponent {
+export class CartComponent implements OnInit {
   protected Math = Math;
   cartService = inject(CartService);
   private checkoutService = inject(CheckoutService);
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private router = inject(Router);
 
   loading = signal(false);
   loadingCOD = signal(false);
+  puntosEntrega = signal<{ id: number; nombre: string }[]>([]);
+  selectedPunto = signal<number | null>(null);
+  telefono = '';
 
   private readonly WHATSAPP_NUMBER = environment.whatsappNumber;
+
+  ngOnInit(): void {
+    this.checkoutService.getPuntosEntrega().subscribe({
+      next: (data) => this.puntosEntrega.set(data),
+    });
+  }
 
   updateQuantity(productoId: number, cantidad: number): void {
     this.cartService.updateQuantity(productoId, cantidad);
@@ -53,24 +63,35 @@ export class CartComponent {
   }
 
   onCOD(): void {
+    if (!this.selectedPunto() || !this.telefono.trim()) return;
     this.loadingCOD.set(true);
     const items = this.cartService.cartItems().map((item) => ({
       producto_id: item.producto.id,
       cantidad: item.cantidad,
     }));
 
-    this.checkoutService.crearOrdenCOD(items).subscribe({
-      next: () => {
-        this.cartService.clearCart();
-        this.loadingCOD.set(false);
-        this.router.navigate(['/success'], { queryParams: { tipo: 'cod' } });
-      },
-      error: (err) => {
-        console.error('Error en COD:', err);
-        alert('Error al crear la orden. Intenta de nuevo.');
-        this.loadingCOD.set(false);
-      },
-    });
+    this.checkoutService
+      .crearOrdenCOD(items, this.selectedPunto()!, this.telefono.trim())
+      .subscribe({
+        next: (res) => {
+          this.cartService.clearCart();
+          this.loadingCOD.set(false);
+          this.router.navigate(['/success'], {
+            queryParams: {
+              tipo: 'cod',
+              punto: this.selectedPunto(),
+              telefono: this.telefono.trim(),
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error en COD:', err);
+          const msg =
+            err.error?.detail || 'Error al crear la orden. Intenta de nuevo.';
+          alert(msg);
+          this.loadingCOD.set(false);
+        },
+      });
   }
 
   async onCheckout(): Promise<void> {

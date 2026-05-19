@@ -196,6 +196,112 @@
   color: var(--text);
 }
 
+.cart-login-cta {
+  text-align: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+}
+
+.cart-login-cta p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.btn-login-cta {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: var(--gradient);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(108, 63, 236, 0.3);
+  transition: transform 0.2s;
+}
+
+.btn-login-cta:hover {
+  transform: translateY(-2px);
+}
+
+.checkout-delivery {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.checkout-delivery h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.puntos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.punto-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.punto-option:hover {
+  border-color: var(--primary);
+  background: rgba(108, 63, 236, 0.04);
+}
+
+.punto-option.selected {
+  border-color: var(--primary);
+  background: rgba(108, 63, 236, 0.08);
+  color: var(--primary);
+}
+
+.punto-option input {
+  accent-color: var(--primary);
+}
+
+.checkout-phone {
+  margin-bottom: 0.5rem;
+}
+
+.checkout-phone label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.phone-input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.phone-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108, 63, 236, 0.1);
+}
+
 .checkout-options {
   display: flex;
   flex-direction: column;

@@ -26,12 +26,18 @@ export class CheckoutService {
     );
   }
 
-  crearOrdenCOD(items: { producto_id: number; cantidad: number }[]): Observable<any> {
+  crearOrdenCOD(items: { producto_id: number; cantidad: number }[], punto_entrega_id: number, telefono_contacto: string): Observable<any> {
     const token = this.authService.sessionToken();
     return this.http.post(
       `${environment.apiUrl}/api/checkout/cod`,
-      { items },
+      { items, punto_entrega_id, telefono_contacto },
       { headers: this.getHeaders(token) }
+    );
+  }
+
+  getPuntosEntrega(): Observable<{ id: number; nombre: string }[]> {
+    return this.http.get<{ id: number; nombre: string }[]>(
+      `${environment.apiUrl}/api/puntos-entrega`
     );
   }
 }

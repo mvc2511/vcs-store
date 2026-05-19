@@ -15,11 +15,25 @@ export class SuccessComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   esCOD = false;
+  puntoEntregaNombre = '';
+
+  private readonly PUNTOS_MAP: Record<number, string> = {
+    1: 'Crucero de Dongu',
+    2: 'Deportivo Dongu',
+    3: 'Centro San Felipe',
+    4: 'Crucero de San Juan',
+    5: 'Centro de San Juan',
+    6: 'Pickup en local de San Antonio',
+  };
 
   ngOnInit(): void {
     this.cartService.clearCart();
     this.route.queryParams.subscribe((params) => {
       this.esCOD = params['tipo'] === 'cod';
+      if (this.esCOD && params['punto']) {
+        const id = parseInt(params['punto'], 10);
+        this.puntoEntregaNombre = this.PUNTOS_MAP[id] || '';
+      }
     });
   }
 }
