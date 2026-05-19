@@ -1,19 +1,53 @@
 <div class="success">
-  <div class="success-card">
-    <div class="success-icon">
+  <div class="success-card" *ngIf="orden">
+    <div class="success-icon" aria-hidden="true">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     </div>
-    <h1 class="success-title">¡Pedido Registrado!</h1>
+    <h1 class="success-title">¡Pedido #{{ orden.id }} Registrado!</h1>
     <p class="success-sub">
-      <ng-container *ngIf="esCOD; else pagoMsg">
-        Tu pedido está en proceso. Pagarás contra entrega cuando recibas tus productos. Te contactaremos para coordinar la entrega.
-      </ng-container>
-      <ng-template #pagoMsg>
-        Gracias por tu compra. Recibirás un correo con los detalles de tu pedido.
-      </ng-template>
+      Tu pedido está en proceso. Pagarás contra entrega cuando recibas tus productos.
+      Te contactaremos al <strong>{{ orden.telefono_contacto }}</strong> para coordinar la entrega.
     </p>
+
+    <div class="success-summary">
+      <div class="summary-row" *ngIf="orden.puntos_entrega">
+        <span class="summary-label">Punto de entrega</span>
+        <span class="summary-value">{{ orden.puntos_entrega.nombre }}</span>
+      </div>
+      <div class="summary-row" *ngIf="orden.fecha_entrega">
+        <span class="summary-label">Fecha de entrega</span>
+        <span class="summary-value">{{ orden.fecha_entrega }}</span>
+      </div>
+      <div class="summary-row" *ngIf="orden.hora_entrega">
+        <span class="summary-label">Horario</span>
+        <span class="summary-value">{{ orden.hora_entrega }}</span>
+      </div>
+    </div>
+
+    <table class="productos-table" *ngIf="orden.detalles_orden?.length">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cant.</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let det of orden.detalles_orden">
+          <td>{{ det.productos?.nombre || 'Producto eliminado' }}</td>
+          <td>{{ det.cantidad }}</td>
+          <td>{{ det.cantidad * det.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="total-row">
+      <span class="total-label">Total</span>
+      <span class="total-value">{{ orden.total | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+    </div>
+
     <a routerLink="/" class="success-btn">Seguir comprando</a>
   </div>
 </div>

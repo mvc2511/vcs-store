@@ -1,0 +1,247 @@
+.admin-ordenes {
+  max-width: 1100px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.filtro-select {
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  cursor: pointer;
+}
+
+.loading, .empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 3rem 1rem;
+  font-size: 0.9rem;
+}
+
+.orden-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.orden-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.orden-header:hover {
+  background: #f8f8fc;
+}
+
+.orden-id {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  min-width: 60px;
+}
+
+.orden-total {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  min-width: 80px;
+}
+
+.orden-estado {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 80px;
+  text-align: center;
+}
+
+.estado-pendiente { background: #fff3cd; color: #856404; }
+.estado-confirmado { background: #cce5ff; color: #004085; }
+.estado-preparando { background: #d4edda; color: #155724; }
+.estado-enviado { background: #d1ecf1; color: #0c5460; }
+.estado-entregado { background: #d4edda; color: #155724; }
+.estado-cancelado { background: #f8d7da; color: #721c24; }
+
+.orden-meta {
+  flex: 1;
+}
+
+.orden-fecha {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.orden-punto {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  min-width: 120px;
+}
+
+.expand-icon {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  color: var(--text-secondary);
+}
+
+.expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.orden-body {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.detalles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.detalle-info label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.detalle-info span {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.detalle-info .mono {
+  font-family: monospace;
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+
+.productos-section {
+  padding: 1rem 0;
+}
+
+.productos-section h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.productos-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+.productos-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.productos-table tr:last-child td {
+  border-bottom: none;
+}
+
+.estado-section {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.estado-section label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.estado-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.btn-estado {
+  padding: 0.35rem 0.7rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-estado:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-estado.active {
+  border-color: var(--primary);
+  background: rgba(108, 63, 236, 0.08);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.btn-estado:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .orden-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .orden-meta { flex: none; width: 100%; }
+  .detalles-grid { grid-template-columns: 1fr; }
+  .productos-table {
+    font-size: 0.78rem;
+  }
+  .productos-table th, .productos-table td {
+    padding: 0.35rem 0.5rem;
+  }
+}

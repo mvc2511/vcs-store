@@ -25,6 +25,7 @@
   font-family: 'Poppins', sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -40,9 +41,7 @@
   margin-right: 4px;
 }
 
-.brand-text {
-  color: var(--text);
-}
+.brand-text { color: var(--text); }
 
 .brand-accent {
   background: var(--gradient);
@@ -147,9 +146,7 @@
 }
 
 @media (min-width: 768px) {
-  .user-name {
-    display: inline;
-  }
+  .user-name { display: inline; }
 }
 
 .logout-btn {
@@ -174,4 +171,111 @@
 .admin-link {
   color: var(--primary) !important;
   font-weight: 600 !important;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.hamburger-line {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.25s;
+}
+
+.hamburger-line.open:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.hamburger-line.open:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-line.open:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.mobile-menu {
+  display: none;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .hamburger { display: flex; }
+  .desktop-only { display: none; }
+  .mobile-menu.open { display: block; }
+}
+
+.mob-link {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+
+.mob-link:hover {
+  background: #f0f0f5;
+}
+
+.mob-auth {
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.mob-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.mob-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+.mob-logout {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mob-logout:hover {
+  background: rgba(255, 107, 107, 0.06);
 }

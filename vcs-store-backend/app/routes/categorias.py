@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.security import verificar_admin
@@ -8,6 +9,10 @@ router = APIRouter(prefix="/api/categorias", tags=["categorias"])
 
 
 class CategoriaCreate(BaseModel):
+    nombre: str
+
+
+class CategoriaUpdate(BaseModel):
     nombre: str
 
 
@@ -25,6 +30,18 @@ async def crear_categoria(
     resp = supabase_admin.table("categorias").insert({"nombre": body.nombre}).execute()
     if not resp.data:
         raise HTTPException(status_code=500, detail="Error al crear la categoría")
+    return resp.data[0]
+
+
+@router.put("/{categoria_id}")
+async def actualizar_categoria(
+    categoria_id: int,
+    body: CategoriaUpdate,
+    admin: dict = Depends(verificar_admin),
+):
+    resp = supabase_admin.table("categorias").update({"nombre": body.nombre}).eq("id", categoria_id).execute()
+    if not resp.data:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
     return resp.data[0]
 
 

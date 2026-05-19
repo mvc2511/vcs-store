@@ -1,46 +1,95 @@
 # TODO - VC'S Store
 
-## 🔄 En Progreso
-- [ ] Login con correo y contraseña (email/password)
-- [ ] Login combinado Google + Email
+## 🔄 Pendiente
+- [ ] Login combinado Google + Email (intercambio entre sesiones)
+- [ ] Stripe: reactivar y corregir columnas a schema actual
 
-## ⏸️ Bloqueado / Suspendido
-- **Stripe:** Código existente pero columnas incorrectas vs schema real. No priorizado.
-- Despliegue en Netlify + Koyeb (pendiente de tener features core estables)
+## ✅ Completado
+### UX y Funcionalidad
+- [x] Subida de imagen solo al hacer submit (evita basura en Storage)
+- [x] Search bar + chips layout fijo (2 filas + sticky)
+- [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
+- [x] Columna `nombre` en `perfiles` + trigger actualizado
+- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly
+- [x] Navbar: link "Mi Perfil" en desktop y mobile
+- [x] Ordenar productos por precio (menor→mayor, mayor→menor)
+- [x] Success page con resumen completo de la orden (productos, total, punto entrega, fecha/hora)
+- [x] Tracking visual de orden: barra de progreso en mis-pedidos
+
+### Despliegue
+- [x] Despliegue Netlify (frontend) + Render (backend) — funcional con Docker + cron-job
 
 ## ✅ Completado
 ### Infraestructura
 - [x] Proyecto Supabase (PostgreSQL + Auth + Storage + RLS)
-- [x] Schema DB: perfiles, categorias, productos, ordenes, detalles_orden
+- [x] Schema DB: perfiles, categorias, productos, ordenes, detalles_orden, puntos_entrega, carrito
+- [x] Tabla `puntos_entrega` con 6 puntos de entrega (seed)
+- [x] Tabla `carrito` con RLS (cada usuario ve/edita su propio carrito)
+- [x] Columnas `user_email`, `fecha_entrega`, `hora_entrega` en ordenes
+- [x] ENUM `orden_estado` (pendiente, confirmado, preparando, enviado, entregado, cancelado)
 - [x] Trigger auto-creación de perfiles en auth.users
 - [x] Admin forzado: marianovc251@gmail.com
-- [x] Row Level Security configurado
+- [x] Row Level Security configurado (incl. admin access a ordenes, carrito)
 - [x] Storage bucket `productos` con políticas de subida/lectura
+- [x] Service_role: UPDATE en productos (stock) y ordenes
+- [x] Migraciones idempotentes: migracion-puntos-entrega.sql, migracion-carrito-entrega.sql
 
 ### Frontend (Angular 18)
 - [x] Arquitectura Standalone con Signals
-- [x] Navbar con carrito y sesión
-- [x] Home: grid de productos
-- [x] Product-detail: detalle con imagen y descripción
-- [x] Cart: carrito con Signals + localStorage
+- [x] Navbar con carrito, sesión, hamburger menu + desktop auth section
+- [x] Navbar: "Mis Pedidos" link para usuarios logueados
+- [x] Home: grid de productos responsive + búsqueda por nombre/descripcion
+- [x] Product-detail: detalle responsive 1 columna en mobile
+- [x] Cart: carrito responsive con login gate + selector punto entrega + teléfono
+- [x] Cart: selector de fecha de entrega + franjas horarias (Mañana/Tarde/Noche)
+- [x] Cart: COD button deshabilitado hasta seleccionar punto + teléfono
+- [x] Cart merge modal: al login con items locales + servidor, pregunta al usuario
 - [x] WhatsApp: botón en carrito que abre wa.me con productos
-- [x] Contra Entrega: botón en carrito que crea orden
-- [x] Success: página dinámica (Stripe / COD)
+- [x] Contra Entrega: flujo completo con punto de entrega, teléfono, fecha y hora
+- [x] Success: muestra punto de entrega en COD
 - [x] Auth service con Signals
-- [x] Login con Google OAuth
+- [x] Login con Google OAuth + Email/Password
+- [x] Login: redirect a returnUrl después de login
 - [x] AuthGuard + AdminGuard
-- [x] NuevoProductoComponent (formulario con upload)
-- [x] CategoriasComponent (listar, crear, eliminar)
+- [x] CartService híbrido: API cuando logueado, localStorage cuando no
+- [x] Admin Layout con sidebar + mobile drawer + nav Órdenes + Puntos de Entrega
+- [x] Admin Productos: listar/editar/eliminar con tabla responsive → cards
+- [x] Admin ProductoForm: crear/editar producto (reutilizable)
+- [x] Admin Categorías: listar/crear/editar inline/eliminar
+- [x] Admin Puntos de Entrega: listar/crear/editar inline/eliminar
+- [x] Admin Órdenes: dashboard con lista, filtro por estado, cambio de estado
+- [x] Admin Órdenes: muestra user_email, fecha/hora entrega, permite editar
+- [x] Mis Pedidos: historial del cliente con cancelación + fecha/hora entrega
 - [x] UploadImageComponent
+- [x] Diseño mobile-first (breakpoints 767px y 500px)
+- [x] Navbar hamburger menu con animación
 
 ### Backend (FastAPI)
-- [x] Endpoints: productos, categorias, checkout/cod
+- [x] CRUD completo productos: GET list (con search), GET by id, POST, PUT, DELETE
+- [x] CRUD completo categorías: GET, POST, PUT, DELETE
+- [x] CRUD completo puntos-entrega: GET público, POST/PUT/DELETE (admin)
+- [x] CRUD completo carrito: GET/POST/PUT/DELETE (autenticado)
+- [x] POST /api/checkout/cod — crear orden con punto entrega + teléfono + fecha/hora + stock validation + decrement + user_email
+- [x] GET /api/admin/ordenes — listar órdenes (admin) con filtro por estado (incluye user_email, fecha_entrega, hora_entrega)
+- [x] GET /api/admin/ordenes/{id} — detalle de orden (admin)
+- [x] PUT /api/admin/ordenes/{id}/estado — cambiar estado (admin)
+- [x] PUT /api/admin/ordenes/{id} — editar fecha/hora entrega (admin)
+- [x] GET /api/mis-ordenes — órdenes del usuario autenticado
+- [x] PUT /api/mis-ordenes/{id}/cancelar — cancelar si pendiente
 - [x] Seguridad: verificar_admin + verificar_usuario_google
 - [x] Validación Pydantic
 - [x] Cliente Supabase (anon + admin)
 
+### Docker
+- [x] docker-compose.yml: backend + frontend orquestados
+- [x] docker-compose.override.yml: hot reload para desarrollo
+- [x] Frontend multi-stage Dockerfile (node build → nginx serve)
+- [x] nginx.conf con SPA fallback
+- [x] .dockerignore para frontend y backend
+- [x] DOCKER-COMPOSE.md: guía completa con explicaciones
+
 ### Documentación
 - [x] CONTEXT.md — arquitectura general actualizada
-- [x] AGENT.md — estado para agentes de IA
+- [x] AGENTS.md — estado para agentes de IA
 - [x] TODO.md — tracking de tareas
 - [x] database.sql — schema limpio y re-ejecutable

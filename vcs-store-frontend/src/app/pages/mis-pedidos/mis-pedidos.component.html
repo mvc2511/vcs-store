@@ -1,0 +1,82 @@
+<div class="mis-pedidos">
+  <div class="container">
+    <h1>Mis Pedidos</h1>
+
+    <div *ngIf="loading()" class="loading">Cargando tus pedidos...</div>
+
+    <div *ngIf="!loading() && ordenes().length === 0" class="empty">
+      <p>Aún no tienes pedidos.</p>
+      <a routerLink="/" class="btn-cta">Ir al catálogo</a>
+    </div>
+
+    <div class="ordenes-list" *ngIf="!loading() && ordenes().length > 0">
+      <div *ngFor="let orden of ordenes()" class="orden-card">
+        <div class="orden-header">
+          <div class="orden-id">#{{ orden.id }}</div>
+          <span class="orden-estado" [class]="'estado-' + orden.estado">{{ orden.estado }}</span>
+          <div class="orden-total">{{ orden.total | currency:'MXN':'symbol-narrow':'1.0-0' }}</div>
+          <div class="orden-fecha">{{ orden.creado_en | date:'short' }}</div>
+          <div class="orden-punto" *ngIf="orden.puntos_entrega">
+            {{ orden.puntos_entrega.nombre }}
+          </div>
+        </div>
+
+        <div class="orden-progress">
+          <div class="progress-step" [class.active]="orden.estado === 'pendiente'" [class.done]="isStepDone('pendiente', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Pendiente</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'confirmado'" [class.done]="isStepDone('confirmado', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Confirmado</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'preparando'" [class.done]="isStepDone('preparando', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Preparando</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'enviado'" [class.done]="isStepDone('enviado', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Enviado</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'entregado'" [class.done]="isStepDone('entregado', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Entregado</span>
+          </div>
+        </div>
+
+        <div class="orden-body">
+          <div class="orden-entrega" *ngIf="orden.fecha_entrega || orden.hora_entrega">
+            <span *ngIf="orden.fecha_entrega">Entrega: {{ orden.fecha_entrega }}</span>
+            <span *ngIf="orden.hora_entrega"> — {{ orden.hora_entrega }}</span>
+          </div>
+          <table class="productos-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let det of orden.detalles_orden">
+                <td>{{ det.productos?.nombre || 'Producto eliminado' }}</td>
+                <td>{{ det.cantidad }}</td>
+                <td>{{ det.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+                <td>{{ det.cantidad * det.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button
+            *ngIf="isCancelable(orden.estado)"
+            class="btn-cancelar"
+            [disabled]="cancelandoId() === orden.id"
+            (click)="cancelarOrden(orden.id)"
+          >
+            {{ cancelandoId() === orden.id ? 'Cancelando...' : 'Cancelar orden' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

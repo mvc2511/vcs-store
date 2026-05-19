@@ -68,6 +68,54 @@ export class AuthService {
     if (error) console.error('Error OAuth:', error.message);
   }
 
+  private mapAuthError(error: any): string {
+    const msg = error?.message || '';
+    if (msg.includes('Database error saving new user')) {
+      return 'Error al crear tu cuenta. El registro está temporalmente deshabilitado.';
+    }
+    if (msg.includes('User already registered')) {
+      return 'Este correo ya está registrado. Intenta iniciar sesión.';
+    }
+    if (msg.includes('Invalid login credentials')) {
+      return 'Correo o contraseña incorrectos.';
+    }
+    if (msg.includes('Email not confirmed')) {
+      return 'Debes confirmar tu correo antes de iniciar sesión. Revisa tu bandeja de entrada.';
+    }
+    if (msg.includes('Password should be at least')) {
+      return 'La contraseña debe tener al menos 6 caracteres.';
+    }
+    if (msg.includes('rate limit')) {
+      return 'Demasiados intentos. Espera unos minutos e intenta de nuevo.';
+    }
+    if (msg.includes('NetworkError') || msg.includes('network')) {
+      return 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+    }
+    return 'Ocurrió un error inesperado. Intenta de nuevo más tarde.';
+  }
+
+  async signInWithEmail(email: string, password: string): Promise<string | null> {
+    const { error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) return this.mapAuthError(error);
+    return null;
+  }
+
+  async signUpWithEmail(email: string, password: string, nombre?: string): Promise<string | null> {
+    const { error } = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nombre: nombre || '' },
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) return this.mapAuthError(error);
+    return null;
+  }
+
   async logout() {
     await this.supabase.auth.signOut();
   }

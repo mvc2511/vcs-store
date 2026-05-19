@@ -1,73 +1,110 @@
-<nav class="navbar">
+<nav class="navbar" aria-label="Navegación principal">
   <div class="navbar-inner">
-    <a routerLink="/" class="navbar-brand">
-      <span class="brand-icon">&#10003;</span>
+    <a routerLink="/" class="navbar-brand" aria-label="VC'S Store - Inicio">
+      <span class="brand-icon" aria-hidden="true">&#10003;</span>
       <span class="brand-text">VCS</span>
       <span class="brand-accent">Store</span>
     </a>
+
     <div class="navbar-right">
       <a
         routerLink="/"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
-        class="nav-link"
+        class="nav-link desktop-only"
+        [attr.aria-current]="router.isActive('/' , true) ? 'page' : null"
       >
         Catálogo
       </a>
-      <a routerLink="/cart" routerLinkActive="active" class="nav-link cart-link">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+      <a
+        *ngIf="authService.perfil()?.rol === 'admin'"
+        routerLink="/admin"
+        routerLinkActive="active"
+        class="nav-link admin-link desktop-only"
+        [routerLinkActiveOptions]="{ exact: false }"
+        [attr.aria-current]="router.url.startsWith('/admin') ? 'page' : null"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        Admin
+      </a>
+
+      <a routerLink="/cart" routerLinkActive="active" class="nav-link cart-link" aria-label="Carrito de compras" [attr.aria-current]="router.isActive('/cart', false) ? 'page' : null">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
           <path d="m1 1 4 0 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
         </svg>
-        <span *ngIf="cartService.totalItems() > 0" class="cart-badge">
+        <span *ngIf="cartService.totalItems() > 0" class="cart-badge" aria-hidden="true">
           {{ cartService.totalItems() }}
         </span>
       </a>
 
       <a
-        *ngIf="authService.perfil()?.rol === 'admin'"
-        routerLink="/admin/productos/nuevo"
+        *ngIf="authService.isLoggedIn()"
+        routerLink="/mis-pedidos"
         routerLinkActive="active"
-        class="nav-link admin-link"
+        class="nav-link desktop-only"
+        [attr.aria-current]="router.url === '/mis-pedidos' ? 'page' : null"
       >
-        + Producto
+        Mis Pedidos
       </a>
       <a
-        *ngIf="authService.perfil()?.rol === 'admin'"
-        routerLink="/admin/categorias"
+        *ngIf="authService.isLoggedIn()"
+        routerLink="/perfil"
         routerLinkActive="active"
-        class="nav-link admin-link"
+        class="nav-link desktop-only"
+        [attr.aria-current]="router.url === '/perfil' ? 'page' : null"
       >
-        Categorías
+        Mi Perfil
       </a>
 
-      <div *ngIf="!authService.isLoggedIn()" class="auth-section">
-        <button class="login-btn" (click)="authService.loginWithGoogle()">
-          <svg width="18" height="18" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.54 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.87 7.35 2.56 10.54l7.98-5.95z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.95C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Google
-        </button>
+      <div class="auth-section desktop-only">
+        <ng-container *ngIf="!authService.isLoggedIn()">
+          <a routerLink="/login" class="login-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Entrar
+          </a>
+        </ng-container>
+        <div class="user-section" *ngIf="authService.user() as user">
+          <img [src]="user.user_metadata['avatar_url'] || ''" alt="" class="user-avatar" loading="lazy" referrerpolicy="no-referrer" />
+          <span class="user-name">{{ user.user_metadata['full_name'] || user.email }}</span>
+          <button class="logout-btn" (click)="authService.logout()" aria-label="Cerrar sesión">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div *ngIf="authService.user() as user" class="user-section">
-        <img
-          [src]="user.user_metadata['avatar_url']"
-          [alt]="user.user_metadata['full_name']"
-          class="user-avatar"
-        />
-        <span class="user-name">{{ user.user_metadata['full_name'] }}</span>
-        <button class="logout-btn" (click)="authService.logout()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-        </button>
-      </div>
+      <button class="hamburger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()" aria-label="Abrir menú">
+        <span class="hamburger-line" [class.open]="menuOpen()"></span>
+        <span class="hamburger-line" [class.open]="menuOpen()"></span>
+        <span class="hamburger-line" [class.open]="menuOpen()"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" [class.open]="menuOpen()" *ngIf="menuOpen()">
+    <a routerLink="/" class="mob-link" (click)="closeMenu()">Catálogo</a>
+    <a *ngIf="authService.perfil()?.rol === 'admin'" routerLink="/admin" class="mob-link" (click)="closeMenu()">Admin</a>
+
+    <a *ngIf="authService.isLoggedIn()" routerLink="/mis-pedidos" class="mob-link" (click)="closeMenu()">Mis Pedidos</a>
+    <a *ngIf="authService.isLoggedIn()" routerLink="/perfil" class="mob-link" (click)="closeMenu()">Mi Perfil</a>
+
+    <div class="mob-auth" *ngIf="!authService.isLoggedIn()">
+      <a routerLink="/login" class="mob-link" (click)="closeMenu()">Entrar</a>
+    </div>
+
+    <div class="mob-auth" *ngIf="authService.user() as user">
+      <span class="mob-user">
+        <img [src]="user.user_metadata['avatar_url']" alt="" class="mob-avatar" loading="lazy" />
+        {{ user.user_metadata['full_name'] }}
+      </span>
+      <button class="mob-logout" (click)="authService.logout(); closeMenu()">Cerrar sesión</button>
     </div>
   </div>
 </nav>
