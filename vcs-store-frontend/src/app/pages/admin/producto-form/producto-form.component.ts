@@ -340,9 +340,13 @@ export class ProductoFormComponent implements OnInit {
     this.enviando = true;
     this.errorMsg = '';
 
+    let imagenPath: string | null = null;
+
     try {
       if (this.archivoSeleccionado) {
-        this.imagenUrl = await this.storageService.subirImagen(this.archivoSeleccionado);
+        const subida = await this.storageService.subirImagen(this.archivoSeleccionado);
+        this.imagenUrl = subida.url;
+        imagenPath = subida.path;
         this.archivoSeleccionado = null;
       }
 
@@ -365,15 +369,23 @@ export class ProductoFormComponent implements OnInit {
         ? this.http.put(`${environment.apiUrl}/api/productos/${this.productoId}`, body, { headers })
         : this.http.post(`${environment.apiUrl}/api/productos`, body, { headers });
 
-      request$.subscribe({
-        next: () => {
-          this.enviando = false;
-          this.exito = true;
-        },
-        error: (err) => {
-          this.enviando = false;
-          this.errorMsg = err.error?.detail || 'Error al guardar el producto';
-        },
+      return new Promise((resolve) => {
+        request$.subscribe({
+          next: () => {
+            this.enviando = false;
+            this.exito = true;
+            resolve();
+          },
+          error: (err) => {
+            this.enviando = false;
+            this.errorMsg = err.error?.detail || 'Error al guardar el producto';
+            if (imagenPath) {
+              this.storageService.eliminarImagen(imagenPath);
+              this.imagenUrl = '';
+            }
+            resolve();
+          },
+        });
       });
     } catch (err: any) {
       this.enviando = false;
