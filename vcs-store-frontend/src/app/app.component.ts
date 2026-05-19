@@ -3,11 +3,12 @@ import { RouterOutlet, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { SeoService } from './core/services/seo.service';
+import { CartMergeModalComponent } from './shared/components/cart-merge-modal/cart-merge-modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, CartMergeModalComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
