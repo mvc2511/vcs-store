@@ -9,6 +9,9 @@ interface Orden {
   id: number;
   total: number;
   estado: string;
+  telefono_contacto: string | null;
+  fecha_entrega: string | null;
+  hora_entrega: string | null;
   creado_en: string;
   puntos_entrega: { nombre: string } | null;
   detalles_orden: DetalleOrden[];

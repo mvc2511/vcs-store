@@ -8,9 +8,12 @@ import { environment } from '../../../../environments/environments';
 interface Orden {
   id: number;
   user_id: string;
+  user_email: string | null;
   total: number;
   estado: string;
   telefono_contacto: string | null;
+  fecha_entrega: string | null;
+  hora_entrega: string | null;
   creado_en: string;
   updated_at: string;
   puntos_entrega: { nombre: string } | null;
@@ -40,6 +43,9 @@ export class AdminOrdenesComponent implements OnInit {
   filtroEstado = signal('');
   expandedId = signal<number | null>(null);
   updatingId = signal<number | null>(null);
+  editingEntregaId = signal<number | null>(null);
+  editFecha = signal('');
+  editHora = signal('');
 
   readonly ESTADOS = ['pendiente', 'confirmado', 'preparando', 'enviado', 'entregado', 'cancelado'];
 
@@ -88,5 +94,32 @@ export class AdminOrdenesComponent implements OnInit {
 
   toggleExpand(ordenId: number): void {
     this.expandedId.set(this.expandedId() === ordenId ? null : ordenId);
+  }
+
+  startEditEntrega(orden: Orden): void {
+    this.editingEntregaId.set(orden.id);
+    this.editFecha.set(orden.fecha_entrega || '');
+    this.editHora.set(orden.hora_entrega || '');
+  }
+
+  cancelEditEntrega(): void {
+    this.editingEntregaId.set(null);
+  }
+
+  guardarEntrega(ordenId: number): void {
+    const data: any = {};
+    if (this.editFecha()) data.fecha_entrega = this.editFecha();
+    if (this.editHora()) data.hora_entrega = this.editHora();
+    if (!data.fecha_entrega && !data.hora_entrega) return;
+
+    this.http
+      .put(`${environment.apiUrl}/api/admin/ordenes/${ordenId}`, data, { headers: this.getHeaders() })
+      .subscribe({
+        next: () => {
+          this.editingEntregaId.set(null);
+          this.cargarOrdenes();
+        },
+        error: () => alert('Error al guardar la fecha/hora de entrega'),
+      });
   }
 }

@@ -22,6 +22,10 @@
         </div>
 
         <div class="orden-body">
+          <div class="orden-entrega" *ngIf="orden.fecha_entrega || orden.hora_entrega">
+            <span *ngIf="orden.fecha_entrega">Entrega: {{ orden.fecha_entrega }}</span>
+            <span *ngIf="orden.hora_entrega"> — {{ orden.hora_entrega }}</span>
+          </div>
           <table class="productos-table">
             <thead>
               <tr>

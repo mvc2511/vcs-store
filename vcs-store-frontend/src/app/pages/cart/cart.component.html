@@ -72,6 +72,31 @@
                 class="phone-input"
               />
             </div>
+
+            <div class="checkout-delivery-time">
+              <label for="fecha-entrega">Fecha de entrega</label>
+              <input
+                id="fecha-entrega"
+                type="date"
+                [min]="tomorrow()"
+                [(ngModel)]="fechaEntrega"
+                class="date-input"
+              />
+            </div>
+
+            <div class="checkout-delivery-time">
+              <label>Horario de entrega</label>
+              <div class="franjas-grid">
+                <label
+                  *ngFor="let franja of FRANJAS"
+                  class="franja-option"
+                  [class.selected]="horaEntrega() === franja"
+                >
+                  <input type="radio" name="hora" [value]="franja" (change)="horaEntrega.set(franja)" />
+                  <span class="franja-nombre">{{ franja }}</span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <div class="checkout-options">

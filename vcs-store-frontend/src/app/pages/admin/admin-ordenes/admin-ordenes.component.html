@@ -38,6 +38,10 @@
             <label>ID de usuario</label>
             <span class="mono">{{ orden.user_id }}</span>
           </div>
+          <div class="detalle-info" *ngIf="orden.user_email">
+            <label>Email</label>
+            <span>{{ orden.user_email }}</span>
+          </div>
           <div class="detalle-info" *ngIf="orden.telefono_contacto">
             <label>Teléfono</label>
             <span>{{ orden.telefono_contacto }}</span>
@@ -50,6 +54,32 @@
             <label>Actualizado</label>
             <span>{{ orden.updated_at | date:'medium' }}</span>
           </div>
+        </div>
+
+        <div class="entrega-section" *ngIf="orden.fecha_entrega || orden.hora_entrega || editingEntregaId() === orden.id">
+          <h3>Entrega</h3>
+          <ng-container *ngIf="editingEntregaId() !== orden.id; else editEntrega">
+            <div class="entrega-info">
+              <span *ngIf="orden.fecha_entrega">Fecha: {{ orden.fecha_entrega }}</span>
+              <span *ngIf="orden.hora_entrega">Horario: {{ orden.hora_entrega }}</span>
+              <button class="btn-edit-entrega" (click)="startEditEntrega(orden)">Editar</button>
+            </div>
+          </ng-container>
+          <ng-template #editEntrega>
+            <div class="entrega-edit">
+              <input type="date" [(ngModel)]="editFecha" class="date-input" />
+              <select [(ngModel)]="editHora" class="hora-select">
+                <option value="">Seleccionar horario</option>
+                <option value="Mañana (9:00 - 12:00)">Mañana (9:00 - 12:00)</option>
+                <option value="Tarde (12:00 - 17:00)">Tarde (12:00 - 17:00)</option>
+                <option value="Noche (17:00 - 20:00)">Noche (17:00 - 20:00)</option>
+              </select>
+              <div class="entrega-actions">
+                <button class="btn-save" (click)="guardarEntrega(orden.id)">Guardar</button>
+                <button class="btn-cancel" (click)="cancelEditEntrega()">Cancelar</button>
+              </div>
+            </div>
+          </ng-template>
         </div>
 
         <div class="productos-section">

@@ -26,6 +26,16 @@ export class CartComponent implements OnInit {
   puntosEntrega = signal<{ id: number; nombre: string }[]>([]);
   selectedPunto = signal<number | null>(null);
   telefono = '';
+  fechaEntrega = signal('');
+  horaEntrega = signal('');
+
+  readonly FRANJAS = ['Mañana (9:00 - 12:00)', 'Tarde (12:00 - 17:00)', 'Noche (17:00 - 20:00)'];
+
+  tomorrow(): string {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  }
 
   private readonly WHATSAPP_NUMBER = environment.whatsappNumber;
 
@@ -71,7 +81,7 @@ export class CartComponent implements OnInit {
     }));
 
     this.checkoutService
-      .crearOrdenCOD(items, this.selectedPunto()!, this.telefono.trim())
+      .crearOrdenCOD(items, this.selectedPunto()!, this.telefono.trim(), this.fechaEntrega() || undefined, this.horaEntrega() || undefined)
       .subscribe({
         next: (res) => {
           this.cartService.clearCart();
