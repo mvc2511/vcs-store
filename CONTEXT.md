@@ -21,7 +21,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Código limpio y mantenible:** Separación de conceptos, componentes atómicos.
 - **Backend stateless:** FastAPI asíncrono, procesamiento multimedia delegado al cliente.
 - **Seguridad en base de datos:** Row Level Security (RLS) como escudo perimetral, RBAC vía trigger en `auth.users`.
-- **Mínimo Privilegio:** Tres roles segmentados — `anon` (lectura pública), `authenticated` (lectura propia), `service_role` (escritura backend).
+- **Mínimo Privilegio:** Tres roles segmentados — `anon` (lectura pública), `authenticated` (lectura propia/escritura carrito), `service_role` (escritura backend).
 - **Mobile-first:** Todos los componentes responsivos con breakpoints en 767px y 500px.
 - **Diseño homogéneo:** Mismo tema claro para clientes y admin.
 
@@ -29,7 +29,8 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 
 ## 3. Frontend (Angular 18)
 
-- **Gestión de estado:** Signals en AuthService para propagar sesión y roles.
+- **Gestión de estado:** Signals en AuthService para propagar sesión y roles. Signals en CartService con modo híbrido (API si logueado, localStorage si no).
+- **Carrito persistente:** Sincronizado con backend via `/api/carrito`. Merge modal al login si hay conflicto local vs servidor.
 - **Rutas protegidas:** `AdminGuard` + `AuthGuard` (CanActivateFn) para zonas administrativas y checkout.
 - **Lazy loading:** Todas las rutas cargan asíncronamente.
 - **Upload de imágenes:** Procesamiento local con FileReader → spinner → subida a Storage → URL inyectada en formulario.
@@ -42,24 +43,25 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 |------|-----------|-------|
 | `/` | HomeComponent | - |
 | `/producto/:id` | ProductDetailComponent | - |
-| `/cart` | CartComponent | - |
+| `/cart` | CartComponent (fecha/hora entrega) | - |
 | `/login` | LoginComponent (soporta ?returnUrl) | - |
-| `/mis-pedidos` | MisPedidosComponent (historial + cancelar) | AuthGuard |
+| `/mis-pedidos` | MisPedidosComponent (historial + cancelar + fecha/hora) | AuthGuard |
 | `/success` | SuccessComponent | AuthGuard |
 | `/admin` | AdminLayoutComponent → redirect a /admin/productos | AdminGuard |
 | `/admin/productos` | AdminProductosComponent (lista con editar/eliminar) | AdminGuard |
 | `/admin/productos/nuevo` | ProductoFormComponent (crear) | AdminGuard |
 | `/admin/productos/:id/editar` | ProductoFormComponent (editar) | AdminGuard |
-| `/admin/ordenes` | AdminOrdenesComponent (dashboard + estado) | AdminGuard |
+| `/admin/ordenes` | AdminOrdenesComponent (dashboard + estado + editar fecha/hora) | AdminGuard |
 | `/admin/categorias` | CategoriasComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/puntos-entrega` | PuntosEntregaComponent (CRUD con edición inline) | AdminGuard |
 
 ---
 
 ## 4. Backend (FastAPI)
 
 - **Seguridad:** `verificar_admin()` decodifica JWT, consulta `perfiles.rol` con `service_role`, rechaza con 403 si no es admin.
-- **Validación:** Esquemas Pydantic (`ProductoCreate`, `ProductoUpdate`, `CODRequest`, etc.).
-- **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend.
+- **Validación:** Esquemas Pydantic (`ProductoCreate`, `CODRequest`, `CarritoAddItem`, etc.).
+- **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend. El carrito usa `authenticated` + RLS para que el frontend pueda hacer CRUD directo.
 - **Endpoints activos:**
   - `GET /api/productos?search=:query` — Listar productos (búsqueda por nombre)
   - `GET /api/productos/{id}` — Obtener producto por ID
@@ -71,10 +73,19 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
   - `PUT /api/categorias/{id}` — Actualizar categoría (admin)
   - `DELETE /api/categorias/{id}` — Eliminar categoría (admin)
   - `GET /api/puntos-entrega` — Listar puntos de entrega (público)
-  - `POST /api/checkout/cod` — Crear orden COD (requiere punto_entrega_id + telefono_contacto, valida y descuenta stock)
-  - `GET /api/admin/ordenes?estado=:filtro` — Listar órdenes (admin)
+  - `POST /api/puntos-entrega` — Crear punto de entrega (admin)
+  - `PUT /api/puntos-entrega/{id}` — Actualizar punto de entrega (admin)
+  - `DELETE /api/puntos-entrega/{id}` — Eliminar punto de entrega (admin)
+  - `GET /api/carrito` — Listar items del carrito (autenticado)
+  - `POST /api/carrito` — Agregar/incrementar item (autenticado)
+  - `PUT /api/carrito/{id}` — Cambiar cantidad (autenticado)
+  - `DELETE /api/carrito/{id}` — Eliminar item (autenticado)
+  - `DELETE /api/carrito` — Vaciar carrito (autenticado)
+  - `POST /api/checkout/cod` — Crear orden COD (requiere punto_entrega_id + telefono_contacto + fecha_entrega/hora_entrega opcionales, valida y descuenta stock, guarda user_email)
+  - `GET /api/admin/ordenes?estado=:filtro` — Listar órdenes (admin) con user_email, fecha_entrega, hora_entrega
   - `GET /api/admin/ordenes/{id}` — Detalle de orden (admin)
   - `PUT /api/admin/ordenes/{id}/estado` — Cambiar estado de orden (admin)
+  - `PUT /api/admin/ordenes/{id}` — Editar fecha/hora entrega (admin)
   - `GET /api/mis-ordenes` — Órdenes del usuario autenticado
   - `PUT /api/mis-ordenes/{id}/cancelar` — Cancelar orden si pendiente
   - `GET /` y `GET /health` — Health check
@@ -155,11 +166,14 @@ productos (
 ordenes (
     id SERIAL PK,
     user_id UUID NOT NULL,
+    user_email VARCHAR(255),       -- email del usuario al crear la orden
     total DECIMAL(10,2) NOT NULL,
     estado orden_estado DEFAULT 'pendiente',
     punto_entrega_id INT → puntos_entrega(id) ON DELETE SET NULL,
     telefono_contacto VARCHAR(20),
-    stripe_session_id VARCHAR(255),  -- nullable, solo usado si se reactiva Stripe
+    fecha_entrega DATE,            -- fecha seleccionada por el cliente
+    hora_entrega VARCHAR(50),      -- franja horaria (ej: "Mañana 9:00-12:00")
+    stripe_session_id VARCHAR(255),
     creado_en TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 )
@@ -170,6 +184,15 @@ detalles_orden (
     producto_id INT → productos(id) ON DELETE SET NULL,
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10,2) NOT NULL
+)
+
+carrito (
+    id SERIAL PK,
+    user_id UUID NOT NULL,
+    producto_id INT → productos(id) ON DELETE CASCADE,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 )
 ```
 
@@ -192,6 +215,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 | `ordenes` | SELECT solo propias (`auth.uid() = user_id`) | authenticated |
 | `ordenes` | SELECT todas (para service_role) | service_role |
 | `detalles_orden` | (Sin política explícita, protegida por RLS por defecto) | - |
+| `carrito` | SELECT/INSERT/UPDATE/DELETE solo propias (`auth.uid() = user_id`) | authenticated |
 
 ### 6.4. Matriz de Privilegios
 
@@ -201,13 +225,15 @@ on_auth_user_created AFTER INSERT ON auth.users
 - SELECT, INSERT, UPDATE en productos + secuencia
 - SELECT, INSERT, UPDATE en ordenes + secuencia
 - SELECT, INSERT en detalles_orden + secuencia
-- SELECT en puntos_entrega + secuencia
+- SELECT, INSERT, UPDATE, DELETE en puntos_entrega + secuencia
+- SELECT, INSERT, UPDATE, DELETE en carrito + secuencia
 
 **anon** (Frontend - navegación pública):
 - SELECT en categorias, productos, perfiles, puntos_entrega
 
 **authenticated** (Frontend - sesión activa):
 - SELECT en perfiles, puntos_entrega
+- SELECT, INSERT, UPDATE, DELETE en carrito + secuencia
 
 ### 6.5. Storage (Bucket `productos`)
 
@@ -224,6 +250,10 @@ on_auth_user_created AFTER INSERT ON auth.users
       ├── (Lectura de productos) ──────────────> Supabase DB / Storage
       │
       ├── (Autenticación) ─────────────────────> Supabase Auth
+      │
+      ├── (Carrito - no logueado) ─────────────> localStorage
+      │
+      ├── (Carrito - logueado) ────────────────> FastAPI /api/carrito → Supabase DB
       │
       ├── (WhatsApp) ──────────────────────────> Cliente abre wa.me
       │
@@ -242,32 +272,37 @@ on_auth_user_created AFTER INSERT ON auth.users
 |---------|--------|
 | Infraestructura Supabase (DB, Auth, Storage, RLS) | ✅ |
 | Tabla puntos_entrega + seed 6 puntos | ✅ |
+| Tabla carrito con RLS | ✅ |
+| Columnas user_email, fecha_entrega, hora_entrega en ordenes | ✅ |
 | ENUM orden_estado (6 estados) | ✅ |
 | Trigger auto-creación de perfiles | ✅ |
 | Admin por defecto | ✅ |
 | Catálogo público (grid + detalle + búsqueda) | ✅ |
-| Carrito con Signals + localStorage | ✅ |
-| Login con Google OAuth | ✅ |
-| Login con correo y contraseña | ✅ |
+| Carrito híbrido (API + localStorage) con Signals | ✅ |
+| Cart merge modal (local vs servidor al login) | ✅ |
+| Login con Google OAuth + Email/Password | ✅ |
 | Login: returnUrl post-auth | ✅ |
 | Guards de autenticación y admin | ✅ |
 | Admin CRUD productos (listar/crear/editar/eliminar) | ✅ |
 | Admin CRUD categorías (listar/crear/editar/eliminar) | ✅ |
-| Admin Layout con sidebar + mobile drawer | ✅ |
-| Edición inline de categorías | ✅ |
+| Admin CRUD puntos de entrega (listar/crear/editar/eliminar) | ✅ |
+| Admin Layout con sidebar + mobile drawer + nav completo | ✅ |
+| Edición inline de categorías y puntos de entrega | ✅ |
 | Confirmación modal al eliminar productos | ✅ |
 | Upload de imágenes a Storage | ✅ |
 | WhatsApp: generar pedido | ✅ |
-| Contra Entrega: flujo completo (punto entrega + teléfono + stock) | ✅ |
+| Contra Entrega: flujo completo (punto entrega + teléfono + fecha/hora + stock) | ✅ |
 | Stock validation + decrement en COD | ✅ |
 | Página de éxito dinámica con punto de entrega | ✅ |
 | Navbar responsive con hamburger menu + desktop auth | ✅ |
 | Diseño mobile-first (breakpoints 767px, 500px) | ✅ |
-| Admin dashboard de órdenes (listar, filtrar, cambiar estado) | ✅ |
-| Historial de pedidos del cliente + cancelación | ✅ |
+| Admin dashboard de órdenes (listar, filtrar, cambiar estado, editar fecha/hora) | ✅ |
+| Admin órdenes: muestra user_email + fecha/hora entrega | ✅ |
+| Historial de pedidos del cliente + cancelación + fecha/hora entrega | ✅ |
 | Búsqueda de productos (client-side) | ✅ |
 | Docker Compose (backend + frontend) | ✅ |
 | Frontend multi-stage Dockerfile (node → nginx) | ✅ |
+| Migraciones idempotentes (puntos-entrega, carrito-entrega) | ✅ |
 | Login Google + Email combinado | ❌ Pendiente |
 | Stripe (Checkout + Webhooks) | ❌ Suspendido |
 | Despliegue (Netlify + Koyeb) | ❌ Futuro |
