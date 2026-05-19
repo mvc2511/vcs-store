@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Producto, CarritoItem } from '../models/product.model';
 import { CheckoutService } from '../../core/services/checkout.service';
@@ -51,7 +51,8 @@ export class CartService {
       this.cartItemsSignal.set(this.loadFromStorage());
     }
 
-    this.authService.isLoggedIn.subscribe((loggedIn) => {
+    effect(() => {
+      const loggedIn = this.authService.isLoggedIn();
       if (loggedIn) {
         this.syncAfterLogin();
       } else {
