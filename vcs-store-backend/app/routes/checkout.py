@@ -23,6 +23,8 @@ class CODRequest(BaseModel):
     items: list[CODItem]
     punto_entrega_id: int
     telefono_contacto: str
+    fecha_entrega: Optional[str] = None
+    hora_entrega: Optional[str] = None
 
 
 @router.post("/cod", status_code=201)
@@ -69,10 +71,13 @@ async def crear_orden_cod(
         supabase_admin.table("ordenes")
         .insert({
             "user_id": usuario["user_id"],
+            "user_email": usuario.get("email"),
             "total": total,
             "estado": "pendiente",
             "punto_entrega_id": req.punto_entrega_id,
             "telefono_contacto": req.telefono_contacto,
+            "fecha_entrega": req.fecha_entrega,
+            "hora_entrega": req.hora_entrega,
         })
         .execute()
     )

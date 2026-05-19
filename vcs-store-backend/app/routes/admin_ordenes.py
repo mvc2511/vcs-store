@@ -14,6 +14,11 @@ class EstadoUpdate(BaseModel):
     estado: str
 
 
+class OrdenUpdate(BaseModel):
+    fecha_entrega: Optional[str] = None
+    hora_entrega: Optional[str] = None
+
+
 @router.get("")
 async def listar_ordenes(
     admin: dict = Depends(verificar_admin),
@@ -61,6 +66,34 @@ async def actualizar_estado_orden(
     resp = (
         supabase_admin.table("ordenes")
         .update({"estado": body.estado, "updated_at": now_iso})
+        .eq("id", orden_id)
+        .execute()
+    )
+    if not resp.data:
+        raise HTTPException(status_code=404, detail="Orden no encontrada")
+    return resp.data[0]
+
+
+@router.put("/{orden_id}")
+async def actualizar_orden(
+    orden_id: int,
+    body: OrdenUpdate,
+    admin: dict = Depends(verificar_admin),
+):
+    update_data = {}
+    if body.fecha_entrega is not None:
+        update_data["fecha_entrega"] = body.fecha_entrega
+    if body.hora_entrega is not None:
+        update_data["hora_entrega"] = body.hora_entrega
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No hay campos para actualizar")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = now_iso
+
+    resp = (
+        supabase_admin.table("ordenes")
+        .update(update_data)
         .eq("id", orden_id)
         .execute()
     )
