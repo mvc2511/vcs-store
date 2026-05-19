@@ -10,7 +10,7 @@
 .cart-title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 2rem;
 }
 
@@ -20,7 +20,7 @@
 }
 
 .cart-empty p {
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   margin: 1rem 0 1.5rem;
   font-size: 1.1rem;
 }
@@ -28,11 +28,10 @@
 .cart-cta {
   display: inline-block;
   padding: 0.75rem 2rem;
-  background: var(--gradient);
-  color: #fff;
+  background: var(--vyro-text);
+  color: var(--vyro-surface);
   font-weight: 600;
   border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(108, 63, 236, 0.3);
   transition: transform 0.2s;
 }
 
@@ -58,9 +57,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: var(--surface);
+  background: var(--vyro-surface);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .cart-item-image {
@@ -83,30 +82,30 @@
 }
 
 .cart-item-info a {
-  color: var(--text);
+  color: var(--vyro-text);
   transition: color 0.2s;
 }
 
 .cart-item-info a:hover {
-  color: var(--primary);
+  color: var(--vyro-accent);
 }
 
 .cart-item-variant {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   margin-bottom: 0.3rem;
 }
 
 .cart-item-price {
   font-weight: 600;
-  color: var(--text);
+  color: var(--vyro-text);
   font-size: 0.95rem;
 }
 
 .cart-item-qty {
   display: flex;
   align-items: center;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
 }
 
@@ -116,13 +115,13 @@
   border: none;
   background: transparent;
   font-weight: 600;
-  color: var(--text);
+  color: var(--vyro-text);
   font-size: 1rem;
   transition: background 0.2s;
 }
 
 .cart-item-qty button:hover {
-  background: #f0f0f5;
+  background: var(--vyro-border);
 }
 
 .cart-item-qty span {
@@ -133,12 +132,11 @@
 }
 
 .cart-item-subtotal {
-  font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   min-width: 80px;
   text-align: right;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .cart-item-remove {
@@ -150,21 +148,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   transition: all 0.2s;
   flex-shrink: 0;
 }
 
 .cart-item-remove:hover {
-  background: rgba(255, 107, 107, 0.1);
-  color: var(--secondary);
+  background: color-mix(in srgb, var(--vyro-error) 10%, transparent);
+  color: var(--vyro-error);
 }
 
 .cart-summary {
-  background: var(--surface);
+  background: var(--vyro-surface);
   padding: 1.5rem;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   position: sticky;
   top: 88px;
 }
@@ -172,39 +170,39 @@
 .cart-summary h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 1rem;
 }
 
 .summary-line {
   display: flex;
   justify-content: space-between;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
 
 .summary-divider {
   height: 1px;
-  background: var(--border);
+  background: var(--vyro-border);
   margin: 0.75rem 0;
 }
 
 .summary-total {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .cart-login-cta {
   text-align: center;
   padding: 1.5rem 0;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--vyro-border);
   margin-top: 1.5rem;
 }
 
 .cart-login-cta p {
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
@@ -212,11 +210,10 @@
 .btn-login-cta {
   display: inline-block;
   padding: 0.75rem 2rem;
-  background: var(--gradient);
-  color: #fff;
+  background: var(--vyro-text);
+  color: var(--vyro-surface);
   font-weight: 600;
   border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(108, 63, 236, 0.3);
   transition: transform 0.2s;
 }
 
@@ -227,13 +224,13 @@
 .checkout-delivery {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--vyro-border);
 }
 
 .checkout-delivery h3 {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 0.75rem;
 }
 
@@ -249,28 +246,28 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 0.75rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .punto-option:hover {
-  border-color: var(--primary);
-  background: rgba(108, 63, 236, 0.04);
+  border-color: var(--vyro-accent);
+  background: color-mix(in srgb, var(--vyro-accent) 6%, transparent);
 }
 
 .punto-option.selected {
-  border-color: var(--primary);
-  background: rgba(108, 63, 236, 0.08);
-  color: var(--primary);
+  border-color: var(--vyro-accent);
+  background: color-mix(in srgb, var(--vyro-accent) 10%, transparent);
+  color: var(--vyro-accent);
 }
 
 .punto-option input {
-  accent-color: var(--primary);
+  accent-color: var(--vyro-accent);
 }
 
 .checkout-phone {
@@ -281,25 +278,25 @@
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 0.4rem;
 }
 
 .phone-input {
   width: 100%;
   padding: 0.7rem 0.85rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  color: var(--text);
-  background: var(--surface);
+  color: var(--vyro-text);
+  background: var(--vyro-surface);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .phone-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(108, 63, 236, 0.1);
+  border-color: var(--vyro-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vyro-accent) 12%, transparent);
 }
 
 .checkout-options {
@@ -323,13 +320,12 @@
   justify-content: center;
   gap: 0.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
   cursor: pointer;
 }
 
 .btn-whatsapp:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.35);
 }
 
 .btn-whatsapp svg {
@@ -339,10 +335,10 @@
 .btn-cod {
   width: 100%;
   padding: 0.85rem;
-  border: 2px solid var(--primary);
+  border: 2px solid var(--vyro-text);
   background: transparent;
   border-radius: var(--radius-sm);
-  color: var(--primary);
+  color: var(--vyro-text);
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.2s;
@@ -350,8 +346,8 @@
 }
 
 .btn-cod:hover:not(:disabled) {
-  background: var(--primary);
-  color: #fff;
+  background: var(--vyro-text);
+  color: var(--vyro-surface);
 }
 
 .btn-cod:disabled {
@@ -364,7 +360,7 @@
   align-items: center;
   gap: 1rem;
   margin-top: 1.5rem;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-size: 0.8rem;
 }
 
@@ -373,7 +369,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: var(--vyro-border);
 }
 
 .checkout-btn {
@@ -381,18 +377,18 @@
   padding: 0.85rem;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--gradient);
-  color: #fff;
+  background: var(--vyro-accent);
+  color: var(--vyro-text);
   font-size: 1rem;
   font-weight: 600;
   margin-top: 0.75rem;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(108, 63, 236, 0.3);
+  cursor: pointer;
 }
 
 .checkout-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(108, 63, 236, 0.4);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--vyro-accent) 30%, transparent);
 }
 
 .checkout-btn:disabled {
@@ -405,8 +401,8 @@
   display: inline-block;
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
+  border: 2px solid rgba(0,0,0,0.15);
+  border-top-color: var(--vyro-text);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   margin-right: 0.4rem;
@@ -419,10 +415,10 @@
 .clear-btn {
   width: 100%;
   padding: 0.65rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   background: transparent;
   border-radius: var(--radius-sm);
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-size: 0.85rem;
   font-weight: 500;
   margin-top: 0.75rem;
@@ -430,19 +426,8 @@
 }
 
 .clear-btn:hover {
-  border-color: var(--secondary);
-  color: var(--secondary);
-}
-
-@media (max-width: 768px) {
-  .cart-layout {
-    grid-template-columns: 1fr;
-  }
-  .cart-item-subtotal {
-    display: none;
-  }
-  .cart-title { font-size: 1.4rem; }
-  .cart { padding: 1.25rem 1rem 5rem; }
+  border-color: var(--vyro-text);
+  color: var(--vyro-text);
 }
 
 .checkout-delivery-time {
@@ -453,25 +438,25 @@
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 0.4rem;
 }
 
 .date-input {
   width: 100%;
   padding: 0.7rem 0.85rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  color: var(--text);
-  background: var(--surface);
+  color: var(--vyro-text);
+  background: var(--vyro-surface);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .date-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(108, 63, 236, 0.1);
+  border-color: var(--vyro-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vyro-accent) 12%, transparent);
 }
 
 .franjas-grid {
@@ -485,34 +470,34 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 0.75rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .franja-option:hover {
-  border-color: var(--primary);
-  background: rgba(108, 63, 236, 0.04);
+  border-color: var(--vyro-accent);
+  background: color-mix(in srgb, var(--vyro-accent) 6%, transparent);
 }
 
 .franja-option.selected {
-  border-color: var(--primary);
-  background: rgba(108, 63, 236, 0.08);
-  color: var(--primary);
+  border-color: var(--vyro-accent);
+  background: color-mix(in srgb, var(--vyro-accent) 10%, transparent);
+  color: var(--vyro-accent);
 }
 
 .franja-option input {
-  accent-color: var(--primary);
+  accent-color: var(--vyro-accent);
 }
 
 .entrega-section {
   margin: 1rem 0;
   padding: 1rem;
-  background: #f8f8fc;
+  background: color-mix(in srgb, var(--vyro-text) 4%, transparent);
   border-radius: var(--radius-sm);
 }
 
@@ -527,22 +512,22 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .entrega-info span {
-  background: var(--surface);
+  background: var(--vyro-surface);
   padding: 0.3rem 0.6rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid var(--vyro-border);
 }
 
 .btn-edit-entrega {
   padding: 0.3rem 0.8rem;
-  border: 1.5px solid var(--primary);
+  border: 1.5px solid var(--vyro-accent);
   background: transparent;
   border-radius: var(--radius-sm);
-  color: var(--primary);
+  color: var(--vyro-accent);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -550,8 +535,8 @@
 }
 
 .btn-edit-entrega:hover {
-  background: var(--primary);
-  color: #fff;
+  background: var(--vyro-accent);
+  color: var(--vyro-text);
 }
 
 .entrega-edit {
@@ -563,18 +548,18 @@
 .hora-select {
   width: 100%;
   padding: 0.7rem 0.85rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  color: var(--text);
-  background: var(--surface);
+  color: var(--vyro-text);
+  background: var(--vyro-surface);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .hora-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(108, 63, 236, 0.1);
+  border-color: var(--vyro-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vyro-accent) 12%, transparent);
 }
 
 .entrega-actions {
@@ -586,8 +571,8 @@
   padding: 0.5rem 1.2rem;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--primary);
-  color: #fff;
+  background: var(--vyro-accent);
+  color: var(--vyro-text);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -600,10 +585,10 @@
 
 .btn-cancel {
   padding: 0.5rem 1.2rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   background: transparent;
   border-radius: var(--radius-sm);
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -611,19 +596,30 @@
 }
 
 .btn-cancel:hover {
-  border-color: var(--text-secondary);
-  color: var(--text);
+  border-color: var(--vyro-text-secondary);
+  color: var(--vyro-text);
 }
 
 .orden-entrega {
   display: flex;
   gap: 0.3rem;
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   margin-bottom: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: #f8f8fc;
+  background: color-mix(in srgb, var(--vyro-text) 4%, transparent);
   border-radius: var(--radius-sm);
+}
+
+@media (max-width: 768px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+  .cart-item-subtotal {
+    display: none;
+  }
+  .cart-title { font-size: 1.4rem; }
+  .cart { padding: 1.25rem 1rem 5rem; }
 }
 
 @media (max-width: 500px) {

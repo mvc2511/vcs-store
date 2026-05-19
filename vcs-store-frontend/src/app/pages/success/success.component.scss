@@ -8,10 +8,10 @@
 
 .success-card {
   text-align: center;
-  background: var(--surface);
+  background: var(--vyro-surface);
   padding: 3rem 2.5rem;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
   max-width: 460px;
   width: 100%;
 }
@@ -19,8 +19,8 @@
 .success-icon {
   width: 80px;
   height: 80px;
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--success);
+  background: color-mix(in srgb, var(--vyro-success) 10%, transparent);
+  color: var(--vyro-success);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -37,12 +37,12 @@
 .success-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 0.75rem;
 }
 
 .success-sub {
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   line-height: 1.6;
   margin-bottom: 2rem;
 }
@@ -50,11 +50,10 @@
 .success-btn {
   display: inline-block;
   padding: 0.85rem 2rem;
-  background: var(--gradient);
-  color: #fff;
+  background: var(--vyro-text);
+  color: var(--vyro-surface);
   font-weight: 600;
   border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(108, 63, 236, 0.3);
   transition: transform 0.2s;
 }
 
@@ -63,7 +62,7 @@
 }
 
 .success-summary {
-  background: var(--bg);
+  background: var(--vyro-bg);
   border-radius: var(--radius-sm);
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -79,16 +78,16 @@
 }
 
 .summary-row + .summary-row {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--vyro-border);
 }
 
 .summary-label {
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-weight: 500;
 }
 
 .summary-value {
-  color: var(--text);
+  color: var(--vyro-text);
   font-weight: 600;
 }
 
@@ -101,16 +100,16 @@
 }
 
 .productos-table th {
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-weight: 600;
   padding: 0.5rem 0.25rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--vyro-border);
 }
 
 .productos-table td {
   padding: 0.5rem 0.25rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
+  border-bottom: 1px solid var(--vyro-border);
+  color: var(--vyro-text);
 }
 
 .productos-table td:last-child,
@@ -124,18 +123,17 @@
   align-items: center;
   padding: 0.75rem 0;
   margin-bottom: 1.5rem;
-  border-top: 2px solid var(--border);
+  border-top: 2px solid var(--vyro-border);
 }
 
 .total-label {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .total-value {
-  font-family: 'Poppins', sans-serif;
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--text);
+  color: var(--vyro-text);
 }
