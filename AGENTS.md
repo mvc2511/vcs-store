@@ -17,30 +17,34 @@ Login combinado Google + Email (intercambio de sesiones).
 
 ## ✅ Completado
 - [x] Infraestructura Supabase (DB, Auth, Storage, RLS)
+- [x] Tabla puntos_entrega + seed 6 puntos (Crucero Dongu, Deportivo Dongu, Centro SF, etc.)
+- [x] ENUM orden_estado (pendiente/confirmado/preparando/enviado/entregado/cancelado)
 - [x] Trigger automático de perfiles al registrarse
 - [x] Admin forzado: marianovc251@gmail.com
-- [x] Catálogo público (grid + detalle producto)
+- [x] Catálogo público (grid + detalle producto + búsqueda client-side)
 - [x] Carrito con Signals + persistencia localStorage
-- [x] Login con Google OAuth
-- [x] Login con correo y contraseña (email/password)
+- [x] Login con Google OAuth + Email/Password
+- [x] Login: redirect a returnUrl post-auth
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
-- [x] Rutas públicas: /, /producto/:id, /cart
-- [x] Rutas protegidas hijas: /admin (productos, categorías)
+- [x] Rutas públicas: /, /producto/:id, /cart, /login
+- [x] Rutas protegidas: /success, /mis-pedidos, /admin/*
 - [x] CRUD de productos (endpoint FastAPI + componente Angular)
 - [x] CRUD de categorías (endpoint FastAPI + componente Angular)
+- [x] CRUD de órdenes (admin): listar/filtrar/cambiar estado
+- [x] Historial de pedidos del cliente + cancelación
 - [x] Upload de imágenes a Storage (FileReader → bucket)
 - [x] WhatsApp: botón en carrito que genera mensaje con productos
-- [x] Contra Entrega: endpoint POST /api/checkout/cod + botón + éxito dinámica
-- [x] Admin full CRUD: productos (listar/crear/editar/eliminar) + categorías (listar/crear/editar/eliminar)
+- [x] Contra Entrega: flujo completo (punto entrega + teléfono + stock validation + decrement)
+- [x] Admin full CRUD: productos + categorías + órdenes
 - [x] Admin Layout con sidebar + drawer mobile (hamburger flotante)
-- [x] Admin tabla productos responsive → cards en mobile con data-labels
+- [x] Admin dashboard órdenes con expansión y cambio de estado
 - [x] ProductoForm reutilizable para crear/editar según ruta :id
 - [x] Edición inline de categorías (enter para guardar, escape para cancelar)
 - [x] Confirmación modal al eliminar productos
-- [x] Navbar: hamburger menu en mobile con animación
-- [x] Navbar: menú deslizable con Catálogo, Admin, login/logout, avatar
-- [x] Carrito responsive: items se envuelven en mobile (<500px)
+- [x] Navbar: hamburger menu en mobile + auth section en desktop (Entrar/avatar+logout)
+- [x] Navbar: links Mis Pedidos para usuarios logueados (mobile + desktop)
+- [x] Carrito responsive: login gate, selector punto entrega, input teléfono
 - [x] Diseño homogéneo claro (admin y clientes mismo tema light)
 - [x] Docker Compose: docker-compose.yml + docker-compose.override.yml
 - [x] Frontend multi-stage Dockerfile (node build → nginx serve)
@@ -90,12 +94,13 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - Diseño homogéneo claro (sin tema oscuro separado para admin)
 
 ## 🔧 Reglas para cambios futuros
+0. **ANTES DE CADA COMMIT** revisar y actualizar los 4 archivos de documentación si corresponde: `TODO.md`, `CONTEXT.md`, `AGENTS.md`, `DOCKER-COMPOSE.md`
 1. Todo cambio en la base de datos debe reflejarse PRIMERO en `database.sql` y LUEGO aplicarse en Supabase
 2. No modificar manualmente la base de datos sin actualizar `database.sql`
 3. Si se crea un endpoint nuevo, agregarlo a CONTEXT.md sección 4
 4. Si se cambia el esquema, actualizar CONTEXT.md sección 5 y este AGENTS.md
 5. Al completar una feature, pasar de "Pendiente" a "Completado" en TODO.md y AGENTS.md
-6. Si se agrega un servicio nuevo a Docker Compose, actualizar DOCKER-COMPOSE.md
+6. Si se modifica el flujo de Docker Compose (servicios nuevos, cambios en Dockerfile, nginx, override, .dockerignore), actualizar `DOCKER-COMPOSE.md`
 
 ## 🛣️ Roadmap futuro — GitHub Ruleset (activar en orden)
 

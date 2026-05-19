@@ -43,11 +43,14 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/` | HomeComponent | - |
 | `/producto/:id` | ProductDetailComponent | - |
 | `/cart` | CartComponent | - |
+| `/login` | LoginComponent (soporta ?returnUrl) | - |
+| `/mis-pedidos` | MisPedidosComponent (historial + cancelar) | AuthGuard |
 | `/success` | SuccessComponent | AuthGuard |
 | `/admin` | AdminLayoutComponent → redirect a /admin/productos | AdminGuard |
 | `/admin/productos` | AdminProductosComponent (lista con editar/eliminar) | AdminGuard |
 | `/admin/productos/nuevo` | ProductoFormComponent (crear) | AdminGuard |
 | `/admin/productos/:id/editar` | ProductoFormComponent (editar) | AdminGuard |
+| `/admin/ordenes` | AdminOrdenesComponent (dashboard + estado) | AdminGuard |
 | `/admin/categorias` | CategoriasComponent (CRUD con edición inline) | AdminGuard |
 
 ---
@@ -58,7 +61,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Validación:** Esquemas Pydantic (`ProductoCreate`, `ProductoUpdate`, `CODRequest`, etc.).
 - **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend.
 - **Endpoints activos:**
-  - `GET /api/productos` — Listar productos (con categoría anidada)
+  - `GET /api/productos?search=:query` — Listar productos (búsqueda por nombre)
   - `GET /api/productos/{id}` — Obtener producto por ID
   - `POST /api/productos` — Crear producto (admin)
   - `PUT /api/productos/{id}` — Actualizar producto (admin)
@@ -67,7 +70,13 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
   - `POST /api/categorias` — Crear categoría (admin)
   - `PUT /api/categorias/{id}` — Actualizar categoría (admin)
   - `DELETE /api/categorias/{id}` — Eliminar categoría (admin)
-  - `POST /api/checkout/cod` — Crear orden contra entrega (autenticado)
+  - `GET /api/puntos-entrega` — Listar puntos de entrega (público)
+  - `POST /api/checkout/cod` — Crear orden COD (requiere punto_entrega_id + telefono_contacto, valida y descuenta stock)
+  - `GET /api/admin/ordenes?estado=:filtro` — Listar órdenes (admin)
+  - `GET /api/admin/ordenes/{id}` — Detalle de orden (admin)
+  - `PUT /api/admin/ordenes/{id}/estado` — Cambiar estado de orden (admin)
+  - `GET /api/mis-ordenes` — Órdenes del usuario autenticado
+  - `PUT /api/mis-ordenes/{id}/cancelar` — Cancelar orden si pendiente
   - `GET /` y `GET /health` — Health check
 
 ---
@@ -111,12 +120,19 @@ Schema completo y re-ejecutable en `vcs-store-database/database.sql`.
 
 ```sql
 usuario_rol ENUM ('cliente', 'admin', 'moderador')
+orden_estado ENUM ('pendiente', 'confirmado', 'preparando', 'enviado', 'entregado', 'cancelado')
 
 perfiles (
     id UUID PK → auth.users(id),
     email TEXT NOT NULL,
     rol usuario_rol DEFAULT 'cliente',
     created_at TIMESTAMPTZ DEFAULT NOW()
+)
+
+puntos_entrega (
+    id SERIAL PK,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    creado_en TIMESTAMPTZ DEFAULT NOW()
 )
 
 categorias (
@@ -140,9 +156,12 @@ ordenes (
     id SERIAL PK,
     user_id UUID NOT NULL,
     total DECIMAL(10,2) NOT NULL,
-    estado VARCHAR(50) DEFAULT 'pendiente',
+    estado orden_estado DEFAULT 'pendiente',
+    punto_entrega_id INT → puntos_entrega(id) ON DELETE SET NULL,
+    telefono_contacto VARCHAR(20),
     stripe_session_id VARCHAR(255),  -- nullable, solo usado si se reactiva Stripe
-    creado_en TIMESTAMPTZ DEFAULT NOW()
+    creado_en TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 )
 
 detalles_orden (
@@ -169,7 +188,9 @@ on_auth_user_created AFTER INSERT ON auth.users
 | `perfiles` | SELECT libre (necesario para AuthService) | anon, authenticated |
 | `categorias` | SELECT libre | anon |
 | `productos` | SELECT libre | anon |
+| `puntos_entrega` | SELECT libre | anon |
 | `ordenes` | SELECT solo propias (`auth.uid() = user_id`) | authenticated |
+| `ordenes` | SELECT todas (para service_role) | service_role |
 | `detalles_orden` | (Sin política explícita, protegida por RLS por defecto) | - |
 
 ### 6.4. Matriz de Privilegios
@@ -177,15 +198,16 @@ on_auth_user_created AFTER INSERT ON auth.users
 **service_role** (Backend FastAPI):
 - SELECT en perfiles (verificar admin)
 - SELECT, INSERT, DELETE en categorias + secuencia
-- SELECT, INSERT en productos + secuencia
-- SELECT, INSERT en ordenes + secuencia
+- SELECT, INSERT, UPDATE en productos + secuencia
+- SELECT, INSERT, UPDATE en ordenes + secuencia
 - SELECT, INSERT en detalles_orden + secuencia
+- SELECT en puntos_entrega + secuencia
 
 **anon** (Frontend - navegación pública):
-- SELECT en categorias, productos, perfiles
+- SELECT en categorias, productos, perfiles, puntos_entrega
 
 **authenticated** (Frontend - sesión activa):
-- SELECT en perfiles
+- SELECT en perfiles, puntos_entrega
 
 ### 6.5. Storage (Bucket `productos`)
 
@@ -219,12 +241,15 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Feature | Estado |
 |---------|--------|
 | Infraestructura Supabase (DB, Auth, Storage, RLS) | ✅ |
+| Tabla puntos_entrega + seed 6 puntos | ✅ |
+| ENUM orden_estado (6 estados) | ✅ |
 | Trigger auto-creación de perfiles | ✅ |
 | Admin por defecto | ✅ |
-| Catálogo público (grid + detalle) | ✅ |
+| Catálogo público (grid + detalle + búsqueda) | ✅ |
 | Carrito con Signals + localStorage | ✅ |
 | Login con Google OAuth | ✅ |
 | Login con correo y contraseña | ✅ |
+| Login: returnUrl post-auth | ✅ |
 | Guards de autenticación y admin | ✅ |
 | Admin CRUD productos (listar/crear/editar/eliminar) | ✅ |
 | Admin CRUD categorías (listar/crear/editar/eliminar) | ✅ |
@@ -233,13 +258,16 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Confirmación modal al eliminar productos | ✅ |
 | Upload de imágenes a Storage | ✅ |
 | WhatsApp: generar pedido | ✅ |
-| Contra Entrega: endpoint COD + UI | ✅ |
-| Página de éxito dinámica | ✅ |
-| Navbar responsive con hamburger menu | ✅ |
+| Contra Entrega: flujo completo (punto entrega + teléfono + stock) | ✅ |
+| Stock validation + decrement en COD | ✅ |
+| Página de éxito dinámica con punto de entrega | ✅ |
+| Navbar responsive con hamburger menu + desktop auth | ✅ |
 | Diseño mobile-first (breakpoints 767px, 500px) | ✅ |
+| Admin dashboard de órdenes (listar, filtrar, cambiar estado) | ✅ |
+| Historial de pedidos del cliente + cancelación | ✅ |
+| Búsqueda de productos (client-side) | ✅ |
 | Docker Compose (backend + frontend) | ✅ |
 | Frontend multi-stage Dockerfile (node → nginx) | ✅ |
 | Login Google + Email combinado | ❌ Pendiente |
 | Stripe (Checkout + Webhooks) | ❌ Suspendido |
-| Panel admin de órdenes | ❌ Futuro |
 | Despliegue (Netlify + Koyeb) | ❌ Futuro |
