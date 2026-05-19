@@ -7,9 +7,10 @@ Login combinado Google + Email (intercambio de sesiones).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
-- **Frontend:** Angular 18 (Standalone, Signals, lazy loading, guards)
+- **Frontend:** Angular 18 (Standalone, Signals, lazy loading, guards, responsive mobile-first)
 - **Backend:** Python 3.11+ / FastAPI (Docker)
 - **Infra:** Supabase (PostgreSQL + Auth + Storage + RLS)
+- **Orquestación:** Docker Compose (backend + frontend)
 - **Hosting:** Netlify (frontend) / Koyeb (backend) — aún no desplegado
 - **Pagos:** Stripe suspendido → reemplazado por WhatsApp + Contra Entrega
 - **Estado:** Funcional y en desarrollo activo
@@ -25,17 +26,27 @@ Login combinado Google + Email (intercambio de sesiones).
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
 - [x] Rutas públicas: /, /producto/:id, /cart
-- [x] Rutas protegidas: /success, /admin/productos/nuevo, /admin/categorias
+- [x] Rutas protegidas hijas: /admin (productos, categorías)
 - [x] CRUD de productos (endpoint FastAPI + componente Angular)
 - [x] CRUD de categorías (endpoint FastAPI + componente Angular)
 - [x] Upload de imágenes a Storage (FileReader → bucket)
 - [x] WhatsApp: botón en carrito que genera mensaje con productos
 - [x] Contra Entrega: endpoint POST /api/checkout/cod + botón + éxito dinámica
 - [x] Admin full CRUD: productos (listar/crear/editar/eliminar) + categorías (listar/crear/editar/eliminar)
-- [x] Admin dark layout con sidebar navegable
-- [x] Edición inline de categorías
+- [x] Admin Layout con sidebar + drawer mobile (hamburger flotante)
+- [x] Admin tabla productos responsive → cards en mobile con data-labels
+- [x] ProductoForm reutilizable para crear/editar según ruta :id
+- [x] Edición inline de categorías (enter para guardar, escape para cancelar)
 - [x] Confirmación modal al eliminar productos
-- [x] Navbar: link único "Admin" para admins
+- [x] Navbar: hamburger menu en mobile con animación
+- [x] Navbar: menú deslizable con Catálogo, Admin, login/logout, avatar
+- [x] Carrito responsive: items se envuelven en mobile (<500px)
+- [x] Diseño homogéneo claro (admin y clientes mismo tema light)
+- [x] Docker Compose: docker-compose.yml + docker-compose.override.yml
+- [x] Frontend multi-stage Dockerfile (node build → nginx serve)
+- [x] nginx.conf con SPA fallback
+- [x] .dockerignore para frontend y backend
+- [x] DOCKER-COMPOSE.md con guía completa y explicaciones
 
 ## 🔄 Pendiente
 - [ ] Login combinado Google + Email (unificar la misma cuenta)
@@ -74,6 +85,9 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - service_role aislado para escritura backend
 - Stripe descartado → WhatsApp (cliente) + COD (backend+DB)
 - Credenciales en variables de entorno (.env, environments.ts)
+- Mobile-first: breakpoints 767px y 500px
+- Docker Compose sobre docker run para orquestación
+- Diseño homogéneo claro (sin tema oscuro separado para admin)
 
 ## 🔧 Reglas para cambios futuros
 1. Todo cambio en la base de datos debe reflejarse PRIMERO en `database.sql` y LUEGO aplicarse en Supabase
@@ -81,6 +95,7 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 3. Si se crea un endpoint nuevo, agregarlo a CONTEXT.md sección 4
 4. Si se cambia el esquema, actualizar CONTEXT.md sección 5 y este AGENTS.md
 5. Al completar una feature, pasar de "Pendiente" a "Completado" en TODO.md y AGENTS.md
+6. Si se agrega un servicio nuevo a Docker Compose, actualizar DOCKER-COMPOSE.md
 
 ## 🛣️ Roadmap futuro — GitHub Ruleset (activar en orden)
 
@@ -102,10 +117,12 @@ Cuando el proyecto esté listo para producción, activar estas reglas en GitHub 
 ---
 
 ## 📦 Comandos útiles
-- Frontend: `npm run start` (localhost:4200)
+- Frontend dev: `npm run start` (localhost:4200)
 - Frontend build: `npm run build`
-- Backend (Docker, comandos detallados en `vcs-store-backend/README.md`):
-  - Reconstruir: `docker build -t vcs-store-backend .`
-  - Levantar: `docker run -d -p 8000:8000 --env-file .env --name vcs-backend-container vcs-store-backend`
-  - Logs: `docker logs -f vcs-backend-container`
-  - Detener: `docker stop vcs-backend-container`
+- Backend + Frontend (Docker Compose, ver `DOCKER-COMPOSE.md`):
+  - `docker compose up -d` — Levantar todo
+  - `docker compose up -d --build` — Reconstruir y levantar
+  - `docker compose up -d backend` — Solo backend con hot reload
+  - `docker compose down` — Bajar todo
+  - `docker compose logs -f` — Logs en tiempo real
+- Backend legacy (sin Compose): `docker build` + `docker run` en `vcs-store-backend/`
