@@ -88,6 +88,83 @@ h1 {
   width: 100%;
 }
 
+.orden-progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  overflow-x: auto;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  position: relative;
+  min-width: 60px;
+}
+
+.progress-step::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.progress-step:last-child::after {
+  display: none;
+}
+
+.progress-step.done::after {
+  background: var(--success);
+}
+
+.step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--border);
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.progress-step.done .step-dot {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.progress-step.active .step-dot {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(108, 63, 236, 0.2);
+}
+
+.step-label {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.progress-step.done .step-label {
+  color: var(--success);
+}
+
+.progress-step.active .step-label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .orden-body {
   padding: 0 1.25rem 1.25rem;
   border-top: 1px solid var(--border);

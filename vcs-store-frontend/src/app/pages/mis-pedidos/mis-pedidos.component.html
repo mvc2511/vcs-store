@@ -21,6 +21,29 @@
           </div>
         </div>
 
+        <div class="orden-progress">
+          <div class="progress-step" [class.active]="orden.estado === 'pendiente'" [class.done]="isStepDone('pendiente', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Pendiente</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'confirmado'" [class.done]="isStepDone('confirmado', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Confirmado</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'preparando'" [class.done]="isStepDone('preparando', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Preparando</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'enviado'" [class.done]="isStepDone('enviado', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Enviado</span>
+          </div>
+          <div class="progress-step" [class.active]="orden.estado === 'entregado'" [class.done]="isStepDone('entregado', orden.estado)">
+            <span class="step-dot"></span>
+            <span class="step-label">Entregado</span>
+          </div>
+        </div>
+
         <div class="orden-body">
           <div class="orden-entrega" *ngIf="orden.fecha_entrega || orden.hora_entrega">
             <span *ngIf="orden.fecha_entrega">Entrega: {{ orden.fecha_entrega }}</span>

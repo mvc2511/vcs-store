@@ -78,4 +78,10 @@ export class MisPedidosComponent implements OnInit {
   isCancelable(estado: string): boolean {
     return estado === 'pendiente';
   }
+
+  isStepDone(step: string, currentEstado: string): boolean {
+    if (currentEstado === 'cancelado') return false;
+    const order = ['pendiente', 'confirmado', 'preparando', 'enviado', 'entregado'];
+    return order.indexOf(step) <= order.indexOf(currentEstado);
+  }
 }

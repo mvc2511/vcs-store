@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit {
   categorias: string[] = [];
   selectedCategoria = '';
   searchQuery = '';
+  sortOrder = '';
   loading = true;
 
   ngOnInit(): void {
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit {
   }
 
   get filteredProductos(): Producto[] {
-    let result = this.productos;
+    let result = [...this.productos];
     if (this.selectedCategoria) {
       result = result.filter((p) => p.categoria === this.selectedCategoria);
     }
@@ -45,6 +46,11 @@ export class HomeComponent implements OnInit {
           p.nombre.toLowerCase().includes(q) ||
           p.descripcion.toLowerCase().includes(q)
       );
+    }
+    if (this.sortOrder === 'price-asc') {
+      result.sort((a, b) => a.precio - b.precio);
+    } else if (this.sortOrder === 'price-desc') {
+      result.sort((a, b) => b.precio - a.precio);
     }
     return result;
   }

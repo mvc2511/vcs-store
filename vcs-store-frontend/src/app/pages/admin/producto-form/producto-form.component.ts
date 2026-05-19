@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NgFor, NgIf } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
+import { StorageService } from '../../../shared/services/storage.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environments';
 
@@ -68,7 +69,7 @@ interface Categoria {
 
           <div class="field full">
             <label>Imagen</label>
-            <app-upload-image (urlSubida)="onUrlSubida($event)" />
+            <app-upload-image (archivoSeleccionado)="onArchivoSeleccionado($event)" />
             <img *ngIf="imagenUrl" [src]="imagenUrl" alt="" class="img-preview" />
           </div>
         </div>
@@ -271,6 +272,7 @@ export class ProductoFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private storageService = inject(StorageService);
   private route = inject(ActivatedRoute);
 
   form = this.fb.group({
@@ -289,6 +291,7 @@ export class ProductoFormComponent implements OnInit {
   exito = false;
   errorMsg = '';
   imagenUrl = '';
+  archivoSeleccionado: File | null = null;
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -327,44 +330,54 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
-  onUrlSubida(url: string): void {
-    this.imagenUrl = url;
+  onArchivoSeleccionado(file: File): void {
+    this.archivoSeleccionado = file;
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.invalid || this.enviando) return;
 
     this.enviando = true;
     this.errorMsg = '';
 
-    const token = this.authService.sessionToken();
-    const headers = new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+    try {
+      if (this.archivoSeleccionado) {
+        this.imagenUrl = await this.storageService.subirImagen(this.archivoSeleccionado);
+        this.archivoSeleccionado = null;
+      }
 
-    const body: Record<string, unknown> = {
-      nombre: this.form.value.nombre,
-      descripcion: this.form.value.descripcion,
-      precio: parseFloat(this.form.value.precio ?? '0'),
-      stock: parseInt(this.form.value.stock ?? '0', 10),
-      imagen_url: this.imagenUrl,
-    };
+      const token = this.authService.sessionToken();
+      const headers = new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
 
-    if (this.form.value.categoria_id) {
-      body['categoria_id'] = this.form.value.categoria_id;
+      const body: Record<string, unknown> = {
+        nombre: this.form.value.nombre,
+        descripcion: this.form.value.descripcion,
+        precio: parseFloat(this.form.value.precio ?? '0'),
+        stock: parseInt(this.form.value.stock ?? '0', 10),
+        imagen_url: this.imagenUrl,
+      };
+
+      if (this.form.value.categoria_id) {
+        body['categoria_id'] = this.form.value.categoria_id;
+      }
+
+      const request$ = this.editMode
+        ? this.http.put(`${environment.apiUrl}/api/productos/${this.productoId}`, body, { headers })
+        : this.http.post(`${environment.apiUrl}/api/productos`, body, { headers });
+
+      request$.subscribe({
+        next: () => {
+          this.enviando = false;
+          this.exito = true;
+        },
+        error: (err) => {
+          this.enviando = false;
+          this.errorMsg = err.error?.detail || 'Error al guardar el producto';
+        },
+      });
+    } catch (err: any) {
+      this.enviando = false;
+      this.errorMsg = err?.message || 'Error al subir la imagen';
     }
-
-    const request$ = this.editMode
-      ? this.http.put(`${environment.apiUrl}/api/productos/${this.productoId}`, body, { headers })
-      : this.http.post(`${environment.apiUrl}/api/productos`, body, { headers });
-
-    request$.subscribe({
-      next: () => {
-        this.enviando = false;
-        this.exito = true;
-      },
-      error: (err) => {
-        this.enviando = false;
-        this.errorMsg = err.error?.detail || 'Error al guardar el producto';
-      },
-    });
   }
 }

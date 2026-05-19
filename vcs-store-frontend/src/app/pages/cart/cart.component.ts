@@ -86,11 +86,11 @@ export class CartComponent implements OnInit {
         next: (res) => {
           this.cartService.clearCart();
           this.loadingCOD.set(false);
+          sessionStorage.setItem('ultimaOrden', JSON.stringify(res));
           this.router.navigate(['/success'], {
             queryParams: {
               tipo: 'cod',
-              punto: this.selectedPunto(),
-              telefono: this.telefono.trim(),
+              orden: res.id,
             },
           });
         },

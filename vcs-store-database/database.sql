@@ -50,6 +50,7 @@ CREATE TYPE orden_estado AS ENUM ('pendiente', 'confirmado', 'preparando', 'envi
 CREATE TABLE public.perfiles (
     id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
     email TEXT NOT NULL,
+    nombre TEXT,
     rol usuario_rol DEFAULT 'cliente' NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
@@ -115,6 +116,9 @@ CREATE TABLE public.carrito (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Migración idempotente: agregar columna nombre a perfiles
+ALTER TABLE public.perfiles ADD COLUMN IF NOT EXISTS nombre TEXT;
+
 -- =============================================================================
 -- 4. AUTOMATIZACIONES (Trigger + Función PL/pgSQL)
 -- =============================================================================
@@ -124,12 +128,15 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
     rol_texto TEXT;
+    nombre_texto TEXT;
 BEGIN
     rol_texto := COALESCE(NEW.raw_user_meta_data->>'rol', 'cliente');
-    INSERT INTO public.perfiles (id, email, rol)
+    nombre_texto := COALESCE(NEW.raw_user_meta_data->>'nombre', NEW.raw_user_meta_data->>'full_name', '');
+    INSERT INTO public.perfiles (id, email, nombre, rol)
     VALUES (
         NEW.id,
         COALESCE(NEW.email, ''),
+        nombre_texto,
         CASE
             WHEN rol_texto = 'admin' THEN 'admin'::public.usuario_rol
             WHEN rol_texto = 'moderador' THEN 'moderador'::public.usuario_rol
@@ -159,6 +166,10 @@ ALTER TABLE public.carrito ENABLE ROW LEVEL SECURITY;
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
 CREATE POLICY "Permitir lectura publica de perfiles"
     ON public.perfiles FOR SELECT USING (true);
+
+-- Los usuarios pueden actualizar su propio perfil (nombre, etc.)
+CREATE POLICY "Usuarios pueden actualizar su propio perfil"
+    ON public.perfiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
 -- Lectura pública de puntos de entrega
 CREATE POLICY "Permitir lectura publica de puntos de entrega"
@@ -203,13 +214,13 @@ GRANT SELECT ON public.perfiles TO anon;
 GRANT SELECT ON public.puntos_entrega TO anon;
 
 -- authenticated (frontend - usuario logueado)
-GRANT SELECT ON public.perfiles TO authenticated;
+GRANT SELECT, UPDATE ON public.perfiles TO authenticated;
 GRANT SELECT ON public.puntos_entrega TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 
 -- service_role (backend FastAPI - supabase_admin)
-GRANT SELECT ON public.perfiles TO service_role;
+GRANT SELECT, UPDATE ON public.perfiles TO service_role;
 GRANT SELECT, INSERT, DELETE ON public.categorias TO service_role;
 GRANT USAGE ON SEQUENCE public.categorias_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE ON public.productos TO service_role;

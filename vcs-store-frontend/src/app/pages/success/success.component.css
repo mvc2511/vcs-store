@@ -61,3 +61,81 @@
 .success-btn:hover {
   transform: translateY(-2px);
 }
+
+.success-summary {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+  font-size: 0.85rem;
+}
+
+.summary-row + .summary-row {
+  border-top: 1px solid var(--border);
+}
+
+.summary-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.summary-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.productos-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.productos-table td {
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.productos-table td:last-child,
+.productos-table th:last-child {
+  text-align: right;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  border-top: 2px solid var(--border);
+}
+
+.total-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.total-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+}

@@ -50,6 +50,15 @@
       >
         Mis Pedidos
       </a>
+      <a
+        *ngIf="authService.isLoggedIn()"
+        routerLink="/perfil"
+        routerLinkActive="active"
+        class="nav-link desktop-only"
+        [attr.aria-current]="router.url === '/perfil' ? 'page' : null"
+      >
+        Mi Perfil
+      </a>
 
       <div class="auth-section desktop-only">
         <ng-container *ngIf="!authService.isLoggedIn()">
@@ -84,6 +93,7 @@
     <a *ngIf="authService.perfil()?.rol === 'admin'" routerLink="/admin" class="mob-link" (click)="closeMenu()">Admin</a>
 
     <a *ngIf="authService.isLoggedIn()" routerLink="/mis-pedidos" class="mob-link" (click)="closeMenu()">Mis Pedidos</a>
+    <a *ngIf="authService.isLoggedIn()" routerLink="/perfil" class="mob-link" (click)="closeMenu()">Mi Perfil</a>
 
     <div class="mob-auth" *ngIf="!authService.isLoggedIn()">
       <a routerLink="/login" class="mob-link" (click)="closeMenu()">Entrar</a>

@@ -26,6 +26,9 @@
           class="search-input"
         />
       </div>
+    </div>
+
+    <div class="filter-bar">
       <div class="categoria-chips">
         <button
           *ngFor="let cat of categorias"
@@ -43,6 +46,11 @@
           Limpiar
         </button>
       </div>
+      <select [(ngModel)]="sortOrder" class="sort-select">
+        <option value="">Más recientes</option>
+        <option value="price-asc">Menor precio</option>
+        <option value="price-desc">Mayor precio</option>
+      </select>
     </div>
 
     <div *ngIf="loading" class="loading">

@@ -103,11 +103,14 @@ export class AuthService {
     return null;
   }
 
-  async signUpWithEmail(email: string, password: string): Promise<string | null> {
+  async signUpWithEmail(email: string, password: string, nombre?: string): Promise<string | null> {
     const { error } = await this.supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: {
+        data: { nombre: nombre || '' },
+        emailRedirectTo: window.location.origin,
+      },
     });
     if (error) return this.mapAuthError(error);
     return null;

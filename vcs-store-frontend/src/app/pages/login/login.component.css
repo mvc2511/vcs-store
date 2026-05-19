@@ -150,3 +150,33 @@
 .login-toggle .link-btn:hover {
   text-decoration: underline;
 }
+
+.terms-group {
+  flex-direction: row;
+}
+
+.terms-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.terms-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.terms-label .link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.terms-label .link:hover {
+  text-decoration: underline;
+}
