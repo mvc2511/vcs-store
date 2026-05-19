@@ -3,7 +3,7 @@
 **Última actualización:** 2026-05-18
 
 ## 🎯 Próximo paso inmediato
-Login combinado Google + Email o Stripe (según prioridad).
+Stripe: reactivar y corregir columnas (según prioridad).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -58,7 +58,6 @@ Login combinado Google + Email o Stripe (según prioridad).
 - [x] Migraciones idempotentes (puntos-entrega, carrito-entrega)
 
 ## 🔄 Pendiente
-- [ ] Login combinado Google + Email (intercambio entre sesiones)
 - [ ] Stripe: reactivar y corregir columnas a schema actual
 
 ## ✅ Completado
