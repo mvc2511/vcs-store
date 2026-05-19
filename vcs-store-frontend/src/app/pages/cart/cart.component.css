@@ -335,4 +335,29 @@
   .cart-item-subtotal {
     display: none;
   }
+  .cart-title { font-size: 1.4rem; }
+  .cart { padding: 1.25rem 1rem 5rem; }
+}
+
+@media (max-width: 500px) {
+  .cart-item {
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+  .cart-item-image {
+    width: 64px;
+    height: 80px;
+  }
+  .cart-item-info {
+    min-width: calc(100% - 80px);
+  }
+  .cart-item-info h3 {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cart-item-qty {
+    margin-left: auto;
+  }
 }
