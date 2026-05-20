@@ -155,6 +155,10 @@ CREATE TABLE public.carrito (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Índice único para evitar duplicados en carrito por usuario + producto + variante
+CREATE UNIQUE INDEX IF NOT EXISTS idx_carrito_unique
+    ON public.carrito (user_id, producto_id, COALESCE(variante_id, 0));
+
 -- Migración idempotente: agregar columna nombre a perfiles
 ALTER TABLE public.perfiles ADD COLUMN IF NOT EXISTS nombre TEXT;
 

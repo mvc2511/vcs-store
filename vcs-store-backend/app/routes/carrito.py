@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from postgrest.exceptions import APIError
 
 from app.core.security import verificar_usuario_google
 from app.core.supabase_client import supabase_admin
@@ -36,14 +39,15 @@ async def agregar_al_carrito(
     body: CarritoAddItem,
     usuario: dict = Depends(verificar_usuario_google),
 ):
-    producto_resp = (
-        supabase_admin.table("productos")
-        .select("id, stock")
-        .eq("id", body.producto_id)
-        .single()
-        .execute()
-    )
-    if not producto_resp.data:
+    try:
+        producto_resp = (
+            supabase_admin.table("productos")
+            .select("id, stock")
+            .eq("id", body.producto_id)
+            .single()
+            .execute()
+        )
+    except APIError:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
     query = (
@@ -58,11 +62,11 @@ async def agregar_al_carrito(
         query = query.is_("variante_id", "null")
     existing = query.maybe_single().execute()
 
-    if existing.data:
+    if existing is not None and existing.data:
         nueva_cantidad = existing.data["cantidad"] + body.cantidad
         resp = (
             supabase_admin.table("carrito")
-            .update({"cantidad": nueva_cantidad, "updated_at": "now()"})
+            .update({"cantidad": nueva_cantidad, "updated_at": datetime.now(timezone.utc).isoformat()})
             .eq("id", existing.data["id"])
             .execute()
         )
@@ -93,7 +97,7 @@ async def actualizar_cantidad(
 ):
     resp = (
         supabase_admin.table("carrito")
-        .update({"cantidad": body.cantidad, "updated_at": "now()"})
+        .update({"cantidad": body.cantidad, "updated_at": datetime.now(timezone.utc).isoformat()})
         .eq("id", item_id)
         .eq("user_id", usuario["user_id"])
         .execute()
