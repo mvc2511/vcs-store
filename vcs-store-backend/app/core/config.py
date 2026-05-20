@@ -17,5 +17,9 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     SUPABASE_JWT_SECRET: str = ""
 
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "noreply@vyro.boutique"
+    EMAIL_FROM_NAME: str = "VYRO Boutique"
+
 
 settings = Settings()

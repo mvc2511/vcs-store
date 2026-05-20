@@ -11,7 +11,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | **Frontend** | Angular 18 (Standalone, Signals, Lazyloading) | Netlify | Estructura robusta, estado reactivo con Signals, lazy loading nativo |
 | **Backend** | Python 3.11+ / FastAPI (Docker) | Render | Alto rendimiento asíncrono, validación Pydantic, autodocumentación Swagger |
 | **BBDD & Auth** | PostgreSQL + Supabase Auth | Supabase | DB relacional, Auth listo, Storage para imágenes, RLS nativo |
-| **Pagos** | ~~Stripe~~ (Suspendido) → WhatsApp + Contra Entrega | N/A | Modelo de negocio alternativo sin pasarela |
+| **Pagos** | ~~Stripe~~ (Suspendido permanentemente) → WhatsApp + Contra Entrega | N/A | Modelo de negocio definitivo sin pasarela |
 | **Orquestación** | Docker Compose (dev + prod) | N/A | Un solo comando para backend + frontend |
 
 ---
@@ -24,6 +24,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Mínimo Privilegio:** Tres roles segmentados — `anon` (lectura pública), `authenticated` (lectura propia/escritura carrito), `service_role` (escritura backend).
 - **Mobile-first:** Todos los componentes responsivos con breakpoints en 767px y 500px.
 - **Diseño homogéneo:** Mismo tema claro para clientes y admin.
+- **Diseño visual:** Guiado por `VYRO-REDESIGN.md` (paleta monocromática + champagne, tipografía Space Grotesk + Inter, minimalismo urbano editorial).
 
 ---
 
@@ -63,6 +64,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Seguridad:** `verificar_admin()` decodifica JWT, consulta `perfiles.rol` con `service_role`, rechaza con 403 si no es admin.
 - **Validación:** Esquemas Pydantic (`ProductoCreate`, `CODRequest`, `CarritoAddItem`, etc.).
 - **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend. El carrito usa `authenticated` + RLS para que el frontend pueda hacer CRUD directo.
+- **Email:** Servicio SendGrid en `services/email.py` con 3 templates HTML inline (orden creada, cambio estado, cancelación). Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
 - **Endpoints activos:**
   - `GET /api/productos?search=:query` — Listar productos (búsqueda por nombre)
   - `GET /api/productos/{id}` — Obtener producto por ID
@@ -263,7 +265,7 @@ on_auth_user_created AFTER INSERT ON auth.users
                                                        └── (CRUD) ──> Supabase DB
 ```
 
-**Stripe queda suspendido** — el código existe en `checkout.py` y `webhooks.py` pero con columnas que no corresponden al schema actual. Si se reactiva, requiere corregir nombres de columnas.
+**Stripe queda suspendido permanentemente** — el código existe en `checkout.py` y `webhooks.py` pero con columnas que no corresponden al schema actual. WhatsApp + Contra Entrega es el modelo de pago definitivo, no hay planes de reactivarlo.
 
 ---
 
@@ -302,13 +304,33 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Admin órdenes: muestra user_email + fecha/hora entrega | ✅ |
 | Historial de pedidos del cliente + cancelación + fecha/hora entrega | ✅ |
 | Búsqueda de productos (client-side) | ✅ |
+| Servicio de email SendGrid (services/email.py) | ✅ |
+| Email: notificación orden creada en checkout.py | ✅ |
+| Email: notificación cambio estado en admin_ordenes.py | ✅ |
+| Email: notificación cancelación en mis_ordenes.py | ✅ |
 | Docker Compose (backend + frontend) | ✅ |
 | Frontend multi-stage Dockerfile (node → nginx) | ✅ |
 | Migraciones idempotentes (puntos-entrega, carrito-entrega) | ✅ |
 | Login Google + Email combinado | ✅ |
-| Stripe (Checkout + Webhooks) | ❌ Suspendido |
+| Stripe (Checkout + Webhooks) | ⛔ Suspendido permanentemente (WhatsApp + COD es modelo definitivo) |
 | Despliegue (Netlify + Render) | ✅ Completado |
 | Navbar search duplicado eliminado (solo queda sticky home search) | ✅ |
 | Product-detail compacto (max-width 1000px, fuentes reducidas) | ✅ |
 | Product-cards compactos (4/5 aspect, grid minmax 240px, padding reducido) | ✅ |
 | Carrito DB persistente (race condition token corregida, timeout 3s) | ✅ |
+| Rediseño Login VYRO (password strength, Google OAuth, alerts) | ✅ |
+| Rediseño Mis Pedidos VYRO (progress tracker animado, badges) | ✅ |
+| Rediseño Cart VYRO (editorial grid, payment methods hierarchy) | ✅ |
+| Toast Service + Container (4 tipos, SVG icons, slideIn animation) | ✅ |
+| Animaciones globales (_animations.scss: fadeIn, slideUp, stagger, shimmer) | ✅ |
+| Sistema de diseño VYRO (_variables, _typography, _components, _mixins) | ✅ |
+| Search bar + chips layout fijo sticky en home | ✅ |
+| Signup completo (nombre, confirmar contraseña, términos) | ✅ |
+| Columna `nombre` en perfiles + trigger actualizado | ✅ |
+| Navbar: link Mi Perfil + avatar clickable | ✅ |
+| Subida de imagen diferida al submit (UploadImage) | ✅ |
+| Ordenar productos por precio (menor→mayor, mayor→menor) | ✅ |
+| Diseño homogéneo claro (admin y clientes mismo tema light) | ✅ |
+| Admin edición inline categorías/puntos de entrega | ✅ |
+| Admin confirmación modal al eliminar productos | ✅ |
+| WhatsApp botón generador de mensaje en carrito | ✅ |

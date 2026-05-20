@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.core.config import settings
 from app.core.security import verificar_usuario_google
 from app.core.supabase_client import supabase_anon, supabase_admin
+from app.services.email import email_orden_creada
 from app.schemas.orden import CheckoutRequest, CheckoutResponse
 
 router = APIRouter(prefix="/api/checkout", tags=["checkout"])
@@ -95,6 +96,34 @@ async def crear_orden_cod(
     for detalle in detalles:
         detalle["orden_id"] = orden_id
     supabase_admin.table("detalles_orden").insert(detalles).execute()
+
+    punto_resp = (
+        supabase_admin.table("puntos_entrega")
+        .select("nombre")
+        .eq("id", req.punto_entrega_id)
+        .single()
+        .execute()
+    )
+    punto_nombre = punto_resp.data["nombre"] if punto_resp.data else ""
+
+    email_items = [
+        {
+            "nombre": productos_bd[item.producto_id]["nombre"],
+            "cantidad": item.cantidad,
+            "subtotal": productos_bd[item.producto_id]["precio"] * item.cantidad,
+        }
+        for item in req.items
+    ]
+    email_orden_creada(
+        destinatario=usuario.get("email", ""),
+        orden_id=orden_id,
+        total=total,
+        estado="pendiente",
+        punto_entrega=punto_nombre,
+        fecha_entrega=req.fecha_entrega,
+        hora_entrega=req.hora_entrega,
+        items=email_items,
+    )
 
     return {"orden_id": orden_id, "total": total, "estado": "pendiente"}
 
