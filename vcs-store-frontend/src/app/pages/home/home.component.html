@@ -4,7 +4,6 @@
        ═════════════════════════════════════════════════════ -->
   <section class="hero">
     <div class="hero-inner">
-      <!-- Hero Content -->
       <div class="hero-content">
         <div class="hero-badge">Nuevas colecciones</div>
         <h1 class="hero-title">
@@ -16,7 +15,6 @@
         <a href="#catalogo" class="btn btn-primary btn-lg">Explorar colección</a>
       </div>
 
-      <!-- Hero Visual — Formas geométricas sutiles -->
       <div class="hero-visual">
         <div class="hero-shape"></div>
         <div class="hero-shape hero-shape-2"></div>
@@ -29,12 +27,11 @@
        CATÁLOGO SECTION — Grid Editorial
        ═════════════════════════════════════════════════════ -->
   <section id="catalogo" class="catalogo">
-    <!-- Header -->
     <div class="catalogo-header">
       <div class="header-left">
         <h2 class="catalogo-title">{{ selectedCategoria || 'Todas las colecciones' }}</h2>
-        <p class="catalogo-subtitle" *ngIf="!selectedCategoria">
-          {{ filteredProductos.length }} productos disponibles
+        <p class="catalogo-subtitle" *ngIf="!loading">
+          {{ total }} productos disponibles
         </p>
       </div>
     </div>
@@ -49,6 +46,7 @@
           type="text"
           placeholder="Buscar en colección..."
           [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()"
           aria-label="Buscar productos"
         />
       </div>
@@ -57,23 +55,23 @@
           <button
             *ngFor="let cat of categorias"
             class="chip"
-            [class.chip-active]="selectedCategoria === cat"
+            [class.chip-active]="selectedCategoria === cat.nombre"
             (click)="filterBy(cat)"
-            [attr.aria-pressed]="selectedCategoria === cat"
+            [attr.aria-pressed]="selectedCategoria === cat.nombre"
           >
-            {{ cat }}
+            {{ cat.nombre }}
           </button>
           <button
             *ngIf="selectedCategoria"
             class="chip chip-clear"
-            (click)="selectedCategoria = ''"
+            (click)="selectedCategoria = ''; selectedCategoriaId = null; cargarProductos(true)"
             aria-label="Limpiar filtro"
           >
             ✕ Limpiar
           </button>
         </div>
 
-        <select [(ngModel)]="sortOrder" class="sort-select" aria-label="Ordenar productos">
+        <select [(ngModel)]="sortOrder" (ngModelChange)="onSortChange()" class="sort-select" aria-label="Ordenar productos">
           <option value="">Más recientes</option>
           <option value="price-asc">Precio: menor a mayor</option>
           <option value="price-desc">Precio: mayor a menor</option>
@@ -96,7 +94,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading && filteredProductos.length === 0" class="empty-state">
+    <div *ngIf="!loading && productos.length === 0" class="empty-state">
       <div class="empty-icon">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -104,18 +102,25 @@
       </div>
       <h3 class="empty-title">No hay productos</h3>
       <p class="empty-text">No encontramos productos que coincidan con tu búsqueda.</p>
-      <button (click)="selectedCategoria = ''; searchQuery = ''" class="btn btn-secondary">
+      <button (click)="selectedCategoria = ''; selectedCategoriaId = null; searchQuery = ''; cargarProductos(true)" class="btn btn-secondary">
         Limpiar filtros
       </button>
     </div>
 
     <!-- Productos Grid — Responsive 4-3-2-1 -->
-    <div *ngIf="!loading && filteredProductos.length > 0" class="productos-grid">
+    <div *ngIf="!loading && productos.length > 0" class="productos-grid">
       <app-product-card
-        *ngFor="let p of filteredProductos; let i = index"
+        *ngFor="let p of productos; let i = index"
         [producto]="p"
         [attr.style]="'animation-delay: ' + (i * 0.05) + 's'"
       />
+    </div>
+
+    <!-- Load More -->
+    <div *ngIf="hasMore && !loading" class="load-more">
+      <button class="btn btn-secondary" (click)="loadMore()" [disabled]="loadingMore">
+        {{ loadingMore ? 'Cargando...' : 'Ver más productos' }}
+      </button>
     </div>
   </section>
 </div>
