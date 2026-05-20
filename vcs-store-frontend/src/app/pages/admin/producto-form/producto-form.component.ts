@@ -11,10 +11,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environments';
 import { Variante } from '../../../shared/models/product.model';
 
-interface Categoria {
-  id: number;
-  nombre: string;
-}
+interface Categoria { id: number; nombre: string; }
+interface Talla { id: number; nombre: string; }
+interface Color { id: number; nombre: string; hex: string | null; }
 
 @Component({
   selector: 'app-producto-form',
@@ -40,6 +39,8 @@ export class ProductoFormComponent implements OnInit {
   });
 
   categorias: Categoria[] = [];
+  tallas: Talla[] = [];
+  colores: Color[] = [];
   editMode = false;
   productoId: number | null = null;
   loading = false;
@@ -52,8 +53,8 @@ export class ProductoFormComponent implements OnInit {
   // Variant state
   variantes: Variante[] = [];
   showAddVariant = false;
-  nuevaTalla = '';
-  nuevoColor = '';
+  nuevaTallaId: number | null = null;
+  nuevoColorId: number | null = null;
   nuevoStock = 0;
   nuevoPrecioAdic = 0;
   showGenerador = false;
@@ -70,6 +71,8 @@ export class ProductoFormComponent implements OnInit {
       this.cargarProducto();
     }
     this.cargarCategorias();
+    this.cargarTallas();
+    this.cargarColores();
   }
 
   private cargarProducto(): void {
@@ -102,6 +105,18 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
+  private cargarTallas(): void {
+    this.http.get<Talla[]>(`${environment.apiUrl}/api/tallas`).subscribe({
+      next: (data) => (this.tallas = data),
+    });
+  }
+
+  private cargarColores(): void {
+    this.http.get<Color[]>(`${environment.apiUrl}/api/colores`).subscribe({
+      next: (data) => (this.colores = data),
+    });
+  }
+
   onArchivoSeleccionado(file: File): void {
     this.archivoSeleccionado = file;
   }
@@ -111,26 +126,42 @@ export class ProductoFormComponent implements OnInit {
     return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
   }
 
+  tallaNombre(tallaId: number | null | undefined): string {
+    if (!tallaId) return '—';
+    return this.tallas.find(t => t.id === tallaId)?.nombre || '—';
+  }
+
+  colorNombre(colorId: number | null | undefined): string {
+    if (!colorId) return '—';
+    return this.colores.find(c => c.id === colorId)?.nombre || '—';
+  }
+
+  getColorHex(colorId: number | null | undefined): string {
+    if (!colorId) return '#ccc';
+    return this.colores.find(c => c.id === colorId)?.hex || '#ccc';
+  }
+
   // Variant methods
   async agregarVariante(): Promise<void> {
-    if (!this.productoId || (!this.nuevaTalla.trim() && !this.nuevoColor.trim())) return;
+    if (!this.productoId || (!this.nuevaTallaId && !this.nuevoColorId)) return;
     try {
+      const body: Record<string, unknown> = { producto_id: this.productoId, stock: this.nuevoStock, precio_adicional: this.nuevoPrecioAdic };
+      if (this.nuevaTallaId) {
+        const talla = this.tallas.find(t => t.id === this.nuevaTallaId);
+        body['talla'] = talla?.nombre;
+        body['talla_id'] = this.nuevaTallaId;
+      }
+      if (this.nuevoColorId) {
+        const color = this.colores.find(c => c.id === this.nuevoColorId);
+        body['color'] = color?.nombre;
+        body['color_id'] = this.nuevoColorId;
+      }
       const resp = await firstValueFrom(
-        this.http.post(
-          `${environment.apiUrl}/api/variantes`,
-          {
-            producto_id: this.productoId,
-            talla: this.nuevaTalla.trim() || null,
-            color: this.nuevoColor.trim() || null,
-            stock: this.nuevoStock,
-            precio_adicional: this.nuevoPrecioAdic,
-          },
-          { headers: this.getHeaders() }
-        )
+        this.http.post(`${environment.apiUrl}/api/variantes`, body, { headers: this.getHeaders() })
       );
       this.variantes = [...this.variantes, resp as Variante];
-      this.nuevaTalla = '';
-      this.nuevoColor = '';
+      this.nuevaTallaId = null;
+      this.nuevoColorId = null;
       this.nuevoStock = 0;
       this.nuevoPrecioAdic = 0;
       this.showAddVariant = false;
@@ -141,13 +172,9 @@ export class ProductoFormComponent implements OnInit {
 
   async eliminarVariante(varianteId: number): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.delete(`${environment.apiUrl}/api/variantes/${varianteId}`, { headers: this.getHeaders() })
-      );
+      await firstValueFrom(this.http.delete(`${environment.apiUrl}/api/variantes/${varianteId}`, { headers: this.getHeaders() }));
       this.variantes = this.variantes.filter(v => v.id !== varianteId);
-    } catch {
-      this.errorMsg = 'Error al eliminar variante';
-    }
+    } catch { this.errorMsg = 'Error al eliminar variante'; }
   }
 
   async generarVariantes(): Promise<void> {
@@ -156,17 +183,10 @@ export class ProductoFormComponent implements OnInit {
       const tallas = this.genTallas.split(',').map(s => s.trim()).filter(Boolean);
       const colores = this.genColores.split(',').map(s => s.trim()).filter(Boolean);
       const resp = await firstValueFrom(
-        this.http.post(
-          `${environment.apiUrl}/api/variantes/generate`,
-          {
-            producto_id: this.productoId,
-            tallas,
-            colores,
-            stock_default: this.genStockDefault,
-            precio_adicional_default: this.genPrecioDefault,
-          },
-          { headers: this.getHeaders() }
-        )
+        this.http.post(`${environment.apiUrl}/api/variantes/generate`, {
+          producto_id: this.productoId, tallas, colores,
+          stock_default: this.genStockDefault, precio_adicional_default: this.genPrecioDefault,
+        }, { headers: this.getHeaders() })
       );
       this.variantes = [...this.variantes, ...(resp as Variante[])];
       this.showGenerador = false;
@@ -179,10 +199,8 @@ export class ProductoFormComponent implements OnInit {
 
   async onSubmit(): Promise<void> {
     if (this.form.invalid || this.enviando) return;
-
     this.enviando = true;
     this.errorMsg = '';
-
     let imagenPath: string | null = null;
 
     try {
@@ -194,7 +212,6 @@ export class ProductoFormComponent implements OnInit {
       }
 
       const headers = this.getHeaders();
-
       const body: Record<string, unknown> = {
         nombre: this.form.value.nombre,
         descripcion: this.form.value.descripcion,
@@ -202,10 +219,7 @@ export class ProductoFormComponent implements OnInit {
         stock: parseInt(this.form.value.stock ?? '0', 10),
         imagen_url: this.imagenUrl,
       };
-
-      if (this.form.value.categoria_id) {
-        body['categoria_id'] = this.form.value.categoria_id;
-      }
+      if (this.form.value.categoria_id) body['categoria_id'] = this.form.value.categoria_id;
 
       const request$ = this.editMode
         ? this.http.put(`${environment.apiUrl}/api/productos/${this.productoId}`, body, { headers })
@@ -215,20 +229,13 @@ export class ProductoFormComponent implements OnInit {
         request$.subscribe({
           next: (res: any) => {
             this.enviando = false;
-            this.exito = true;
-            if (!this.editMode && res?.id) {
-              this.productoId = res.id;
-              this.editMode = true;
-            }
-            resolve();
+            if (!this.editMode && res?.id) { this.router.navigate(['/admin/productos', res.id, 'editar']); return; }
+            this.exito = true; resolve();
           },
           error: (err) => {
             this.enviando = false;
             this.errorMsg = err.error?.detail || 'Error al guardar el producto';
-            if (imagenPath) {
-              this.storageService.eliminarImagen(imagenPath);
-              this.imagenUrl = '';
-            }
+            if (imagenPath) { this.storageService.eliminarImagen(imagenPath); this.imagenUrl = ''; }
             resolve();
           },
         });

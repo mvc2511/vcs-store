@@ -3,6 +3,8 @@ export interface Variante {
   producto_id: number;
   talla?: string | null;
   color?: string | null;
+  talla_id?: number | null;
+  color_id?: number | null;
   stock: number;
   precio_adicional: number;
   imagen_url?: string | null;

@@ -100,6 +100,20 @@ export const routes: Routes = [
             (m) => m.PuntosEntregaComponent
           ),
       },
+      {
+        path: 'tallas',
+        loadComponent: () =>
+          import('./pages/admin/tallas/tallas.component').then(
+            (m) => m.TallasComponent
+          ),
+      },
+      {
+        path: 'colores',
+        loadComponent: () =>
+          import('./pages/admin/colores/colores.component').then(
+            (m) => m.ColoresComponent
+          ),
+      },
     ],
   },
   {
