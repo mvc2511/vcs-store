@@ -2,12 +2,6 @@
 
 ## 🔄 Pendiente — Plan de Implementación por Fases
 
-### Fase 1 — MVP Production (~2 semanas)
-- [x] **1.1 Notificaciones Email** — SendGrid backend service + integración en checkout, admin, mis_ordenes
-- [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id, admin inline editor
-- [ ] **1.3 Paginación Catálogo** — Backend LIMIT/OFFSET, reemplazar filtrado client-side
-- [ ] **1.4 Stock Agotado Visual** — Badge, botón disabled, warning en carrito
-
 ### Fase 2 — Experiencia Cliente (~2 semanas)
 - [ ] **2.1 Reseñas y Valoraciones** — Tabla resenas, CRUD backend, frontend estrellas (solo compradores)
 - [ ] **2.2 Wishlist / Favoritos** — Tabla favoritos, corazón en cards/detalle, página /favoritos
@@ -16,7 +10,7 @@
 
 ### Fase 3 — Validaciones Críticas (~1 semana)
 - [ ] **3.1 Backend:** race condition stock, restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex
-- [ ] **3.2 Frontend:** 401 Interceptor, refresh token Supabase, producto eliminado en carrito, stock agotado checkout, alert()→Toast, refresh precios
+- [ ] **3.2 Frontend:** 401 Interceptor, refresh token Supabase, producto eliminado en carrito, alert()→Toast, refresh precios
 
 ### Fase 4 — Estandarización Responsive + Accordion (~1 semana)
 - [ ] **4.1** Mixins mobile-first (min-width), migrar cart.component.scss, reemplazar raw @media en 6 componentes
@@ -30,10 +24,18 @@
 
 ## ✅ Completado
 
+### Fase 1 — MVP Production
+- [x] **1.1 Notificaciones Email** — SendGrid backend service + integración en checkout, admin, mis_ordenes
+- [x] **1.2 Variantes de Producto (Talla, Color)** — Variantes_producto table, CRUD backend, selector product-detail, carrito con variante_id, checkout con variante_id, admin inline editor
+- [x] **1.2 Extra: Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores` con valores predefinidos, FK desde variantes_producto, CRUD admin, selectores en formulario
+- [x] **1.2 Extra: Corrección doble stock** — Stock de producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe
+- [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro por categoría, frontend con ProductService, "Ver más" button
+- [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito, botones checkout deshabilitados con advertencia
+
 ### Infraestructura y Base de Datos
 - [x] Proyecto Supabase (PostgreSQL + Auth + Storage + RLS)
 - [x] Schema completo re-ejecutable en database.sql
-- [x] Tablas: perfiles, categorias, productos, ordenes, detalles_orden, puntos_entrega, carrito
+- [x] Tablas: perfiles, categorias, productos, tallas, colores, ordenes, detalles_orden, puntos_entrega, variantes_producto, carrito
 - [x] Tabla carrito persistente con RLS (cada usuario ve/edita su propio carrito)
 - [x] Columnas user_email, fecha_entrega, hora_entrega en ordenes
 - [x] ENUM orden_estado (pendiente, confirmado, preparando, enviado, entregado, cancelado)
@@ -41,7 +43,7 @@
 - [x] Admin forzado: marianovc251@gmail.com
 - [x] Row Level Security configurado (3 roles: anon, authenticated, service_role)
 - [x] Storage bucket productos con políticas de subida/lectura
-- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega)
+- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores)
 
 ### Frontend — Navegación y Layout
 - [x] Arquitectura Standalone con Signals
@@ -49,7 +51,7 @@
 - [x] Navbar: links Mis Pedidos + Mi Perfil para usuarios logueados
 - [x] Navbar: avatar clickable a perfil
 - [x] Navbar: search eliminado de desktop (solo sticky home search)
-- [x] Home: grid de productos responsive + sticky bar (search + chips + sort)
+- [x] Home: grid de productos responsive + sticky bar (search + chips + sort) + paginación
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
@@ -79,9 +81,10 @@
 ### Frontend — Admin
 - [x] Admin Layout con sidebar + drawer mobile (hamburger flotante) + nav items
 - [x] Admin dashboard órdenes con expansión, cambio de estado, edición fecha/hora entrega
-- [x] Admin full CRUD: productos + categorías + órdenes + puntos de entrega
+- [x] Admin full CRUD: productos + categorías + puntos de entrega + tallas + colores
 - [x] ProductoForm reutilizable para crear/editar según ruta :id
-- [x] Edición inline de categorías y puntos de entrega (enter guardar, escape cancelar)
+- [x] ProductoForm: selects de tallas/colores desde lookup tables, stock readonly cuando hay variantes
+- [x] Edición inline de categorías, tallas, colores, puntos de entrega
 - [x] Confirmación modal al eliminar productos
 
 ### Frontend — Mis Pedidos
@@ -94,8 +97,8 @@
 - [x] Rediseño Navbar VYRO (logo, animaciones, focus rings champagne)
 - [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
 - [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
-- [x] Rediseño ProductDetail VYRO (compacto 1000px, fonts reducidos ~30%)
-- [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar)
+- [x] Rediseño ProductDetail VYRO (compacto 1000px, variant pills con stock indicator)
+- [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar, stock warnings)
 - [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
 - [x] SCSS consistente en todos los componentes con paleta VYRO
@@ -106,10 +109,13 @@
 - [x] Email integrado en checkout.py (notificar al crear orden COD)
 - [x] Email integrado en admin_ordenes.py (notificar al cambiar estado)
 - [x] Email integrado en mis_ordenes.py (notificar al cancelar orden)
-- [x] CRUD completo productos (GET list con search, GET by id, POST, PUT, DELETE)
+- [x] CRUD completo productos (GET list con paginación, búsqueda, filtro categoría, sort; GET by id, POST, PUT, DELETE)
 - [x] CRUD completo categorías (GET, POST, PUT, DELETE)
+- [x] CRUD completo tallas (GET público, POST/PUT/DELETE admin)
+- [x] CRUD completo colores (GET público, POST/PUT/DELETE admin)
 - [x] CRUD completo puntos-entrega (GET público, POST/PUT/DELETE admin)
 - [x] CRUD completo carrito (GET/POST/PUT/DELETE autenticado)
+- [x] Variantes: auto-resuelve talla_id/color_id desde texto
 - [x] POST /api/checkout/cod (crear orden COD con punto entrega + teléfono + fecha/hora + stock validation + user_email)
 - [x] GET /api/admin/ordenes (listar con filtro estado — incluye user_email, fecha/hora)
 - [x] GET /api/admin/ordenes/{id} (detalle orden admin)
@@ -138,5 +144,5 @@
 - [x] CONTEXT.md — arquitectura general actualizada
 - [x] AGENTS.md — estado para agentes de IA
 - [x] TODO.md — tracking de tareas
-- [x] database.sql — schema limpio y re-ejecutable
+- [x] database.sql — schema limpio y re-ejecutable (incluye tallas y colores)
 - [x] VYRO-REDESIGN.md — guía de diseño visual (paleta, tipografía, principios)

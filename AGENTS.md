@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-19
+**Última actualización:** 2026-05-20
 
 ## 🎯 Próximo paso inmediato
-Fase 1.3 — Paginación Catálogo.
+Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -28,7 +28,7 @@ Fase 1.3 — Paginación Catálogo.
 - [x] Admin forzado: marianovc251@gmail.com
 - [x] Row Level Security configurado (3 roles: anon, authenticated, service_role)
 - [x] Storage bucket productos con políticas de subida/lectura
-- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega)
+- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores)
 
 ### Frontend — Navegación y Layout
 - [x] Arquitectura Standalone con Signals
@@ -36,7 +36,7 @@ Fase 1.3 — Paginación Catálogo.
 - [x] Navbar: links Mis Pedidos + Mi Perfil para usuarios logueados
 - [x] Navbar: avatar clickable a perfil
 - [x] Navbar: search eliminado de desktop (solo sticky home search)
-- [x] Home: grid de productos responsive + sticky bar (search + chips + sort)
+- [x] Home: grid de productos responsive + sticky bar (search + chips + sort) + paginación server-side
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
@@ -68,7 +68,7 @@ Fase 1.3 — Paginación Catálogo.
 ### Frontend — Admin
 - [x] Admin Layout con sidebar + drawer mobile (hamburger flotante) + nav items
 - [x] Admin dashboard órdenes con expansión, cambio de estado, edición fecha/hora entrega
-- [x] Admin full CRUD: productos + categorías + órdenes + puntos de entrega
+- [x] Admin full CRUD: productos + categorías + tallas + colores + órdenes + puntos de entrega
 - [x] ProductoForm reutilizable para crear/editar según ruta :id
 - [x] Variantes inline: tabla editable, agregar individual, generación automática talla×color
 - [x] Edición inline de categorías y puntos de entrega (enter guardar, escape cancelar)
@@ -97,10 +97,13 @@ Fase 1.3 — Paginación Catálogo.
 - [x] Email en checkout.py: notificación al crear orden COD
 - [x] Email en admin_ordenes.py: notificación al cambiar estado de orden
 - [x] Email en mis_ordenes.py: notificación al cancelar orden
-- [x] CRUD completo productos (GET list con search, GET by id, POST, PUT, DELETE)
+- [x] CRUD completo productos (GET list con paginación, búsqueda, filtro categoría, sort; GET by id, POST, PUT, DELETE)
 - [x] CRUD completo categorías (GET, POST, PUT, DELETE)
 - [x] CRUD completo puntos-entrega (GET público, POST/PUT/DELETE admin)
+- [x] CRUD completo tallas (GET público, POST/PUT/DELETE admin)
+- [x] CRUD completo colores (GET público, POST/PUT/DELETE admin)
 - [x] CRUD completo carrito (GET/POST/PUT/DELETE autenticado)
+- [x] Variantes auto-resuelve talla_id/color_id desde texto
 - [x] POST /api/checkout/cod (crear orden COD: punto entrega + teléfono + fecha/hora + stock validation + user_email)
 - [x] GET /api/admin/ordenes (listar con filtro estado — incluye user_email, fecha/hora)
 - [x] GET /api/admin/ordenes/{id} (detalle orden admin)
@@ -127,11 +130,13 @@ Fase 1.3 — Paginación Catálogo.
 
 ## 🔄 Pendiente — Plan de Implementación por Fases
 
-### Fase 1 — MVP Production (~2 semanas)
+### Fase 1 — MVP Production ✅ COMPLETADA
 - [x] **1.1 Notificaciones Email** — SendGrid. Eventos: orden creada, cambio estado, cancelación. Servicio: `services/email.py` con 3 templates HTML inline. Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
 - [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id. 3-5 días.
-- [ ] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET, frontend reemplazar filtrado client-side. 0.5-1 día.
-- [ ] **1.4 Stock Agotado Visual** — Badge, botón disabled, warning carrito. 0.5-1 día.
+- [x] **1.2b Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores`, FK desde variantes_producto, CRUD admin, selects en formulario.
+- [x] **1.2c Corrección doble stock** — Stock producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe.
+- [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro categoría, frontend ProductService con "Ver más".
+- [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito + advertencia + botones checkout deshabilitados.
 
 ### Fase 2 — Experiencia Cliente (~2 semanas)
 - [ ] **2.1 Reseñas y Valoraciones** — Tabla resenas, CRUD backend, estrellas frontend (solo compradores). 2-3 días.
@@ -163,7 +168,9 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `perfiles` — id (UUID PK→auth.users), email, rol (ENUM: cliente/admin/moderador), created_at
 - `categorias` — id (SERIAL PK), nombre (UNIQUE), creado_en
 - `productos` — id (SERIAL PK), nombre, descripcion, precio (DECIMAL), imagen_url, stock, categoria_id (FK→categorias), creado_en
-- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), talla (VARCHAR), color (VARCHAR), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(talla,'') + COALESCE(color,''))
+- `tallas` — id (SERIAL PK), nombre (UNIQUE), orden (INT), creado_en
+- `colores` — id (SERIAL PK), nombre (UNIQUE), hex (VARCHAR), creado_en
+- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), talla (VARCHAR), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(talla,'') + COALESCE(color,''))
 - `ordenes` — id (SERIAL PK), user_id (UUID), user_email, total (DECIMAL), estado (orden_estado), punto_entrega_id (FK), telefono_contacto, fecha_entrega (DATE), hora_entrega (VARCHAR), stripe_session_id (nullable), creado_en, updated_at
 - `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), variante_id (FK→variantes_producto SET NULL), cantidad (INT), precio_unitario (DECIMAL)
 - `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), variante_id (FK→variantes_producto CASCADE), cantidad (INT CHECK >0), created_at, updated_at
@@ -174,6 +181,8 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - perfiles: SELECT público (anon + authenticated)
 - categorias: SELECT público (anon)
 - productos: SELECT público (anon)
+- tallas: SELECT público (anon)
+- colores: SELECT público (anon)
 - puntos_entrega: SELECT público (anon)
 - ordenes: SELECT solo propias (authenticated, auth.uid() = user_id)
 - detalles_orden: protegido por RLS por defecto

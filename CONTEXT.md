@@ -56,6 +56,8 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/admin/ordenes` | AdminOrdenesComponent (dashboard + estado + editar fecha/hora) | AdminGuard |
 | `/admin/categorias` | CategoriasComponent (CRUD con edición inline) | AdminGuard |
 | `/admin/puntos-entrega` | PuntosEntregaComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/tallas` | TallasComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/colores` | ColoresComponent (CRUD con edición inline) | AdminGuard |
 
 ---
 
@@ -64,11 +66,12 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Seguridad:** `verificar_admin()` decodifica JWT, consulta `perfiles.rol` con `service_role`, rechaza con 403 si no es admin.
 - **Validación:** Esquemas Pydantic (`ProductoCreate`, `CODRequest`, `CarritoAddItem`, etc.).
 - **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend. El carrito usa `authenticated` + RLS para que el frontend pueda hacer CRUD directo.
-- **Variantes:** Tabla `variantes_producto` con talla, color, stock, precio_adicional. CRUD completo en `routes/variantes.py`. GET /api/productos/{id} incluye variantes. Carrito y checkout con soporte de variante_id (nullable para productos sin variantes).
+- **Variantes:** Tabla `variantes_producto` con talla, color, talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional. CRUD completo en `routes/variantes.py`. Auto-resuelve talla_id/color_id desde texto. GET /api/productos/{id} incluye variantes. Carrito y checkout con soporte de variante_id.
 - **Email:** Servicio Resend (migrado desde SendGrid por bloqueo de cuenta Twilio) en `services/email.py` con 3 templates HTML inline (orden creada, cambio estado, cancelación). Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
+- **Estandarización:** Lookup tables `tallas` y `colores` con CRUD admin. Selectores en formularios de producto.
 - **Endpoints activos:**
-  - `GET /api/productos?search=:query` — Listar productos (búsqueda por nombre)
-  - `GET /api/productos/{id}` — Obtener producto por ID
+  - `GET /api/productos?search=&categoria_id=&sort_by=&sort_order=&limit=&offset=` — Listar productos paginados
+  - `GET /api/productos/{id}` — Obtener producto por ID (incluye variantes)
   - `POST /api/productos` — Crear producto (admin)
   - `PUT /api/productos/{id}` — Actualizar producto (admin)
   - `DELETE /api/productos/{id}` — Eliminar producto (admin)
@@ -97,6 +100,14 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
   - `PUT /api/variantes/{id}` — Actualizar variante (admin)
   - `DELETE /api/variantes/{id}` — Eliminar variante (admin)
   - `POST /api/variantes/generate` — Generar combinaciones talla×color (admin)
+  - `GET /api/tallas` — Listar tallas (público, ordenado por `orden`)
+  - `POST /api/tallas` — Crear talla (admin)
+  - `PUT /api/tallas/{id}` — Actualizar talla (admin)
+  - `DELETE /api/tallas/{id}` — Eliminar talla (admin)
+  - `GET /api/colores` — Listar colores (público)
+  - `POST /api/colores` — Crear color (admin)
+  - `PUT /api/colores/{id}` — Actualizar color (admin)
+  - `DELETE /api/colores/{id}` — Eliminar color (admin)
   - `GET /` y `GET /health` — Health check
 
 ---
@@ -172,11 +183,27 @@ productos (
     creado_en TIMESTAMPTZ DEFAULT NOW()
 )
 
+tallas (
+    id SERIAL PK,
+    nombre VARCHAR(20) UNIQUE NOT NULL,
+    orden INT DEFAULT 0,
+    creado_en TIMESTAMPTZ DEFAULT NOW()
+)
+
+colores (
+    id SERIAL PK,
+    nombre VARCHAR(50) UNIQUE NOT NULL,
+    hex VARCHAR(7),
+    creado_en TIMESTAMPTZ DEFAULT NOW()
+)
+
 variantes_producto (
     id SERIAL PK,
     producto_id INT → productos(id) ON DELETE CASCADE,
     talla VARCHAR(10),
     color VARCHAR(50),
+    talla_id INT → tallas(id) ON DELETE SET NULL,
+    color_id INT → colores(id) ON DELETE SET NULL,
     stock INT DEFAULT 0,
     precio_adicional DECIMAL(10,2) DEFAULT 0,
     imagen_url TEXT,
@@ -297,6 +324,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 |---------|--------|
 | Infraestructura Supabase (DB, Auth, Storage, RLS) | ✅ |
 | Tabla puntos_entrega + seed 6 puntos | ✅ |
+| Tablas tallas (7) + colores (15) + seed | ✅ |
 | Tabla carrito con RLS | ✅ |
 | Columnas user_email, fecha_entrega, hora_entrega en ordenes | ✅ |
 | ENUM orden_estado (6 estados) | ✅ |
