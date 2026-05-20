@@ -1,15 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-19
-
-> ⚠️ **Rama activa:** `features` — cambios para QA deploy y fixes UI. Pendiente merge a `develop`.
+**Última actualización:** 2026-05-20
 
 ## 🎯 Próximo paso inmediato
-✅ Listo para merge a develop y deploy QA.
-- Configurar DNS Namecheap: CNAME `qa` → `qa-vyro-boutique.netlify.app`, `api-qa` → `vcs-store.onrender.com`
-- Netlify: agregar custom domain `qa.vyro.boutique`
-- Render: agregar custom domain `api-qa.vyro.boutique`
-- Build automático con `npm run build:qa` (branch deploy en Netlify)
+Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -22,82 +16,150 @@
 - **Estado:** Funcional y en desarrollo activo
 
 ## ✅ Completado
-- [x] Infraestructura Supabase (DB, Auth, Storage, RLS)
-- [x] Tabla puntos_entrega + seed 6 puntos (Crucero Dongu, Deportivo Dongu, Centro SF, etc.)
+
+### Infraestructura y Base de Datos
+- [x] Proyecto Supabase (PostgreSQL + Auth + Storage + RLS)
+- [x] Schema completo re-ejecutable en database.sql
+- [x] Tablas: perfiles, categorias, productos, variantes_producto, ordenes, detalles_orden, puntos_entrega, carrito
 - [x] Tabla carrito persistente con RLS (cada usuario ve/edita su propio carrito)
 - [x] Columnas user_email, fecha_entrega, hora_entrega en ordenes
 - [x] ENUM orden_estado (pendiente/confirmado/preparando/enviado/entregado/cancelado)
-- [x] Trigger automático de perfiles al registrarse
+- [x] Trigger on_auth_user_created → handle_new_user() crea perfil
 - [x] Admin forzado: marianovc251@gmail.com
-- [x] Catálogo público (grid + detalle producto + búsqueda client-side)
-- [x] Carrito híbrido: API cuando logueado, localStorage cuando no
-- [x] Cart merge modal: al login pregunta usuario si conservar servidor/local/fusionar
-- [x] Login con Google OAuth + Email/Password
-- [x] Login: redirect a returnUrl post-auth
+- [x] Row Level Security configurado (3 roles: anon, authenticated, service_role)
+- [x] Storage bucket productos con políticas de subida/lectura
+- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores)
+
+### Frontend — Navegación y Layout
+- [x] Arquitectura Standalone con Signals
+- [x] Navbar responsive con hamburger menu animado + auth section desktop
+- [x] Navbar: links Mis Pedidos + Mi Perfil para usuarios logueados
+- [x] Navbar: avatar clickable a perfil
+- [x] Navbar: search eliminado de desktop (solo sticky home search)
+- [x] Home: grid de productos responsive + sticky bar (search + chips + sort) + paginación server-side
+- [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
 - [x] Rutas públicas: /, /producto/:id, /cart, /login
-- [x] Rutas protegidas: /success, /mis-pedidos, /admin/*
-- [x] CRUD de productos (endpoint FastAPI + componente Angular)
-- [x] CRUD de categorías (endpoint FastAPI + componente Angular)
-- [x] CRUD de puntos de entrega (admin): POST/PUT/DELETE backend + admin UI
-- [x] CRUD de órdenes (admin): listar/filtrar/cambiar estado + editar fecha/hora entrega
-- [x] Historial de pedidos del cliente + cancelación + muestra fecha/hora entrega
-- [x] Upload de imágenes a Storage (FileReader → bucket)
+- [x] Rutas protegidas: /success, /mis-pedidos, /perfil, /admin/*
+- [x] Diseño mobile-first (breakpoints 767px y 500px)
+- [x] Diseño homogéneo claro (admin y clientes mismo tema light)
+
+### Frontend — Auth y Perfil
+- [x] Login con Google OAuth + Email/Password
+- [x] Login: redirect a returnUrl post-auth
+- [x] Login combinado Google + Email (intercambio entre sesiones)
+- [x] Rediseño Login VYRO: password strength, Google OAuth, alerts, responsive
+- [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
+- [x] Columna `nombre` en `perfiles` + trigger handle_new_user actualizado
+- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly, avatar upload
+
+### Frontend — Carrito y Checkout
+- [x] Carrito híbrido: API cuando logueado, localStorage cuando no
+- [x] Carrito con variantes: clave única (producto_id + variante_id), merge modal compatible
+- [x] Cart merge modal: al login pregunta usuario si conservar servidor/local/fusionar
+- [x] Carrito DB persistente: race condition corregida (sessionToken antes que isLoggedIn), timeout 3s
+- [x] Carrito responsive: login gate, selector punto entrega, input teléfono, selector fecha/hora entrega
 - [x] WhatsApp: botón en carrito que genera mensaje con productos
-- [x] Contra Entrega: flujo completo (punto entrega + teléfono + fecha/hora entrega + stock validation + decrement + user_email)
-- [x] Admin full CRUD: productos + categorías + órdenes + puntos de entrega
+- [x] Contra Entrega: flujo completo (punto entrega + teléfono + fecha/hora + stock validation + decrement + user_email)
+- [x] Success page con resumen completo (productos, total, punto entrega, fecha/hora)
+- [x] Subida de imagen diferida al submit (UploadImage en ProductoForm.onSubmit)
+
+### Frontend — Admin
 - [x] Admin Layout con sidebar + drawer mobile (hamburger flotante) + nav items
 - [x] Admin dashboard órdenes con expansión, cambio de estado, edición fecha/hora entrega
+- [x] Admin full CRUD: productos + categorías + tallas + colores + órdenes + puntos de entrega
 - [x] ProductoForm reutilizable para crear/editar según ruta :id
-- [x] Edición inline de categorías y puntos de entrega (enter para guardar, escape para cancelar)
+- [x] Variantes inline: tabla editable, agregar individual, generación automática talla×color
+- [x] Edición inline de categorías y puntos de entrega (enter guardar, escape cancelar)
 - [x] Confirmación modal al eliminar productos
-- [x] Navbar: hamburger menu en mobile + auth section en desktop (Entrar/avatar+logout)
-- [x] Navbar: links Mis Pedidos para usuarios logueados (mobile + desktop)
-- [x] Carrito responsive: login gate, selector punto entrega, input teléfono, selector fecha/hora entrega
-- [x] Diseño homogéneo claro (admin y clientes mismo tema light)
-- [x] Docker Compose: docker-compose.yml + docker-compose.override.yml
+
+### Frontend — Mis Pedidos
+- [x] Historial de pedidos del cliente + cancelación + muestra fecha/hora entrega
+- [x] Tracking visual de orden con barra de progreso (pendiente→confirmado→preparando→enviado→entregado)
+- [x] Rediseño Mis Pedidos VYRO: progress tracker animado, badges estados suaves
+- [x] Detalles de orden siempre visibles inline (accordion pendiente — ver Fase 4)
+
+### Frontend — Rediseño VYRO
+- [x] Rediseño Navbar VYRO (logo, animaciones, focus rings champagne)
+- [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
+- [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
+- [x] Rediseño ProductDetail VYRO (compacto 1000px, fonts reducidos ~30%)
+- [x] Selector de variantes (talla pills + color pills), precio/stock dinámico según variante seleccionada
+- [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar)
+- [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
+- [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
+- [x] SCSS consistente en todos los componentes con paleta VYRO
+- [x] Toast Service + Container: Signal + Observable, 4 tipos, SVG icons, slideIn animation, responsive
+
+### Backend (FastAPI)
+- [x] Servicio de email con SendGrid (services/email.py): 3 templates HTML (orden creada, cambio estado, cancelación)
+- [x] Email en checkout.py: notificación al crear orden COD
+- [x] Email en admin_ordenes.py: notificación al cambiar estado de orden
+- [x] Email en mis_ordenes.py: notificación al cancelar orden
+- [x] CRUD completo productos (GET list con paginación, búsqueda, filtro categoría, sort; GET by id, POST, PUT, DELETE)
+- [x] CRUD completo categorías (GET, POST, PUT, DELETE)
+- [x] CRUD completo puntos-entrega (GET público, POST/PUT/DELETE admin)
+- [x] CRUD completo tallas (GET público, POST/PUT/DELETE admin)
+- [x] CRUD completo colores (GET público, POST/PUT/DELETE admin)
+- [x] CRUD completo carrito (GET/POST/PUT/DELETE autenticado)
+- [x] Variantes auto-resuelve talla_id/color_id desde texto
+- [x] POST /api/checkout/cod (crear orden COD: punto entrega + teléfono + fecha/hora + stock validation + user_email)
+- [x] GET /api/admin/ordenes (listar con filtro estado — incluye user_email, fecha/hora)
+- [x] GET /api/admin/ordenes/{id} (detalle orden admin)
+- [x] PUT /api/admin/ordenes/{id}/estado (cambiar estado admin)
+- [x] PUT /api/admin/ordenes/{id} (editar fecha/hora entrega admin)
+- [x] GET /api/mis-ordenes (órdenes del usuario autenticado)
+- [x] PUT /api/mis-ordenes/{id}/cancelar (cancelar si pendiente)
+- [x] Seguridad: verificar_admin + verificar_usuario_google
+- [x] Validación Pydantic en todos los schemas
+- [x] Cliente Supabase con service_role para escritura backend
+
+### Docker
+- [x] docker-compose.yml (backend + frontend orquestados)
+- [x] docker-compose.override.yml (hot reload desarrollo)
 - [x] Frontend multi-stage Dockerfile (node build → nginx serve)
 - [x] nginx.conf con SPA fallback
 - [x] .dockerignore para frontend y backend
-- [x] DOCKER-COMPOSE.md con guía completa y explicaciones
-- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega)
+- [x] DOCKER-COMPOSE.md con guía completa
 
-## 🔄 Pendiente
-- [ ] Stripe: reactivar y corregir columnas a schema actual (suspendido)
+### Despliegue
+- [x] Frontend en Netlify (build automático)
+- [x] Backend en Render (Docker Compose)
+- [x] Cron-job keep-alive activo
 
-## ✅ Completado
-- [x] WhatsApp number corregido: 525537525291
-- [x] Entorno QA: environment.qa.ts + angular.json config + build:qa script + netlify.toml branch-deploy
-- [x] CORS backend: agregadas URLs de QA (qa-vyro-boutique.netlify.app, qa.vyro.boutique)
-- [x] Mobile nav: search bar eliminada (consistente con desktop)
-- [x] Navbar TS: FormsModule y onSearch() removidos (limpio)
+## 🔄 Pendiente — Plan de Implementación por Fases
 
-## ✅ Completado
-- [x] Subida de imagen diferida al submit (UploadImage emite File, upload en ProductoForm.onSubmit)
-- [x] Search bar + chips layout fijo (sticky bar en home: search + chips + sort)
-- [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
-- [x] Columna `nombre` en `perfiles` + trigger `handle_new_user` actualizado
-- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly, avatar upload, avatar upload
-- [x] Navbar: link "Mi Perfil" en desktop (añadido) + mobile, avatar clickable a perfil
-- [x] Navbar: search eliminado de desktop (solo queda sticky home search, navbar más limpio)
-- [x] Ordenar productos por precio (menor→mayor, mayor→menor)
-- [x] Success page con resumen completo (productos, total, punto entrega, fecha/hora)
-- [x] Tracking visual de orden con barra de progreso (pendiente→confirmado→preparando→enviado→entregado)
-- [x] Login combinado Google + Email (intercambio entre sesiones)
-- [x] Rediseño Login VYRO: password strength, Google OAuth, alerts, responsive
-- [x] Rediseño Mis Pedidos VYRO: progress tracker animado, badges estados suaves
-- [x] Toast Service: Signal + Observable, 4 tipos (success/error/info/warning)
-- [x] Toast Container: standalone, SVG icons, slideIn animation, responsive
-- [x] Animaciones globales (_animations.scss): fadeIn, slideUp, stagger, shimmer, etc.
-- [x] SCSS consistente en todos los componentes con paleta VYRO
-- [x] Product-detail compacto: max-width 1000px, fonts reducidos (~30%), gaps/padding optimizados
-- [x] Product-cards compactos: aspect-ratio 4/5, grid minmax 240px, padding reducido, botón +34px
-- [x] Carrito DB persistente: race condition corregida (sessionToken antes que isLoggedIn), timeout 3s, warnings en dbIdMap faltante
-- [x] Despliegue (Netlify + Render) — funcional con Docker + cron-job
+### Fase 1 — MVP Production ✅ COMPLETADA
+- [x] **1.1 Notificaciones Email** — SendGrid. Eventos: orden creada, cambio estado, cancelación. Servicio: `services/email.py` con 3 templates HTML inline. Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
+- [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id. 3-5 días.
+- [x] **1.2b Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores`, FK desde variantes_producto, CRUD admin, selects en formulario.
+- [x] **1.2c Corrección doble stock** — Stock producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe.
+- [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro categoría, frontend ProductService con "Ver más".
+- [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito + advertencia + botones checkout deshabilitados.
+
+### Fase 2 — Experiencia Cliente (~2 semanas)
+- [ ] **2.1 Reseñas y Valoraciones** — Tabla resenas, CRUD backend, estrellas frontend (solo compradores). 2-3 días.
+- [ ] **2.2 Wishlist / Favoritos** — Tabla favoritos, corazón cards/detalle, página /favoritos. 1-2 días.
+- [ ] **2.3 Cupones / Descuentos** — Tabla cupones, validación backend, input carrito, CRUD admin. 2-3 días.
+- [ ] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend, tarjeta dashboard, badge admin. 1 día.
+
+### Fase 3 — Validaciones Críticas (~1 semana)
+- [ ] **3.1 Backend (7):** Race condition stock (UPDATE atómico), restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex.
+- [ ] **3.2 Frontend (6):** 401 Interceptor → redirect login + toast, refresh token Supabase, producto eliminado en carrito, stock agotado checkout, alert()→Toast, refresh precios al abrir carrito.
+
+### Fase 4 — Estandarización Responsive + Accordion (~1 semana)
+- [ ] **4.1** Mixins mobile-first (min-width), migrar cart.component.scss, reemplazar raw @media en 6 componentes.
+- [ ] **4.2** Mis Pedidos: convertir detalles inline en accordion expandible por orden.
+
+### Fase 5 — Funcionalidades Medias (~2-3 semanas)
+- [ ] **5.1** Filtros combinados (rango precio, stock, sort server-side), productos relacionados, dashboard analíticas (Chart.js), carrito abandonado (email), notas del cliente, galería múltiple imágenes.
+
+### Fase 6 — Mejoras Bajas (~1-2 semanas)
+- [ ] **6.1** Términos/Privacidad (rutas + footer), multi-idioma (Angular i18n, español/inglés), blog (CRUD admin), comparación productos, compartir en redes.
 
 ## ⛔ Suspendido / No implementado
-- **Stripe:** Código existe en checkout.py y webhooks.py pero las columnas no coinciden con el schema actual (usa `total_cents`/`status`/`product_name`/`price_cents` en vez de `total`/`estado`/`producto_id`/`precio_unitario`). Stripe en requirements.txt para evitar error de import.
+- **Stripe (Suspendido permanentemente):** Código existe en checkout.py y webhooks.py pero las columnas no coinciden con el schema actual (usa `total_cents`/`status`/`product_name`/`price_cents` en vez de `total`/`estado`/`producto_id`/`precio_unitario`). Stripe en requirements.txt para evitar error de import. WhatsApp + Contra Entrega es el modelo definitivo, no hay planes de reactivarlo.
 
 ## 🗄️ Base de Datos (Supabase)
 Schema completo re-ejecutable en: `vcs-store-database/database.sql`
@@ -106,9 +168,12 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `perfiles` — id (UUID PK→auth.users), email, rol (ENUM: cliente/admin/moderador), created_at
 - `categorias` — id (SERIAL PK), nombre (UNIQUE), creado_en
 - `productos` — id (SERIAL PK), nombre, descripcion, precio (DECIMAL), imagen_url, stock, categoria_id (FK→categorias), creado_en
+- `tallas` — id (SERIAL PK), nombre (UNIQUE), orden (INT), creado_en
+- `colores` — id (SERIAL PK), nombre (UNIQUE), hex (VARCHAR), creado_en
+- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), talla (VARCHAR), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(talla,'') + COALESCE(color,''))
 - `ordenes` — id (SERIAL PK), user_id (UUID), user_email, total (DECIMAL), estado (orden_estado), punto_entrega_id (FK), telefono_contacto, fecha_entrega (DATE), hora_entrega (VARCHAR), stripe_session_id (nullable), creado_en, updated_at
-- `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), cantidad (INT), precio_unitario (DECIMAL)
-- `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), cantidad (INT CHECK >0), created_at, updated_at
+- `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), variante_id (FK→variantes_producto SET NULL), cantidad (INT), precio_unitario (DECIMAL)
+- `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), variante_id (FK→variantes_producto CASCADE), cantidad (INT CHECK >0), created_at, updated_at
 
 **Secuencias:** Service_role tiene USAGE en todas las secuencias SERIAL.
 
@@ -116,6 +181,8 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - perfiles: SELECT público (anon + authenticated)
 - categorias: SELECT público (anon)
 - productos: SELECT público (anon)
+- tallas: SELECT público (anon)
+- colores: SELECT público (anon)
 - puntos_entrega: SELECT público (anon)
 - ordenes: SELECT solo propias (authenticated, auth.uid() = user_id)
 - detalles_orden: protegido por RLS por defecto
@@ -137,6 +204,7 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - Mobile-first: breakpoints 767px y 500px
 - Docker Compose sobre docker run para orquestación
 - Diseño homogéneo claro (sin tema oscuro separado para admin)
+- Diseño visual guiado por `VYRO-REDESIGN.md` (paleta, tipografía, principios de diseño)
 
 ## 🔧 Reglas para cambios futuros
 0. **ANTES DE CADA COMMIT** revisar y actualizar los 4 archivos de documentación si corresponde: `TODO.md`, `CONTEXT.md`, `AGENTS.md`, `DOCKER-COMPOSE.md`

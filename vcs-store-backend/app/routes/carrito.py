@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from postgrest.exceptions import APIError
 
 from app.core.security import verificar_usuario_google
 from app.core.supabase_client import supabase_admin
@@ -10,6 +13,7 @@ router = APIRouter(prefix="/api/carrito", tags=["carrito"])
 class CarritoAddItem(BaseModel):
     producto_id: int
     cantidad: int
+    variante_id: int | None = None
 
 
 class CarritoUpdateItem(BaseModel):
@@ -22,7 +26,7 @@ async def listar_carrito(
 ):
     resp = (
         supabase_admin.table("carrito")
-        .select("*, productos!left(id, nombre, precio, imagen_url, stock)")
+        .select("*, productos!left(id, nombre, precio, imagen_url, stock), variantes_producto!left(*)")
         .eq("user_id", usuario["user_id"])
         .order("created_at")
         .execute()
@@ -35,42 +39,49 @@ async def agregar_al_carrito(
     body: CarritoAddItem,
     usuario: dict = Depends(verificar_usuario_google),
 ):
-    producto_resp = (
-        supabase_admin.table("productos")
-        .select("id, stock")
-        .eq("id", body.producto_id)
-        .single()
-        .execute()
-    )
-    if not producto_resp.data:
+    try:
+        producto_resp = (
+            supabase_admin.table("productos")
+            .select("id, stock")
+            .eq("id", body.producto_id)
+            .single()
+            .execute()
+        )
+    except APIError:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-    existing = (
+    query = (
         supabase_admin.table("carrito")
         .select("id, cantidad")
         .eq("user_id", usuario["user_id"])
         .eq("producto_id", body.producto_id)
-        .maybe_single()
-        .execute()
     )
+    if body.variante_id is not None:
+        query = query.eq("variante_id", body.variante_id)
+    else:
+        query = query.is_("variante_id", "null")
+    existing = query.maybe_single().execute()
 
-    if existing.data:
+    if existing is not None and existing.data:
         nueva_cantidad = existing.data["cantidad"] + body.cantidad
         resp = (
             supabase_admin.table("carrito")
-            .update({"cantidad": nueva_cantidad, "updated_at": "now()"})
+            .update({"cantidad": nueva_cantidad, "updated_at": datetime.now(timezone.utc).isoformat()})
             .eq("id", existing.data["id"])
             .execute()
         )
         return resp.data[0]
     else:
+        insert_data = {
+            "user_id": usuario["user_id"],
+            "producto_id": body.producto_id,
+            "cantidad": body.cantidad,
+        }
+        if body.variante_id is not None:
+            insert_data["variante_id"] = body.variante_id
         resp = (
             supabase_admin.table("carrito")
-            .insert({
-                "user_id": usuario["user_id"],
-                "producto_id": body.producto_id,
-                "cantidad": body.cantidad,
-            })
+            .insert(insert_data)
             .execute()
         )
         if not resp.data:
@@ -86,7 +97,7 @@ async def actualizar_cantidad(
 ):
     resp = (
         supabase_admin.table("carrito")
-        .update({"cantidad": body.cantidad, "updated_at": "now()"})
+        .update({"cantidad": body.cantidad, "updated_at": datetime.now(timezone.utc).isoformat()})
         .eq("id", item_id)
         .eq("user_id", usuario["user_id"])
         .execute()

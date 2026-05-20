@@ -562,6 +562,37 @@
   }
 }
 
+/* ── Stock Warnings ─────────────────────────── */
+.stock-warning-badge {
+  display: inline-block;
+  margin-top: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  background: rgba($vyro-error, 0.1);
+  color: $vyro-error;
+  border-radius: $vyro-radius-sm;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stock-issues-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba($vyro-error, 0.08);
+  border: 1px solid rgba($vyro-error, 0.15);
+  border-radius: $vyro-radius-sm;
+  color: $vyro-error;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+
+  svg { flex-shrink: 0; margin-top: 1px; }
+}
+
 /* ── Loader ────────────────────────────────── */
 .btn-loader {
   display: inline-block;

@@ -29,7 +29,7 @@ export class CheckoutService {
   }
 
   crearOrdenCOD(
-    items: { producto_id: number; cantidad: number }[],
+    items: { producto_id: number; cantidad: number; variante_id?: number | null }[],
     punto_entrega_id: number,
     telefono_contacto: string,
     fecha_entrega?: string,
@@ -55,10 +55,14 @@ export class CheckoutService {
     );
   }
 
-  addToCarrito(producto_id: number, cantidad: number): Observable<any> {
+  addToCarrito(producto_id: number, cantidad: number, variante_id?: number | null): Observable<any> {
+    const body: Record<string, any> = { producto_id, cantidad };
+    if (variante_id != null) {
+      body['variante_id'] = variante_id;
+    }
     return this.http.post(
       `${environment.apiUrl}/api/carrito`,
-      { producto_id, cantidad },
+      body,
       { headers: this.getHeaders() }
     );
   }

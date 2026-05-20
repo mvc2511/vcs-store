@@ -10,3 +10,8 @@ services:
       - --reload
     volumes:
       - ./vcs-store-backend:/app
+
+  frontend:
+    build:
+      args:
+        BUILD_CONFIG: development

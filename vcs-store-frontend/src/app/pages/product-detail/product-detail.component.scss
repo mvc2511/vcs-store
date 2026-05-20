@@ -216,6 +216,71 @@
 }
 
 // ─────────────────────────────────────────────────────────────
+// Variant Selectors (Talla, Color)
+// ─────────────────────────────────────────────────────────────
+
+.variants-section {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-lg;
+  padding-bottom: $vyro-space-lg;
+  border-bottom: 1px solid $vyro-border;
+}
+
+.variant-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $vyro-space-sm;
+}
+
+.variant-pill {
+  padding: $vyro-space-sm $vyro-space-lg;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-full;
+  background: $vyro-surface;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $vyro-text;
+  cursor: pointer;
+  @include transition(all);
+  min-width: 48px;
+  text-align: center;
+
+  &:hover {
+    border-color: $vyro-text;
+  }
+
+  &.active {
+    background: $vyro-text;
+    color: $vyro-surface;
+    border-color: $vyro-text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+}
+
+.pill-badge {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--vyro-error);
+  text-decoration: none;
+  margin-top: 1px;
+}
+
+// ─────────────────────────────────────────────────────────────
 // Selector Group (Cantidad)
 // ─────────────────────────────────────────────────────────────
 
