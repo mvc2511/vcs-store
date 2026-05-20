@@ -216,6 +216,53 @@
 }
 
 // ─────────────────────────────────────────────────────────────
+// Variant Selectors (Talla, Color)
+// ─────────────────────────────────────────────────────────────
+
+.variants-section {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-lg;
+  padding-bottom: $vyro-space-lg;
+  border-bottom: 1px solid $vyro-border;
+}
+
+.variant-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $vyro-space-sm;
+}
+
+.variant-pill {
+  padding: $vyro-space-sm $vyro-space-lg;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-full;
+  background: $vyro-surface;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $vyro-text;
+  cursor: pointer;
+  @include transition(all);
+  min-width: 48px;
+  text-align: center;
+
+  &:hover {
+    border-color: $vyro-text;
+  }
+
+  &.active {
+    background: $vyro-text;
+    color: $vyro-surface;
+    border-color: $vyro-text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // Selector Group (Cantidad)
 // ─────────────────────────────────────────────────────────────
 

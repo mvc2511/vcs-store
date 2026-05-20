@@ -64,7 +64,8 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Seguridad:** `verificar_admin()` decodifica JWT, consulta `perfiles.rol` con `service_role`, rechaza con 403 si no es admin.
 - **Validación:** Esquemas Pydantic (`ProductoCreate`, `CODRequest`, `CarritoAddItem`, etc.).
 - **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend. El carrito usa `authenticated` + RLS para que el frontend pueda hacer CRUD directo.
-- **Email:** Servicio SendGrid en `services/email.py` con 3 templates HTML inline (orden creada, cambio estado, cancelación). Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
+- **Variantes:** Tabla `variantes_producto` con talla, color, stock, precio_adicional. CRUD completo en `routes/variantes.py`. GET /api/productos/{id} incluye variantes. Carrito y checkout con soporte de variante_id (nullable para productos sin variantes).
+- **Email:** Servicio Resend (migrado desde SendGrid por bloqueo de cuenta Twilio) en `services/email.py` con 3 templates HTML inline (orden creada, cambio estado, cancelación). Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
 - **Endpoints activos:**
   - `GET /api/productos?search=:query` — Listar productos (búsqueda por nombre)
   - `GET /api/productos/{id}` — Obtener producto por ID
@@ -91,6 +92,11 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
   - `PUT /api/admin/ordenes/{id}` — Editar fecha/hora entrega (admin)
   - `GET /api/mis-ordenes` — Órdenes del usuario autenticado
   - `PUT /api/mis-ordenes/{id}/cancelar` — Cancelar orden si pendiente
+  - `GET /api/variantes/producto/{id}` — Listar variantes (público)
+  - `POST /api/variantes` — Crear variante (admin)
+  - `PUT /api/variantes/{id}` — Actualizar variante (admin)
+  - `DELETE /api/variantes/{id}` — Eliminar variante (admin)
+  - `POST /api/variantes/generate` — Generar combinaciones talla×color (admin)
   - `GET /` y `GET /health` — Health check
 
 ---
@@ -166,6 +172,18 @@ productos (
     creado_en TIMESTAMPTZ DEFAULT NOW()
 )
 
+variantes_producto (
+    id SERIAL PK,
+    producto_id INT → productos(id) ON DELETE CASCADE,
+    talla VARCHAR(10),
+    color VARCHAR(50),
+    stock INT DEFAULT 0,
+    precio_adicional DECIMAL(10,2) DEFAULT 0,
+    imagen_url TEXT,
+    creado_en TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE INDEX ON (producto_id, COALESCE(talla,''), COALESCE(color,''))
+)
+
 ordenes (
     id SERIAL PK,
     user_id UUID NOT NULL,
@@ -185,6 +203,7 @@ detalles_orden (
     id SERIAL PK,
     orden_id INT → ordenes(id) ON DELETE CASCADE,
     producto_id INT → productos(id) ON DELETE SET NULL,
+    variante_id INT → variantes_producto(id) ON DELETE SET NULL,
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10,2) NOT NULL
 )
@@ -193,6 +212,7 @@ carrito (
     id SERIAL PK,
     user_id UUID NOT NULL,
     producto_id INT → productos(id) ON DELETE CASCADE,
+    variante_id INT → variantes_producto(id) ON DELETE CASCADE,
     cantidad INT NOT NULL CHECK (cantidad > 0),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -214,6 +234,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 | `perfiles` | SELECT libre (necesario para AuthService) | anon, authenticated |
 | `categorias` | SELECT libre | anon |
 | `productos` | SELECT libre | anon |
+| `variantes_producto` | SELECT libre | anon |
 | `puntos_entrega` | SELECT libre | anon |
 | `ordenes` | SELECT solo propias (`auth.uid() = user_id`) | authenticated |
 | `ordenes` | SELECT todas (para service_role) | service_role |
@@ -226,16 +247,17 @@ on_auth_user_created AFTER INSERT ON auth.users
 - SELECT en perfiles (verificar admin)
 - SELECT, INSERT, DELETE en categorias + secuencia
 - SELECT, INSERT, UPDATE en productos + secuencia
+- SELECT, INSERT, UPDATE, DELETE en variantes_producto + secuencia
 - SELECT, INSERT, UPDATE en ordenes + secuencia
 - SELECT, INSERT en detalles_orden + secuencia
 - SELECT, INSERT, UPDATE, DELETE en puntos_entrega + secuencia
 - SELECT, INSERT, UPDATE, DELETE en carrito + secuencia
 
 **anon** (Frontend - navegación pública):
-- SELECT en categorias, productos, perfiles, puntos_entrega
+- SELECT en categorias, productos, variantes_producto, perfiles, puntos_entrega
 
 **authenticated** (Frontend - sesión activa):
-- SELECT en perfiles, puntos_entrega
+- SELECT en perfiles, puntos_entrega, variantes_producto
 - SELECT, INSERT, UPDATE, DELETE en carrito + secuencia
 
 ### 6.5. Storage (Bucket `productos`)
@@ -304,7 +326,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Admin órdenes: muestra user_email + fecha/hora entrega | ✅ |
 | Historial de pedidos del cliente + cancelación + fecha/hora entrega | ✅ |
 | Búsqueda de productos (client-side) | ✅ |
-| Servicio de email SendGrid (services/email.py) | ✅ |
+| Servicio de email Resend (services/email.py) — migrado desde SendGrid | ✅ |
 | Email: notificación orden creada en checkout.py | ✅ |
 | Email: notificación cambio estado en admin_ordenes.py | ✅ |
 | Email: notificación cancelación en mis_ordenes.py | ✅ |
@@ -321,6 +343,11 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Rediseño Login VYRO (password strength, Google OAuth, alerts) | ✅ |
 | Rediseño Mis Pedidos VYRO (progress tracker animado, badges) | ✅ |
 | Rediseño Cart VYRO (editorial grid, payment methods hierarchy) | ✅ |
+| Variantes de producto (tabla variantes_producto + CRUD backend) | ✅ |
+| Variantes: selector en product-detail (talla pills + color pills) | ✅ |
+| Variantes: carrito con clave compuesta (producto_id + variante_id) | ✅ |
+| Variantes: checkout con variante_id (stock validation + precio) | ✅ |
+| Variantes: admin inline editor (agregar, generar combinaciones) | ✅ |
 | Toast Service + Container (4 tipos, SVG icons, slideIn animation) | ✅ |
 | Animaciones globales (_animations.scss: fadeIn, slideUp, stagger, shimmer) | ✅ |
 | Sistema de diseño VYRO (_variables, _typography, _components, _mixins) | ✅ |

@@ -4,7 +4,7 @@
 
 ### Fase 1 — MVP Production (~2 semanas)
 - [x] **1.1 Notificaciones Email** — SendGrid backend service + integración en checkout, admin, mis_ordenes
-- [ ] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, UI en product-detail, carrito, checkout
+- [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id, admin inline editor
 - [ ] **1.3 Paginación Catálogo** — Backend LIMIT/OFFSET, reemplazar filtrado client-side
 - [ ] **1.4 Stock Agotado Visual** — Badge, botón disabled, warning en carrito
 

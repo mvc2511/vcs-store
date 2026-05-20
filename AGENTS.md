@@ -3,7 +3,7 @@
 **Última actualización:** 2026-05-19
 
 ## 🎯 Próximo paso inmediato
-Fase 1.2 — Variantes de Producto (Talla, Color).
+Fase 1.3 — Paginación Catálogo.
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -20,7 +20,7 @@ Fase 1.2 — Variantes de Producto (Talla, Color).
 ### Infraestructura y Base de Datos
 - [x] Proyecto Supabase (PostgreSQL + Auth + Storage + RLS)
 - [x] Schema completo re-ejecutable en database.sql
-- [x] Tablas: perfiles, categorias, productos, ordenes, detalles_orden, puntos_entrega, carrito
+- [x] Tablas: perfiles, categorias, productos, variantes_producto, ordenes, detalles_orden, puntos_entrega, carrito
 - [x] Tabla carrito persistente con RLS (cada usuario ve/edita su propio carrito)
 - [x] Columnas user_email, fecha_entrega, hora_entrega en ordenes
 - [x] ENUM orden_estado (pendiente/confirmado/preparando/enviado/entregado/cancelado)
@@ -56,6 +56,7 @@ Fase 1.2 — Variantes de Producto (Talla, Color).
 
 ### Frontend — Carrito y Checkout
 - [x] Carrito híbrido: API cuando logueado, localStorage cuando no
+- [x] Carrito con variantes: clave única (producto_id + variante_id), merge modal compatible
 - [x] Cart merge modal: al login pregunta usuario si conservar servidor/local/fusionar
 - [x] Carrito DB persistente: race condition corregida (sessionToken antes que isLoggedIn), timeout 3s
 - [x] Carrito responsive: login gate, selector punto entrega, input teléfono, selector fecha/hora entrega
@@ -69,6 +70,7 @@ Fase 1.2 — Variantes de Producto (Talla, Color).
 - [x] Admin dashboard órdenes con expansión, cambio de estado, edición fecha/hora entrega
 - [x] Admin full CRUD: productos + categorías + órdenes + puntos de entrega
 - [x] ProductoForm reutilizable para crear/editar según ruta :id
+- [x] Variantes inline: tabla editable, agregar individual, generación automática talla×color
 - [x] Edición inline de categorías y puntos de entrega (enter guardar, escape cancelar)
 - [x] Confirmación modal al eliminar productos
 
@@ -83,6 +85,7 @@ Fase 1.2 — Variantes de Producto (Talla, Color).
 - [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
 - [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
 - [x] Rediseño ProductDetail VYRO (compacto 1000px, fonts reducidos ~30%)
+- [x] Selector de variantes (talla pills + color pills), precio/stock dinámico según variante seleccionada
 - [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar)
 - [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
@@ -126,7 +129,7 @@ Fase 1.2 — Variantes de Producto (Talla, Color).
 
 ### Fase 1 — MVP Production (~2 semanas)
 - [x] **1.1 Notificaciones Email** — SendGrid. Eventos: orden creada, cambio estado, cancelación. Servicio: `services/email.py` con 3 templates HTML inline. Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
-- [ ] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, selector en product-detail, flujo carrito/checkout. 3-5 días.
+- [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id. 3-5 días.
 - [ ] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET, frontend reemplazar filtrado client-side. 0.5-1 día.
 - [ ] **1.4 Stock Agotado Visual** — Badge, botón disabled, warning carrito. 0.5-1 día.
 
@@ -160,9 +163,10 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `perfiles` — id (UUID PK→auth.users), email, rol (ENUM: cliente/admin/moderador), created_at
 - `categorias` — id (SERIAL PK), nombre (UNIQUE), creado_en
 - `productos` — id (SERIAL PK), nombre, descripcion, precio (DECIMAL), imagen_url, stock, categoria_id (FK→categorias), creado_en
+- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), talla (VARCHAR), color (VARCHAR), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(talla,'') + COALESCE(color,''))
 - `ordenes` — id (SERIAL PK), user_id (UUID), user_email, total (DECIMAL), estado (orden_estado), punto_entrega_id (FK), telefono_contacto, fecha_entrega (DATE), hora_entrega (VARCHAR), stripe_session_id (nullable), creado_en, updated_at
-- `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), cantidad (INT), precio_unitario (DECIMAL)
-- `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), cantidad (INT CHECK >0), created_at, updated_at
+- `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), variante_id (FK→variantes_producto SET NULL), cantidad (INT), precio_unitario (DECIMAL)
+- `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), variante_id (FK→variantes_producto CASCADE), cantidad (INT CHECK >0), created_at, updated_at
 
 **Secuencias:** Service_role tiene USAGE en todas las secuencias SERIAL.
 
