@@ -6,6 +6,7 @@ from typing import Optional
 
 from app.core.security import verificar_admin
 from app.core.supabase_client import supabase_admin
+from app.services.email import email_estado_actualizado
 
 router = APIRouter(prefix="/api/admin/ordenes", tags=["admin-ordenes"])
 
@@ -62,6 +63,19 @@ async def actualizar_estado_orden(
     if body.estado not in valid_states:
         raise HTTPException(status_code=400, detail=f"Estado inválido. Válidos: {', '.join(sorted(valid_states))}")
 
+    orden_resp = (
+        supabase_admin.table("ordenes")
+        .select("user_email, estado")
+        .eq("id", orden_id)
+        .single()
+        .execute()
+    )
+    if not orden_resp.data:
+        raise HTTPException(status_code=404, detail="Orden no encontrada")
+
+    estado_anterior = orden_resp.data["estado"]
+    user_email = orden_resp.data.get("user_email", "")
+
     now_iso = datetime.now(timezone.utc).isoformat()
     resp = (
         supabase_admin.table("ordenes")
@@ -71,6 +85,15 @@ async def actualizar_estado_orden(
     )
     if not resp.data:
         raise HTTPException(status_code=404, detail="Orden no encontrada")
+
+    if user_email:
+        email_estado_actualizado(
+            destinatario=user_email,
+            orden_id=orden_id,
+            estado_anterior=estado_anterior,
+            estado_nuevo=body.estado,
+        )
+
     return resp.data[0]
 
 

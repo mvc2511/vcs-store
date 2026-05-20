@@ -1,3 +1,5 @@
+> ⚠️ **Guía de diseño visual.** Para el estado actual del proyecto (funcionalidades implementadas, plan por fases, estado real), consultar [`AGENTS.md`](AGENTS.md).
+
 # 🎯 VYRO — Strategy de Rediseño Visual
 
 **Fecha:** 2026-05-19  
