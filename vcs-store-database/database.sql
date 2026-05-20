@@ -32,6 +32,8 @@ DROP TABLE IF EXISTS public.puntos_entrega;
 DROP TABLE IF EXISTS public.carrito;
 DROP TABLE IF EXISTS public.productos;
 DROP TABLE IF EXISTS public.categorias;
+DROP TABLE IF EXISTS public.tallas;
+DROP TABLE IF EXISTS public.colores;
 DROP TABLE IF EXISTS public.perfiles;
 
 DROP TYPE IF EXISTS usuario_rol;
@@ -60,6 +62,22 @@ CREATE TABLE public.perfiles (
 CREATE TABLE public.puntos_entrega (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- tallas: Lookup table para tallas estandarizadas
+CREATE TABLE IF NOT EXISTS public.tallas (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE,
+    orden INT DEFAULT 0,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- colores: Lookup table para colores estandarizados
+CREATE TABLE IF NOT EXISTS public.colores (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE,
+    hex VARCHAR(7),
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -114,6 +132,8 @@ CREATE TABLE public.variantes_producto (
     producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
     talla VARCHAR(10),
     color VARCHAR(50),
+    talla_id INT REFERENCES public.tallas(id) ON DELETE SET NULL,
+    color_id INT REFERENCES public.colores(id) ON DELETE SET NULL,
     stock INT DEFAULT 0,
     precio_adicional DECIMAL(10, 2) DEFAULT 0,
     imagen_url TEXT,
@@ -182,6 +202,8 @@ ALTER TABLE public.ordenes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.detalles_orden ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.variantes_producto ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.carrito ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tallas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.colores ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
 CREATE POLICY "Permitir lectura publica de perfiles"
@@ -204,6 +226,12 @@ CREATE POLICY "Permitir lectura publica de productos"
 
 CREATE POLICY "Permitir lectura publica de variantes"
     ON public.variantes_producto FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Permitir lectura publica de tallas"
+    ON public.tallas FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Permitir lectura publica de colores"
+    ON public.colores FOR SELECT TO anon USING (true);
 
 -- Aislamiento: cada usuario ve solo sus órdenes
 CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
@@ -236,11 +264,15 @@ GRANT SELECT ON public.productos TO anon;
 GRANT SELECT ON public.perfiles TO anon;
 GRANT SELECT ON public.puntos_entrega TO anon;
 GRANT SELECT ON public.variantes_producto TO anon;
+GRANT SELECT ON public.tallas TO anon;
+GRANT SELECT ON public.colores TO anon;
 
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT, UPDATE ON public.perfiles TO authenticated;
 GRANT SELECT ON public.puntos_entrega TO authenticated;
 GRANT SELECT ON public.variantes_producto TO authenticated;
+GRANT SELECT ON public.tallas TO authenticated;
+GRANT SELECT ON public.colores TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 
@@ -252,6 +284,10 @@ GRANT SELECT, INSERT, UPDATE ON public.productos TO service_role;
 GRANT USAGE ON SEQUENCE public.productos_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.variantes_producto TO service_role;
 GRANT USAGE ON SEQUENCE public.variantes_producto_id_seq TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tallas TO service_role;
+GRANT USAGE ON SEQUENCE public.tallas_id_seq TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.colores TO service_role;
+GRANT USAGE ON SEQUENCE public.colores_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE ON public.ordenes TO service_role;
 GRANT USAGE ON SEQUENCE public.ordenes_id_seq TO service_role;
 GRANT SELECT, INSERT ON public.detalles_orden TO service_role;
@@ -269,6 +305,36 @@ INSERT INTO public.categorias (nombre) VALUES
 ('Pantalones y Jeans'),
 ('Chamarras y Abrigos'),
 ('Accesorios');
+
+-- Tallas estandarizadas
+INSERT INTO public.tallas (nombre, orden) VALUES
+    ('XS', 1),
+    ('S', 2),
+    ('M', 3),
+    ('L', 4),
+    ('XL', 5),
+    ('2XL', 6),
+    ('3XL', 7)
+ON CONFLICT (nombre) DO NOTHING;
+
+-- Colores estandarizados
+INSERT INTO public.colores (nombre, hex) VALUES
+    ('Negro', '#000000'),
+    ('Blanco', '#FFFFFF'),
+    ('Gris', '#808080'),
+    ('Rojo', '#FF0000'),
+    ('Azul', '#0000FF'),
+    ('Verde', '#008000'),
+    ('Beige', '#F5F5DC'),
+    ('Rosa', '#FFC0CB'),
+    ('Morado', '#800080'),
+    ('Naranja', '#FFA500'),
+    ('Amarillo', '#FFFF00'),
+    ('Militar', '#4B5320'),
+    ('Champagne', '#F7E7CE'),
+    ('Plateado', '#C0C0C0'),
+    ('Dorado', '#FFD700')
+ON CONFLICT (nombre) DO NOTHING;
 
 -- Puntos de entrega para Contra Entrega
 INSERT INTO public.puntos_entrega (nombre) VALUES
