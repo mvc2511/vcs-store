@@ -2,8 +2,14 @@
 
 **Última actualización:** 2026-05-19
 
+> ⚠️ **Rama activa:** `features` — cambios para QA deploy y fixes UI. Pendiente merge a `develop`.
+
 ## 🎯 Próximo paso inmediato
-Navegación responsiva y ajustes visuales post-fixes.
+✅ Listo para merge a develop y deploy QA.
+- Configurar DNS Namecheap: CNAME `qa` → `qa-vyro-boutique.netlify.app`, `api-qa` → `vcs-store.onrender.com`
+- Netlify: agregar custom domain `qa.vyro.boutique`
+- Render: agregar custom domain `api-qa.vyro.boutique`
+- Build automático con `npm run build:qa` (branch deploy en Netlify)
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -59,6 +65,13 @@ Navegación responsiva y ajustes visuales post-fixes.
 
 ## 🔄 Pendiente
 - [ ] Stripe: reactivar y corregir columnas a schema actual (suspendido)
+
+## ✅ Completado
+- [x] WhatsApp number corregido: 525537525291
+- [x] Entorno QA: environment.qa.ts + angular.json config + build:qa script + netlify.toml branch-deploy
+- [x] CORS backend: agregadas URLs de QA (qa-vyro-boutique.netlify.app, qa.vyro.boutique)
+- [x] Mobile nav: search bar eliminada (consistente con desktop)
+- [x] Navbar TS: FormsModule y onSearch() removidos (limpio)
 
 ## ✅ Completado
 - [x] Subida de imagen diferida al submit (UploadImage emite File, upload en ProductoForm.onSubmit)

@@ -312,3 +312,5 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Product-detail compacto (max-width 1000px, fuentes reducidas) | ✅ |
 | Product-cards compactos (4/5 aspect, grid minmax 240px, padding reducido) | ✅ |
 | Carrito DB persistente (race condition token corregida, timeout 3s) | ✅ |
+| Entorno QA (environment.qa.ts, angular.json config, build:qa) | ✅ |
+| CORS backend con URLs de QA | ✅ |

@@ -15,6 +15,8 @@ app.add_middleware(
         "http://localhost:4200",
         "https://vyro.boutique",
         "https://www.vyro.boutique",
+        "https://qa-vyro-boutique.netlify.app",
+        "https://qa.vyro.boutique",
     ],
     allow_credentials=True,
     allow_methods=["*"],

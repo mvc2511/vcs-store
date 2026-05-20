@@ -109,19 +109,6 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" [class.open]="menuOpen()" *ngIf="menuOpen()">
     <div class="mobile-menu-inner">
-      <!-- Search Mobile -->
-      <div class="mobile-search">
-        <input 
-          type="search" 
-          placeholder="Buscar..." 
-          class="search-input" 
-          aria-label="Buscar productos"
-          [ngModel]="searchQuery()"
-          (ngModelChange)="searchQuery.set($event)"
-          (keyup.enter)="onSearch(); closeMenu()"
-        />
-      </div>
-
       <!-- Links Mobile -->
       <a routerLink="/" class="mob-link" (click)="closeMenu()">Catálogo</a>
       <a *ngIf="authService.perfil()?.rol === 'admin'" routerLink="/admin" class="mob-link" (click)="closeMenu()">Admin</a>
