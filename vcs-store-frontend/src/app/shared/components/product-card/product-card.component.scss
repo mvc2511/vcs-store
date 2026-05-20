@@ -1,0 +1,279 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+// ═══════════════════════════════════════════════════════════════
+// VYRO Product Card — Minimalista + Editorial
+// ═══════════════════════════════════════════════════════════════
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: $vyro-surface;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-lg;
+  overflow: hidden;
+  @include transition(all);
+
+  &:hover {
+    border-color: $vyro-text;
+    box-shadow: $vyro-shadow-md;
+
+    .card-image {
+      transform: scale(1.03);
+    }
+
+    .card-overlay {
+      opacity: 1;
+    }
+  }
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px $vyro-accent;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Image Wrapper
+// ─────────────────────────────────────────────────────────────
+
+.card-image-wrap {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: $vyro-silver;
+  @include transition(background);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: -4px;
+  }
+}
+
+.card-image-bg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--img-url);
+  background-size: cover;
+  background-position: center;
+  filter: blur(30px);
+  transform: scale(1.1);
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.card-image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  @include transition(transform);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Overlay (al hover)
+// ─────────────────────────────────────────────────────────────
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba($vyro-text, 0.05);
+  opacity: 0;
+  @include transition(opacity);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-overlay-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $vyro-text;
+  opacity: 0;
+  @include transition(opacity);
+}
+
+.card:hover .card-overlay-text {
+  opacity: 1;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Stock Badge
+// ─────────────────────────────────────────────────────────────
+
+.stock-badge {
+  position: absolute;
+  top: $vyro-space-md;
+  left: $vyro-space-md;
+  padding: $vyro-space-xs $vyro-space-md;
+  background: rgba($vyro-text, 0.95);
+  color: $vyro-surface;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: $vyro-radius-sm;
+  z-index: 2;
+
+  &.stock-warning {
+    background: rgba($vyro-warning, 0.95);
+    color: white;
+  }
+
+  &.stock-out {
+    background: rgba($vyro-error, 0.95);
+    color: white;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Card Body
+// ─────────────────────────────────────────────────────────────
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: $vyro-space-md;
+}
+
+.card-category {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $vyro-accent;
+  margin-bottom: $vyro-space-xs;
+}
+
+.card-title {
+  margin: 0 0 $vyro-space-sm;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: $vyro-text;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.2em;
+
+  a {
+    color: inherit;
+    @include transition(color);
+
+    &:hover {
+      color: $vyro-accent;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $vyro-accent;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Card Footer (Price + Action)
+// ─────────────────────────────────────────────────────────────
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $vyro-space-sm;
+  margin-top: auto;
+  padding-top: $vyro-space-sm;
+  border-top: 1px solid $vyro-border;
+}
+
+.card-price {
+  font-family: $vyro-font-heading;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $vyro-accent;
+  letter-spacing: -0.01em;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Add to Cart Button
+// ─────────────────────────────────────────────────────────────
+
+.card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  background: $vyro-surface;
+  color: $vyro-text;
+  cursor: pointer;
+  flex-shrink: 0;
+  @include transition(all);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $vyro-accent;
+    background: color-mix(in srgb, $vyro-accent 8%, transparent);
+    color: $vyro-accent;
+    transform: scale(1.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-color: $vyro-accent;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Responsive
+// ─────────────────────────────────────────────────────────────
+
+@media (max-width: $vyro-bp-mobile) {
+  .card-body {
+    padding: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 0.8rem;
+  }
+
+  .card-price {
+    font-size: 0.85rem;
+  }
+
+  .card-btn {
+    width: 30px;
+    height: 30px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

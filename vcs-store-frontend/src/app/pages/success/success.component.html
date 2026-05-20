@@ -1,53 +1,76 @@
 <div class="success">
   <div class="success-card" *ngIf="orden">
     <div class="success-icon" aria-hidden="true">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     </div>
-    <h1 class="success-title">¡Pedido #{{ orden.id }} Registrado!</h1>
+
+    <h1 class="success-title">
+      Pedido #{{ orden.id }} registrado
+    </h1>
     <p class="success-sub">
-      Tu pedido está en proceso. Pagarás contra entrega cuando recibas tus productos.
+      Pagarás contra entrega cuando recibas tus productos.
       Te contactaremos al <strong>{{ orden.telefono_contacto }}</strong> para coordinar la entrega.
     </p>
 
-    <div class="success-summary">
-      <div class="summary-row" *ngIf="orden.puntos_entrega">
-        <span class="summary-label">Punto de entrega</span>
-        <span class="summary-value">{{ orden.puntos_entrega.nombre }}</span>
+    <div class="success-summary" *ngIf="orden.puntos_entrega">
+      <div class="summary-item">
+        <span class="summary-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </span>
+        <div class="summary-content">
+          <span class="summary-label">Punto de entrega</span>
+          <span class="summary-value">{{ orden.puntos_entrega.nombre }}</span>
+        </div>
       </div>
-      <div class="summary-row" *ngIf="orden.fecha_entrega">
-        <span class="summary-label">Fecha de entrega</span>
-        <span class="summary-value">{{ orden.fecha_entrega }}</span>
+      <div class="summary-item" *ngIf="orden.fecha_entrega">
+        <span class="summary-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <div class="summary-content">
+          <span class="summary-label">Fecha de entrega</span>
+          <span class="summary-value">{{ orden.fecha_entrega }}</span>
+        </div>
       </div>
-      <div class="summary-row" *ngIf="orden.hora_entrega">
-        <span class="summary-label">Horario</span>
-        <span class="summary-value">{{ orden.hora_entrega }}</span>
+      <div class="summary-item" *ngIf="orden.hora_entrega">
+        <span class="summary-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </span>
+        <div class="summary-content">
+          <span class="summary-label">Horario</span>
+          <span class="summary-value">{{ orden.hora_entrega }}</span>
+        </div>
       </div>
     </div>
 
-    <table class="productos-table" *ngIf="orden.detalles_orden?.length">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cant.</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let det of orden.detalles_orden">
-          <td>{{ det.productos?.nombre || 'Producto eliminado' }}</td>
-          <td>{{ det.cantidad }}</td>
-          <td>{{ det.cantidad * det.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="products-section" *ngIf="orden.detalles_orden?.length">
+      <h2 class="products-title">Productos</h2>
+      <div class="products-list">
+        <div class="product-row" *ngFor="let det of orden.detalles_orden">
+          <span class="product-name">{{ det.productos?.nombre || 'Producto eliminado' }}</span>
+          <span class="product-qty">{{ det.cantidad }}</span>
+          <span class="product-subtotal">{{ det.cantidad * det.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
 
     <div class="total-row">
       <span class="total-label">Total</span>
       <span class="total-value">{{ orden.total | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
     </div>
 
-    <a routerLink="/" class="success-btn">Seguir comprando</a>
+    <a routerLink="/" class="success-cta">
+      Seguir comprando
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
   </div>
 </div>

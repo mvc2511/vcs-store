@@ -85,4 +85,20 @@ export class SupabaseService {
         })
     );
   }
+
+  async getPerfil(userId: string): Promise<{ data: { nombre: string } | null }> {
+    return this.supabase
+      .from('perfiles')
+      .select('nombre')
+      .eq('id', userId)
+      .maybeSingle();
+  }
+
+  async actualizarNombre(userId: string, nombre: string): Promise<{ error: any }> {
+    const { error } = await this.supabase
+      .from('perfiles')
+      .update({ nombre })
+      .eq('id', userId);
+    return { error };
+  }
 }

@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-18
+**Última actualización:** 2026-05-19
 
 ## 🎯 Próximo paso inmediato
-Stripe: reactivar y corregir columnas (según prioridad).
+Navegación responsiva y ajustes visuales post-fixes.
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
@@ -58,18 +58,29 @@ Stripe: reactivar y corregir columnas (según prioridad).
 - [x] Migraciones idempotentes (puntos-entrega, carrito-entrega)
 
 ## 🔄 Pendiente
-- [ ] Stripe: reactivar y corregir columnas a schema actual
+- [ ] Stripe: reactivar y corregir columnas a schema actual (suspendido)
 
 ## ✅ Completado
 - [x] Subida de imagen diferida al submit (UploadImage emite File, upload en ProductoForm.onSubmit)
-- [x] Search bar + chips layout fijo (2 filas: título+search, filter-bar sticky)
+- [x] Search bar + chips layout fijo (sticky bar en home: search + chips + sort)
 - [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
 - [x] Columna `nombre` en `perfiles` + trigger `handle_new_user` actualizado
-- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly
-- [x] Navbar: link "Mi Perfil" en desktop y mobile
+- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly, avatar upload, avatar upload
+- [x] Navbar: link "Mi Perfil" en desktop (añadido) + mobile, avatar clickable a perfil
+- [x] Navbar: search eliminado de desktop (solo queda sticky home search, navbar más limpio)
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Success page con resumen completo (productos, total, punto entrega, fecha/hora)
 - [x] Tracking visual de orden con barra de progreso (pendiente→confirmado→preparando→enviado→entregado)
+- [x] Login combinado Google + Email (intercambio entre sesiones)
+- [x] Rediseño Login VYRO: password strength, Google OAuth, alerts, responsive
+- [x] Rediseño Mis Pedidos VYRO: progress tracker animado, badges estados suaves
+- [x] Toast Service: Signal + Observable, 4 tipos (success/error/info/warning)
+- [x] Toast Container: standalone, SVG icons, slideIn animation, responsive
+- [x] Animaciones globales (_animations.scss): fadeIn, slideUp, stagger, shimmer, etc.
+- [x] SCSS consistente en todos los componentes con paleta VYRO
+- [x] Product-detail compacto: max-width 1000px, fonts reducidos (~30%), gaps/padding optimizados
+- [x] Product-cards compactos: aspect-ratio 4/5, grid minmax 240px, padding reducido, botón +34px
+- [x] Carrito DB persistente: race condition corregida (sessionToken antes que isLoggedIn), timeout 3s, warnings en dbIdMap faltante
 - [x] Despliegue (Netlify + Render) — funcional con Docker + cron-job
 
 ## ⛔ Suspendido / No implementado

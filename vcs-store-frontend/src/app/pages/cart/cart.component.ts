@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environments';
   standalone: true,
   imports: [NgIf, NgFor, CurrencyPipe, RouterLink, FormsModule],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.css',
+  styleUrl: './cart.component.scss',
 })
 export class CartComponent implements OnInit {
   protected Math = Math;

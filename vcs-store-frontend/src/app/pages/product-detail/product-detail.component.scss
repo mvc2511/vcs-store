@@ -1,0 +1,366 @@
+@import '../../shared/styles/variables';
+@import '../../shared/styles/mixins';
+
+// ═══════════════════════════════════════════════════════════════
+// VYRO Product Detail — 2-Column Premium Layout
+// ═══════════════════════════════════════════════════════════════
+
+.detail {
+  background: $vyro-bg;
+  min-height: 100vh;
+  padding: $vyro-space-xl $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: $vyro-space-md $vyro-space-md;
+  }
+}
+
+.detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Back Link
+// ─────────────────────────────────────────────────────────────
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  color: $vyro-text-secondary;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: $vyro-space-lg;
+  @include transition(color);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    color: $vyro-accent;
+
+    svg {
+      transform: translateX(-4px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 4px;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Loading State
+// ─────────────────────────────────────────────────────────────
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $vyro-space-3xl;
+  min-height: 400px;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 3px solid $vyro-border;
+  border-top-color: $vyro-accent;
+  border-radius: $vyro-radius-full;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Detail Content — 2 Column Layout
+// ─────────────────────────────────────────────────────────────
+
+.detail-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $vyro-space-2xl;
+  align-items: start;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: 1fr;
+    gap: $vyro-space-lg;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Gallery / Image Section
+// ─────────────────────────────────────────────────────────────
+
+.detail-gallery {
+  position: sticky;
+  top: 100px;
+  border-radius: $vyro-radius-lg;
+  overflow: hidden;
+  background: $vyro-silver;
+  border: 1px solid $vyro-border;
+  aspect-ratio: 3 / 4;
+
+  @media (max-width: $vyro-bp-tablet) {
+    position: static;
+    top: auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    aspect-ratio: 1 / 1.2;
+  }
+}
+
+.detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Detail Info Section
+// ─────────────────────────────────────────────────────────────
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-lg;
+  max-width: 480px;
+}
+
+.detail-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $vyro-accent;
+  margin-bottom: $vyro-space-sm;
+}
+
+.detail-name {
+  font-family: $vyro-font-heading;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: $vyro-text;
+  line-height: 1.2;
+  margin: 0;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Price & Stock Section
+// ─────────────────────────────────────────────────────────────
+
+.detail-price-row {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  padding-bottom: $vyro-space-lg;
+  border-bottom: 1px solid $vyro-border;
+}
+
+.detail-price {
+  font-family: $vyro-font-heading;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  color: $vyro-accent;
+  letter-spacing: -0.01em;
+}
+
+.detail-stock {
+  padding: $vyro-space-xs $vyro-space-md;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: color-mix(in srgb, $vyro-success 12%, transparent);
+  color: $vyro-success;
+  border-radius: $vyro-radius-full;
+  border: 1px solid color-mix(in srgb, $vyro-success 30%, transparent);
+
+  &.low-stock {
+    background: color-mix(in srgb, $vyro-warning 12%, transparent);
+    color: $vyro-warning;
+    border-color: color-mix(in srgb, $vyro-warning 30%, transparent);
+  }
+
+  &.out-of-stock {
+    background: color-mix(in srgb, $vyro-error 12%, transparent);
+    color: $vyro-error;
+    border-color: color-mix(in srgb, $vyro-error 30%, transparent);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Description
+// ─────────────────────────────────────────────────────────────
+
+.detail-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: $vyro-text-secondary;
+  margin: 0;
+  padding: $vyro-space-md 0;
+  border-bottom: 1px solid $vyro-border;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Selector Group (Cantidad)
+// ─────────────────────────────────────────────────────────────
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-md;
+}
+
+.selector-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $vyro-text;
+}
+
+.cantidad-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  overflow: hidden;
+  background: $vyro-surface;
+  width: fit-content;
+
+  button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-right: 1px solid $vyro-border;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 700;
+    color: $vyro-text;
+    cursor: pointer;
+    @include transition(all);
+
+    &:last-child {
+      border-right: none;
+      border-left: 1px solid $vyro-border;
+    }
+
+    &:hover {
+      background: $vyro-border;
+      color: $vyro-accent;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $vyro-accent;
+      outline-offset: -2px;
+    }
+  }
+
+  span {
+    min-width: 50px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Add to Cart Button
+// ─────────────────────────────────────────────────────────────
+
+.add-btn {
+  width: 100%;
+  padding: $vyro-space-md;
+  border: none;
+  border-radius: $vyro-radius-md;
+  background: $vyro-text;
+  color: $vyro-surface;
+  font-family: $vyro-font-heading;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $vyro-space-md;
+  cursor: pointer;
+  @include transition(all);
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &:hover:not(:disabled) {
+    background: $vyro-silver;
+    color: $vyro-text;
+    transform: translateY(-2px);
+    box-shadow: $vyro-shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Responsive Adjustments
+// ─────────────────────────────────────────────────────────────
+
+@media (max-width: $vyro-bp-tablet) {
+  .detail {
+    padding: $vyro-space-xl 0;
+  }
+
+  .detail-gallery {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+@media (max-width: $vyro-bp-mobile) {
+  .detail-name {
+    font-size: 1.25rem;
+  }
+
+  .detail-price {
+    font-size: 1.25rem;
+  }
+
+  .cantidad-control {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+
+    span {
+      flex: 1;
+    }
+  }
+}

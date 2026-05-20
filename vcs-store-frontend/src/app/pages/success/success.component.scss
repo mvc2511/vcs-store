@@ -1,0 +1,276 @@
+@use 'variables' as *;
+
+.success {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 70vh;
+  padding: 3rem 1.5rem 5rem;
+  background: $vyro-bg;
+}
+
+.success-card {
+  text-align: center;
+  background: $vyro-surface;
+  padding: 3rem 2.5rem 2.5rem;
+  border-radius: $vyro-radius-lg;
+  box-shadow: 0 8px 32px rgba($vyro-text, 0.06);
+  max-width: 500px;
+  width: 100%;
+}
+
+/* ── Checkmark ─────────────────────────────── */
+.success-icon {
+  width: 64px;
+  height: 64px;
+  background: color-mix(in srgb, #059669 10%, transparent);
+  color: #059669;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  animation: checkPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ── Typography ────────────────────────────── */
+.success-title {
+  font-family: $vyro-font-heading;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $vyro-text;
+  margin-bottom: 0.65rem;
+  letter-spacing: -0.02em;
+}
+
+.success-sub {
+  font-family: $vyro-font-sans;
+  color: $vyro-text-secondary;
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+
+  strong {
+    color: $vyro-text;
+    font-weight: 600;
+  }
+}
+
+/* ── Summary Cards ─────────────────────────── */
+.success-summary {
+  background: $vyro-bg;
+  border-radius: $vyro-radius-md;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+
+  & + & {
+    border-top: 1px solid $vyro-border;
+  }
+}
+
+.summary-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $vyro-accent;
+  flex-shrink: 0;
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.summary-label {
+  font-family: $vyro-font-sans;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: $vyro-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary-value {
+  font-family: $vyro-font-heading;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $vyro-text;
+}
+
+/* ── Products Section ──────────────────────── */
+.products-section {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.products-title {
+  font-family: $vyro-font-heading;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $vyro-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.65rem;
+}
+
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.product-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid $vyro-border;
+  font-family: $vyro-font-sans;
+  font-size: 0.82rem;
+  color: $vyro-text;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.product-name {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-qty {
+  color: $vyro-text-secondary;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+
+.product-subtotal {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* ── Total ─────────────────────────────────── */
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  margin-bottom: 1.75rem;
+  border-top: 2px solid $vyro-text;
+}
+
+.total-label {
+  font-family: $vyro-font-heading;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $vyro-text;
+}
+
+.total-value {
+  font-family: $vyro-font-heading;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: $vyro-text;
+  letter-spacing: -0.01em;
+}
+
+/* ── CTA ───────────────────────────────────── */
+.success-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  background: $vyro-text;
+  color: $vyro-surface;
+  font-family: $vyro-font-sans;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba($vyro-text, 0.15);
+  }
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+}
+
+/* ── Responsive ────────────────────────────── */
+@media (max-width: $vyro-bp-tablet) {
+  .success {
+    padding: 2rem 1rem 5rem;
+  }
+
+  .success-card {
+    padding: 2.5rem 1.5rem 2rem;
+  }
+
+  .success-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: $vyro-bp-mobile) {
+  .success-card {
+    padding: 2rem 1.25rem 1.75rem;
+  }
+
+  .success-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 1.25rem;
+
+    svg {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .success-title {
+    font-size: 1.15rem;
+  }
+
+  .success-sub {
+    font-size: 0.85rem;
+  }
+
+  .product-row {
+    font-size: 0.78rem;
+  }
+
+  .total-value {
+    font-size: 1.1rem;
+  }
+}

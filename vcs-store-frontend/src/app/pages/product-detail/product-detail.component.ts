@@ -11,7 +11,7 @@ import { Producto } from '../../shared/models/product.model';
   standalone: true,
   imports: [NgIf, CurrencyPipe, RouterLink],
   templateUrl: './product-detail.component.html',
-  styleUrl: './product-detail.component.css',
+  styleUrl: './product-detail.component.scss',
 })
 export class ProductDetailComponent implements OnInit {
   protected Math = Math;

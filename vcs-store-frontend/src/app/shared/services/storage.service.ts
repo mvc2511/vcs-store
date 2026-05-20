@@ -46,4 +46,25 @@ export class StorageService {
       console.error('Error al eliminar imagen:', error.message);
     }
   }
+
+  async subirAvatar(file: File): Promise<ImagenSubida> {
+    const extension = file.name.split('.').pop();
+    const user = (await this.supabase.auth.getUser()).data.user;
+    const userId = user?.id || 'anonymous';
+    const path = `avatares/${userId}.${extension}`;
+
+    const { error: uploadError } = await this.supabase.storage
+      .from('productos')
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      throw new Error(`Error al subir avatar: ${uploadError.message}`);
+    }
+
+    const { data: publicData } = this.supabase.storage
+      .from('productos')
+      .getPublicUrl(path);
+
+    return { url: publicData.publicUrl, path };
+  }
 }

@@ -9,7 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [FormsModule, NgIf, RouterLink],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private authService = inject(AuthService);
@@ -37,6 +37,23 @@ export class LoginComponent {
   toggleModo(): void {
     this.esRegistro.update((v) => !v);
     this.error.set('');
+  }
+
+  getPasswordStrength(): { level: number; label: string; color: string } {
+    const pwd = this.password;
+    if (!pwd) return { level: 0, label: '', color: '' };
+    
+    let strength = 0;
+    if (pwd.length >= 8) strength++;
+    if (pwd.length >= 12) strength++;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+    if (/\d/.test(pwd)) strength++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) strength++;
+
+    if (strength < 2) return { level: 1, label: 'Débil', color: '#DC2626' };
+    if (strength < 3) return { level: 2, label: 'Media', color: '#EA580C' };
+    if (strength < 4) return { level: 3, label: 'Buena', color: '#FBBF24' };
+    return { level: 4, label: 'Muy fuerte', color: '#059669' };
   }
 
   async onSubmit(): Promise<void> {

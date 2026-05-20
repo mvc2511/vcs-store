@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../shared/services/supabase.service';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { Producto } from '../../shared/models/product.model';
@@ -10,10 +11,11 @@ import { Producto } from '../../shared/models/product.model';
   standalone: true,
   imports: [NgIf, NgFor, ProductCardComponent, CurrencyPipe, FormsModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
   private supabase = inject(SupabaseService);
+  private route = inject(ActivatedRoute);
   productos: Producto[] = [];
   categorias: string[] = [];
   selectedCategoria = '';
@@ -22,6 +24,13 @@ export class HomeComponent implements OnInit {
   loading = true;
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const q = params['q'];
+      if (q) {
+        this.searchQuery = q;
+      }
+    });
+
     this.supabase.getProducts().subscribe({
       next: (data) => {
         this.productos = data;

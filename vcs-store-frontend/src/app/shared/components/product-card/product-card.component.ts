@@ -9,7 +9,7 @@ import { CartService } from '../../services/cart.service';
   standalone: true,
   imports: [RouterLink, CurrencyPipe, NgIf],
   templateUrl: './product-card.component.html',
-  styleUrl: './product-card.component.css',
+  styleUrl: './product-card.component.scss',
 })
 export class ProductCardComponent {
   producto = input.required<Producto>();

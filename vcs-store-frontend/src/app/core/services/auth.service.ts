@@ -24,16 +24,16 @@ export class AuthService {
     this.supabase.auth.getSession().then(({ data: { session } }) => {
       const user = session?.user ?? null;
       this.userSignal.set(user);
-      this.isLoggedIn.set(!!user);
       this.sessionTokenSignal.set(session?.access_token ?? null);
+      this.isLoggedIn.set(!!user);
       if (user) this.cargarPerfil();
     });
 
     this.supabase.auth.onAuthStateChange((_event, session) => {
       const user = session?.user ?? null;
       this.userSignal.set(user);
-      this.isLoggedIn.set(!!user);
       this.sessionTokenSignal.set(session?.access_token ?? null);
+      this.isLoggedIn.set(!!user);
       if (user) this.cargarPerfil();
       else this.perfilSignal.set(null);
     });
@@ -114,6 +114,23 @@ export class AuthService {
     });
     if (error) return this.mapAuthError(error);
     return null;
+  }
+
+  async updatePassword(newPassword: string): Promise<{ error: any }> {
+    const { error } = await this.supabase.auth.updateUser({
+      password: newPassword,
+    });
+    return { error };
+  }
+
+  async updateAvatar(url: string): Promise<{ error: any }> {
+    const { data, error } = await this.supabase.auth.updateUser({
+      data: { avatar_url: url },
+    });
+    if (data?.user) {
+      this.userSignal.set(data.user);
+    }
+    return { error };
   }
 
   async logout() {

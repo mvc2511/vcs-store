@@ -1,0 +1,139 @@
+// ═══════════════════════════════════════════════
+// VYRO — Typography
+// ═══════════════════════════════════════════════
+
+// ─── Space Grotesk Font (via Google Fonts) ────
+// Modern, bold sans-serif perfect for headings
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+// ─── Inter Font (via Google Fonts) ────────────
+// Clean, modern sans-serif for body copy
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+// ─── Typography Scale ──────────────────────────
+// Based on 1.25 ratio (Major Third)
+// Base: 16px
+
+// ─── Heading Styles ────────────────────────────
+h1, .h1 {
+  font-family: $vyro-font-heading;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: $vyro-text;
+}
+
+h2, .h2 {
+  font-family: $vyro-font-heading;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: $vyro-text;
+}
+
+h3, .h3 {
+  font-family: $vyro-font-heading;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: $vyro-text;
+}
+
+h4, .h4 {
+  font-family: $vyro-font-heading;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: $vyro-text;
+}
+
+// ─── Utility Classes ──────────────────────────
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1.333;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.428;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.555;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.text-2xl {
+  font-size: 1.563rem;
+  line-height: 1.28;
+}
+
+.text-3xl {
+  font-size: 1.953rem;
+  line-height: 1.2;
+}
+
+.text-4xl {
+  font-size: 2.441rem;
+  line-height: 1.1;
+}
+
+// ─── Letter Spacing ───────────────────────────
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.tracking-normal {
+  letter-spacing: 0;
+}
+
+.tracking-wide {
+  letter-spacing: 0.05em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.1em;
+}
+
+// ─── Font Weight ──────────────────────────────
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+// ─── Uppercase Styling ────────────────────────
+.uppercase-display {
+  text-transform: uppercase;
+  font-family: $vyro-font-heading;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

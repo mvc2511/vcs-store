@@ -14,30 +14,30 @@
 .header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .filtro-select {
   padding: 0.5rem 0.75rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
-  color: var(--text);
-  background: var(--surface);
+  color: var(--vyro-text);
+  background: var(--vyro-surface);
   outline: none;
   cursor: pointer;
 }
 
 .loading, .empty {
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   padding: 3rem 1rem;
   font-size: 0.9rem;
 }
 
 .orden-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--vyro-surface);
+  border: 1px solid var(--vyro-border);
   border-radius: var(--radius-md);
   margin-bottom: 0.75rem;
   overflow: hidden;
@@ -53,20 +53,20 @@
 }
 
 .orden-header:hover {
-  background: #f8f8fc;
+  background: var(--vyro-bg);
 }
 
 .orden-id {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text);
+  color: var(--vyro-text);
   min-width: 60px;
 }
 
 .orden-total {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text);
+  color: var(--vyro-text);
   min-width: 80px;
 }
 
@@ -94,19 +94,19 @@
 
 .orden-fecha {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
 }
 
 .orden-punto {
   font-size: 0.82rem;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   min-width: 120px;
 }
 
 .expand-icon {
   flex-shrink: 0;
   transition: transform 0.2s;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
 }
 
 .expand-icon.rotated {
@@ -115,7 +115,7 @@
 
 .orden-body {
   padding: 0 1.25rem 1.25rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--vyro-border);
 }
 
 .detalles-grid {
@@ -129,7 +129,7 @@
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.25rem;
@@ -137,7 +137,7 @@
 
 .detalle-info span {
   font-size: 0.85rem;
-  color: var(--text);
+  color: var(--vyro-text);
 }
 
 .detalle-info .mono {
@@ -153,7 +153,7 @@
 .productos-section h3 {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 0.75rem;
 }
 
@@ -167,16 +167,16 @@
   text-align: left;
   padding: 0.5rem 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   font-size: 0.75rem;
   text-transform: uppercase;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--vyro-border);
 }
 
 .productos-table td {
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
+  border-bottom: 1px solid var(--vyro-border);
+  color: var(--vyro-text);
 }
 
 .productos-table tr:last-child td {
@@ -185,14 +185,14 @@
 
 .estado-section {
   padding-top: 1rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--vyro-border);
 }
 
 .estado-section label {
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--vyro-text);
   margin-bottom: 0.5rem;
 }
 
@@ -204,25 +204,25 @@
 
 .btn-estado {
   padding: 0.35rem 0.7rem;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--vyro-border);
   border-radius: 999px;
-  background: var(--surface);
+  background: var(--vyro-surface);
   font-size: 0.78rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--vyro-text-secondary);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-estado:hover:not(:disabled) {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--vyro-accent);
+  color: var(--vyro-accent);
 }
 
 .btn-estado.active {
-  border-color: var(--primary);
-  background: rgba(108, 63, 236, 0.08);
-  color: var(--primary);
+  border-color: var(--vyro-accent);
+  background: color-mix(in srgb, var(--vyro-accent) 10%, transparent);
+  color: var(--vyro-accent);
   font-weight: 600;
 }
 

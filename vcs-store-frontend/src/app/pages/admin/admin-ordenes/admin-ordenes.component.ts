@@ -32,7 +32,7 @@ interface DetalleOrden {
   standalone: true,
   imports: [NgIf, NgFor, CurrencyPipe, DatePipe, FormsModule],
   templateUrl: './admin-ordenes.component.html',
-  styleUrl: './admin-ordenes.component.css',
+  styleUrl: './admin-ordenes.component.scss',
 })
 export class AdminOrdenesComponent implements OnInit {
   private http = inject(HttpClient);
