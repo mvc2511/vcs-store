@@ -6,4 +6,4 @@ pydantic-settings>=2.3.4,<3
 python-dotenv==1.0.1
 python-jose[cryptography]==3.3.0
 supabase>=2.9.0,<3
-resend>=3.0.0
+resend>=2.30.0

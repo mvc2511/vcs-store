@@ -1,3 +1,13 @@
+export interface Variante {
+  id: number;
+  producto_id: number;
+  talla?: string | null;
+  color?: string | null;
+  stock: number;
+  precio_adicional: number;
+  imagen_url?: string | null;
+}
+
 export interface Producto {
   id: number;
   nombre: string;
@@ -6,9 +16,11 @@ export interface Producto {
   stock: number;
   imagen_url: string;
   descripcion: string;
+  variantes?: Variante[];
 }
 
 export interface CarritoItem {
   producto: Producto;
+  variante?: Variante | null;
   cantidad: number;
 }

@@ -45,24 +45,39 @@ export class CartComponent implements OnInit {
     });
   }
 
-  updateQuantity(productoId: number, cantidad: number): void {
-    this.cartService.updateQuantity(productoId, cantidad);
+  getItemPrice(item: { producto: { precio: number }; variante?: { precio_adicional?: number } | null }): number {
+    return item.producto.precio + (item.variante?.precio_adicional ?? 0);
   }
 
-  removeItem(productoId: number): void {
-    this.cartService.removeItem(productoId);
+  updateQuantity(productoId: number, cantidad: number, varianteId?: number | null): void {
+    this.cartService.updateQuantity(productoId, cantidad, varianteId);
+  }
+
+  removeItem(productoId: number, varianteId?: number | null): void {
+    this.cartService.removeItem(productoId, varianteId);
   }
 
   clearCart(): void {
     this.cartService.clearCart();
   }
 
+  getVarianteText(item: { variante?: { talla?: string | null; color?: string | null } | null }): string {
+    const v = item.variante;
+    if (!v) return '';
+    const partes: string[] = [];
+    if (v.talla) partes.push(v.talla);
+    if (v.color) partes.push(v.color);
+    return partes.length ? ' — ' + partes.join(' / ') : '';
+  }
+
   onWhatsApp(): void {
     const items = this.cartService.cartItems();
     let mensaje = 'Hola, quiero hacer un pedido:%0A';
     items.forEach((item) => {
-      mensaje += `- ${item.producto.nombre} x${item.cantidad} - $${(
-        item.producto.precio * item.cantidad
+      const precio = this.getItemPrice(item);
+      const variantxt = this.getVarianteText(item);
+      mensaje += `- ${item.producto.nombre}${variantxt} x${item.cantidad} - $${(
+        precio * item.cantidad
       ).toLocaleString()}%0A`;
     });
     mensaje += `%0ATotal: $${this.cartService.totalPrice().toLocaleString()}`;
@@ -78,6 +93,7 @@ export class CartComponent implements OnInit {
     const items = this.cartService.cartItems().map((item) => ({
       producto_id: item.producto.id,
       cantidad: item.cantidad,
+      variante_id: item.variante?.id ?? null,
     }));
 
     this.checkoutService
@@ -110,8 +126,9 @@ export class CartComponent implements OnInit {
       const carrito = this.cartService.cartItems().map((item) => ({
         producto_id: item.producto.id,
         nombre: item.producto.nombre,
-        precio: item.producto.precio,
+        precio: this.getItemPrice(item),
         cantidad: item.cantidad,
+        variante_id: item.variante?.id ?? null,
       }));
 
       this.checkoutService.enviarCarritoAlBackend(carrito).subscribe({

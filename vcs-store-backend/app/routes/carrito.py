@@ -10,6 +10,7 @@ router = APIRouter(prefix="/api/carrito", tags=["carrito"])
 class CarritoAddItem(BaseModel):
     producto_id: int
     cantidad: int
+    variante_id: int | None = None
 
 
 class CarritoUpdateItem(BaseModel):
@@ -22,7 +23,7 @@ async def listar_carrito(
 ):
     resp = (
         supabase_admin.table("carrito")
-        .select("*, productos!left(id, nombre, precio, imagen_url, stock)")
+        .select("*, productos!left(id, nombre, precio, imagen_url, stock), variantes_producto!left(*)")
         .eq("user_id", usuario["user_id"])
         .order("created_at")
         .execute()
@@ -45,14 +46,17 @@ async def agregar_al_carrito(
     if not producto_resp.data:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-    existing = (
+    query = (
         supabase_admin.table("carrito")
         .select("id, cantidad")
         .eq("user_id", usuario["user_id"])
         .eq("producto_id", body.producto_id)
-        .maybe_single()
-        .execute()
     )
+    if body.variante_id is not None:
+        query = query.eq("variante_id", body.variante_id)
+    else:
+        query = query.is_("variante_id", "null")
+    existing = query.maybe_single().execute()
 
     if existing.data:
         nueva_cantidad = existing.data["cantidad"] + body.cantidad
@@ -64,13 +68,16 @@ async def agregar_al_carrito(
         )
         return resp.data[0]
     else:
+        insert_data = {
+            "user_id": usuario["user_id"],
+            "producto_id": body.producto_id,
+            "cantidad": body.cantidad,
+        }
+        if body.variante_id is not None:
+            insert_data["variante_id"] = body.variante_id
         resp = (
             supabase_admin.table("carrito")
-            .insert({
-                "user_id": usuario["user_id"],
-                "producto_id": body.producto_id,
-                "cantidad": body.cantidad,
-            })
+            .insert(insert_data)
             .execute()
         )
         if not resp.data:

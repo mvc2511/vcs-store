@@ -40,7 +40,16 @@ async def obtener_producto(producto_id: int):
     resp = supabase_admin.table("productos").select("*, categorias(nombre)").eq("id", producto_id).single().execute()
     if not resp.data:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return resp.data
+    variantes_resp = (
+        supabase_admin.table("variantes_producto")
+        .select("*")
+        .eq("producto_id", producto_id)
+        .order("id")
+        .execute()
+    )
+    producto = resp.data
+    producto["variantes"] = variantes_resp.data or []
+    return producto
 
 
 @router.post("", status_code=201)

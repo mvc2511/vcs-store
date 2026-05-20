@@ -18,6 +18,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 class CODItem(BaseModel):
     producto_id: int
     cantidad: int
+    variante_id: Optional[int] = None
 
 
 class CODRequest(BaseModel):
@@ -50,23 +51,67 @@ async def crear_orden_cod(
 
     for item in req.items:
         prod = productos_bd[item.producto_id]
-        if prod["stock"] < item.cantidad:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Stock insuficiente para '{prod['nombre']}'. Disponible: {prod['stock']}",
+        if item.variante_id is not None:
+            var_resp = (
+                supabase_admin.table("variantes_producto")
+                .select("stock, precio_adicional")
+                .eq("id", item.variante_id)
+                .single()
+                .execute()
             )
+            if not var_resp.data:
+                raise HTTPException(status_code=400, detail=f"Variante no encontrada para '{prod['nombre']}'")
+            if var_resp.data["stock"] < item.cantidad:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Stock insuficiente para variante de '{prod['nombre']}'. Disponible: {var_resp.data['stock']}",
+                )
+        else:
+            if prod["stock"] < item.cantidad:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Stock insuficiente para '{prod['nombre']}'. Disponible: {prod['stock']}",
+                )
 
     total = 0.0
     detalles = []
+    variantes_info = {}
     for item in req.items:
         prod = productos_bd[item.producto_id]
-        subtotal = prod["precio"] * item.cantidad
+        precio_adicional = 0
+        variante_text = ""
+        if item.variante_id is not None:
+            var_resp = (
+                supabase_admin.table("variantes_producto")
+                .select("precio_adicional, talla, color")
+                .eq("id", item.variante_id)
+                .single()
+                .execute()
+            )
+            if var_resp.data:
+                precio_adicional = var_resp.data["precio_adicional"]
+                partes = []
+                if var_resp.data.get("talla"):
+                    partes.append(f'Talla {var_resp.data["talla"]}')
+                if var_resp.data.get("color"):
+                    partes.append(var_resp.data["color"])
+                variante_text = " — " + " / ".join(partes)
+                variantes_info[item.producto_id] = {
+                    "variante_text": variante_text,
+                    "talla": var_resp.data.get("talla"),
+                    "color": var_resp.data.get("color"),
+                }
+        precio_total = prod["precio"] + precio_adicional
+        subtotal = precio_total * item.cantidad
         total += subtotal
-        detalles.append({
+        detalle = {
             "producto_id": prod["id"],
             "cantidad": item.cantidad,
-            "precio_unitario": prod["precio"],
-        })
+            "precio_unitario": precio_total,
+        }
+        if item.variante_id is not None:
+            detalle["variante_id"] = item.variante_id
+        detalles.append(detalle)
 
     orden_resp = (
         supabase_admin.table("ordenes")
@@ -89,9 +134,22 @@ async def crear_orden_cod(
     orden_id = orden_resp.data[0]["id"]
 
     for item in req.items:
-        supabase_admin.table("productos").update({
-            "stock": productos_bd[item.producto_id]["stock"] - item.cantidad
-        }).eq("id", item.producto_id).execute()
+        if item.variante_id is not None:
+            var_resp = (
+                supabase_admin.table("variantes_producto")
+                .select("stock")
+                .eq("id", item.variante_id)
+                .single()
+                .execute()
+            )
+            if var_resp.data:
+                supabase_admin.table("variantes_producto").update({
+                    "stock": var_resp.data["stock"] - item.cantidad
+                }).eq("id", item.variante_id).execute()
+        else:
+            supabase_admin.table("productos").update({
+                "stock": productos_bd[item.producto_id]["stock"] - item.cantidad
+            }).eq("id", item.producto_id).execute()
 
     for detalle in detalles:
         detalle["orden_id"] = orden_id
@@ -106,14 +164,15 @@ async def crear_orden_cod(
     )
     punto_nombre = punto_resp.data["nombre"] if punto_resp.data else ""
 
-    email_items = [
-        {
-            "nombre": productos_bd[item.producto_id]["nombre"],
-            "cantidad": item.cantidad,
-            "subtotal": productos_bd[item.producto_id]["precio"] * item.cantidad,
-        }
-        for item in req.items
-    ]
+    email_items = []
+    for item, det in zip(req.items, detalles):
+        prod = productos_bd[item.producto_id]
+        nombre_item = prod["nombre"] + variantes_info.get(item.producto_id, {}).get("variante_text", "")
+        email_items.append({
+            "nombre": nombre_item,
+            "cantidad": det["cantidad"],
+            "subtotal": det["precio_unitario"] * det["cantidad"],
+        })
     email_orden_creada(
         destinatario=usuario.get("email", ""),
         orden_id=orden_id,

@@ -24,6 +24,7 @@ DROP POLICY IF EXISTS "Usuarios pueden eliminar su propio carrito" ON public.car
 DROP POLICY IF EXISTS "Subir imagenes a productos" ON storage.objects;
 DROP POLICY IF EXISTS "Leer imagenes de productos" ON storage.objects;
 
+DROP TABLE IF EXISTS public.variantes_producto CASCADE;
 DROP TABLE IF EXISTS public.detalles_orden;
 DROP TABLE IF EXISTS public.ordenes;
 DROP TABLE IF EXISTS public.carrito;
@@ -106,11 +107,29 @@ CREATE TABLE public.detalles_orden (
     precio_unitario DECIMAL(10, 2) NOT NULL
 );
 
+-- variantes_producto: Tallas, colores y presentaciones por producto
+DROP TABLE IF EXISTS public.variantes_producto CASCADE;
+CREATE TABLE public.variantes_producto (
+    id SERIAL PRIMARY KEY,
+    producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
+    talla VARCHAR(10),
+    color VARCHAR(50),
+    stock INT DEFAULT 0,
+    precio_adicional DECIMAL(10, 2) DEFAULT 0,
+    imagen_url TEXT,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE UNIQUE INDEX unique_producto_variante
+    ON public.variantes_producto (producto_id, COALESCE(talla, ''), COALESCE(color, ''));
+
+ALTER TABLE public.detalles_orden ADD COLUMN IF NOT EXISTS variante_id INT REFERENCES public.variantes_producto(id) ON DELETE SET NULL;
+
 -- carrito: Carro de compras persistente por usuario
 CREATE TABLE public.carrito (
     id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL,
     producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
+    variante_id INT REFERENCES public.variantes_producto(id) ON DELETE CASCADE,
     cantidad INT NOT NULL CHECK (cantidad > 0),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -161,6 +180,7 @@ ALTER TABLE public.productos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.puntos_entrega ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ordenes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.detalles_orden ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.variantes_producto ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.carrito ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
@@ -181,6 +201,9 @@ CREATE POLICY "Permitir lectura publica de categorias"
 
 CREATE POLICY "Permitir lectura publica de productos"
     ON public.productos FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Permitir lectura publica de variantes"
+    ON public.variantes_producto FOR SELECT TO anon USING (true);
 
 -- Aislamiento: cada usuario ve solo sus órdenes
 CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
@@ -212,10 +235,12 @@ GRANT SELECT ON public.categorias TO anon;
 GRANT SELECT ON public.productos TO anon;
 GRANT SELECT ON public.perfiles TO anon;
 GRANT SELECT ON public.puntos_entrega TO anon;
+GRANT SELECT ON public.variantes_producto TO anon;
 
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT, UPDATE ON public.perfiles TO authenticated;
 GRANT SELECT ON public.puntos_entrega TO authenticated;
+GRANT SELECT ON public.variantes_producto TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 
@@ -225,6 +250,8 @@ GRANT SELECT, INSERT, DELETE ON public.categorias TO service_role;
 GRANT USAGE ON SEQUENCE public.categorias_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE ON public.productos TO service_role;
 GRANT USAGE ON SEQUENCE public.productos_id_seq TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.variantes_producto TO service_role;
+GRANT USAGE ON SEQUENCE public.variantes_producto_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE ON public.ordenes TO service_role;
 GRANT USAGE ON SEQUENCE public.ordenes_id_seq TO service_role;
 GRANT SELECT, INSERT ON public.detalles_orden TO service_role;

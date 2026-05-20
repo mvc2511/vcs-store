@@ -18,13 +18,44 @@
         <h1 class="detail-name">{{ p.nombre }}</h1>
 
         <div class="detail-price-row">
-          <span class="detail-price">{{ p.precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-          <span class="detail-stock" [class.low-stock]="p.stock <= 5">
-            {{ p.stock > 0 ? (p.stock <= 5 ? 'Últimas ' + p.stock + ' unidades' : 'En stock') : 'Agotado' }}
+          <span class="detail-price">{{ precioActual() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          <span class="detail-stock" [class]="'detail-stock ' + stockClass()">
+            {{ stockText() }}
           </span>
         </div>
 
         <p class="detail-description">{{ p.descripcion }}</p>
+
+        <!-- Variant selectors -->
+        <div *ngIf="hasVariants()" class="variants-section">
+          <div *ngIf="hasTalla()" class="selector-group">
+            <label class="selector-label">Talla</label>
+            <div class="variant-pills">
+              <button
+                *ngFor="let talla of uniqueTallas()"
+                class="variant-pill"
+                [class.active]="selectedTalla() === talla"
+                (click)="selectTalla(talla)"
+              >
+                {{ talla }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="hasColor()" class="selector-group">
+            <label class="selector-label">Color</label>
+            <div class="variant-pills">
+              <button
+                *ngFor="let color of uniqueColores()"
+                class="variant-pill"
+                [class.active]="selectedColor() === color"
+                (click)="selectColor(color)"
+              >
+                {{ color }}
+              </button>
+            </div>
+          </div>
+        </div>
 
         <div class="selector-group">
           <label class="selector-label">Cantidad</label>
@@ -38,7 +69,7 @@
         <button
           class="add-btn"
           (click)="addToCart()"
-          [disabled]="p.stock === 0"
+          [disabled]="!canAddToCart()"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
