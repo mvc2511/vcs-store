@@ -2,8 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environments';
+import { SupabaseService } from '../../shared/services/supabase.service';
+import { StorageService } from '../../shared/services/storage.service';
 
 @Component({
   selector: 'app-perfil',
@@ -14,7 +14,8 @@ import { environment } from '../../../environments/environments';
 })
 export class PerfilComponent implements OnInit {
   private authService = inject(AuthService);
-  private supabase: SupabaseClient;
+  private supabaseService = inject(SupabaseService);
+  private storageService = inject(StorageService);
 
   email = '';
   nombre = '';
@@ -22,33 +23,31 @@ export class PerfilComponent implements OnInit {
   confirmNewPassword = '';
   guardandoNombre = signal(false);
   cambiandoPassword = signal(false);
+  subiendoAvatar = signal(false);
   mensaje = signal('');
   error = signal('');
   esExito = signal(false);
-
-  constructor() {
-    this.supabase = createClient(
-      environment.supabaseUrl,
-      environment.supabaseKey
-    );
-  }
+  avatarUrl = signal('');
 
   ngOnInit(): void {
     const user = this.authService.user();
     if (user) {
       this.email = user.email || '';
+      this.avatarUrl.set(user.user_metadata?.['avatar_url'] || '');
       this.cargarNombre();
     }
+  }
+
+  private limpiarMensajes(): void {
+    this.mensaje.set('');
+    this.error.set('');
+    this.esExito.set(false);
   }
 
   private async cargarNombre(): Promise<void> {
     const user = this.authService.user();
     if (!user) return;
-    const { data } = await this.supabase
-      .from('perfiles')
-      .select('nombre')
-      .eq('id', user.id)
-      .maybeSingle();
+    const { data } = await this.supabaseService.getPerfil(user.id);
     if (data?.nombre) {
       this.nombre = data.nombre;
     }
@@ -58,14 +57,10 @@ export class PerfilComponent implements OnInit {
     const user = this.authService.user();
     if (!user || !this.nombre.trim()) return;
 
+    this.limpiarMensajes();
     this.guardandoNombre.set(true);
-    this.error.set('');
-    this.mensaje.set('');
 
-    const { error } = await this.supabase
-      .from('perfiles')
-      .update({ nombre: this.nombre.trim() })
-      .eq('id', user.id);
+    const { error } = await this.supabaseService.actualizarNombre(user.id, this.nombre.trim());
 
     this.guardandoNombre.set(false);
     if (error) {
@@ -78,7 +73,7 @@ export class PerfilComponent implements OnInit {
 
   async cambiarPassword(): Promise<void> {
     if (this.newPassword.length < 6) {
-      this.error.set('La contraseña debe tener al menos 6 caracteres');
+      this.error.set('La contraseña debe tener al least 6 caracteres');
       return;
     }
     if (this.newPassword !== this.confirmNewPassword) {
@@ -86,22 +81,51 @@ export class PerfilComponent implements OnInit {
       return;
     }
 
+    this.limpiarMensajes();
     this.cambiandoPassword.set(true);
-    this.error.set('');
-    this.mensaje.set('');
 
-    const { error } = await this.supabase.auth.updateUser({
-      password: this.newPassword,
-    });
+    const { error } = await this.authService.updatePassword(this.newPassword);
 
     this.cambiandoPassword.set(false);
     if (error) {
-      this.error.set(error.message);
+      this.error.set(error.message || 'Error al cambiar la contraseña');
     } else {
       this.mensaje.set('Contraseña cambiada correctamente');
       this.esExito.set(true);
       this.newPassword = '';
       this.confirmNewPassword = '';
+    }
+  }
+
+  async onAvatarSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    if (!file.type.startsWith('image/')) {
+      this.error.set('Selecciona una imagen válida');
+      return;
+    }
+
+    this.limpiarMensajes();
+    this.subiendoAvatar.set(true);
+
+    try {
+      const result = await this.storageService.subirAvatar(file);
+      const { error } = await this.authService.updateAvatar(result.url);
+      if (error) {
+        this.error.set('Error al guardar el avatar');
+        return;
+      }
+      this.avatarUrl.set(result.url);
+      this.mensaje.set('Avatar actualizado correctamente');
+      this.esExito.set(true);
+    } catch (err) {
+      this.error.set('Error al subir la imagen');
+      console.error('[Perfil] Error uploading avatar:', err);
+    } finally {
+      this.subiendoAvatar.set(false);
+      input.value = '';
     }
   }
 }

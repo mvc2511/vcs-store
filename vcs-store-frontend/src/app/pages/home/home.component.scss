@@ -184,19 +184,8 @@
 // ─────────────────────────────────────────────────────────────
 
 .catalogo-header {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: $vyro-space-2xl;
-  align-items: flex-start;
-  margin-bottom: $vyro-space-2xl;
+  margin-bottom: $vyro-space-lg;
 
-  @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: 1fr;
-    gap: $vyro-space-lg;
-  }
-}
-
-.header-left {
   @media (max-width: $vyro-bp-tablet) {
     text-align: center;
   }
@@ -218,27 +207,61 @@
   font-weight: 500;
 }
 
-.header-search {
+// ─────────────────────────────────────────────────────────────
+// Filter Bar (Sticky)
+// ─────────────────────────────────────────────────────────────
+
+.filter-bar-sticky {
+  position: sticky;
+  top: 70px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-sm;
+  margin-bottom: $vyro-space-2xl;
+  padding: $vyro-space-md 0;
+  background: rgba($vyro-bg, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba($vyro-border, 0.5);
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: $vyro-bp-mobile) {
+    top: 64px;
+    padding: $vyro-space-sm 0;
+    gap: 0.35rem;
+  }
+}
+
+.filter-search {
   display: flex;
   align-items: center;
   gap: $vyro-space-sm;
-  padding: $vyro-space-md $vyro-space-lg;
+  padding: $vyro-space-sm $vyro-space-md;
   border: 1px solid $vyro-border;
   border-radius: $vyro-radius-md;
   background: $vyro-surface;
-  width: 100%;
-  max-width: 350px;
   @include transition(border-color, box-shadow);
 
-  @media (max-width: $vyro-bp-tablet) {
-    max-width: 100%;
-  }
-
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     color: $vyro-text-secondary;
     flex-shrink: 0;
+  }
+
+  input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.85rem;
+    color: $vyro-text;
+    width: 100%;
+    font-family: inherit;
+
+    &::placeholder {
+      color: $vyro-text-secondary;
+    }
   }
 
   &:focus-within {
@@ -247,45 +270,13 @@
   }
 }
 
-.search-input {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.95rem;
-  color: $vyro-text;
-  width: 100%;
-  font-family: inherit;
-
-  &::placeholder {
-    color: $vyro-text-secondary;
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// Filter Bar (Sticky)
-// ─────────────────────────────────────────────────────────────
-
-.filter-bar-sticky {
-  position: sticky;
-  top: 70px; // navbar height
-  z-index: 20;
+.filter-bar-inner {
   display: flex;
   align-items: center;
   gap: $vyro-space-md;
-  margin-bottom: $vyro-space-2xl;
-  padding: $vyro-space-md 0;
-  background: rgba($vyro-bg, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba($vyro-border, 0.5);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-
-  @media (max-width: $vyro-bp-mobile) {
-    top: 64px;
-    padding: $vyro-space-sm 0;
-  }
 
   &::-webkit-scrollbar {
     height: 4px;
@@ -401,17 +392,17 @@
 
 .skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: $vyro-space-2xl;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: $vyro-space-lg;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: $vyro-space-md;
   }
 
   @media (max-width: $vyro-bp-mobile) {
     grid-template-columns: repeat(2, 1fr);
-    gap: $vyro-space-md;
+    gap: $vyro-space-sm;
   }
 }
 
@@ -423,14 +414,14 @@
 }
 
 .skeleton-img {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 2s infinite;
 }
 
 .skeleton-body {
-  padding: $vyro-space-lg;
+  padding: $vyro-space-md;
 }
 
 .skeleton-line {
@@ -499,17 +490,17 @@
 
 .productos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: $vyro-space-2xl;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: $vyro-space-lg;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: $vyro-space-md;
   }
 
   @media (max-width: $vyro-bp-mobile) {
     grid-template-columns: repeat(2, 1fr);
-    gap: $vyro-space-md;
+    gap: $vyro-space-sm;
   }
 
   > * {

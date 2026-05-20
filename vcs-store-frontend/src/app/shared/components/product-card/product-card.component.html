@@ -1,5 +1,6 @@
 <div class="card">
-  <a [routerLink]="['/producto', producto().id]" class="card-image-wrap">
+  <a [routerLink]="['/producto', producto().id]" class="card-image-wrap" [style.--img-url]="'url(' + producto().imagen_url + ')'">
+    <div class="card-image-bg"></div>
     <img
       [src]="producto().imagen_url"
       [alt]="producto().nombre"

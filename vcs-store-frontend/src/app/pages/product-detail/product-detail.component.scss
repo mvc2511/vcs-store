@@ -8,15 +8,15 @@
 .detail {
   background: $vyro-bg;
   min-height: 100vh;
-  padding: $vyro-space-2xl $vyro-space-lg;
+  padding: $vyro-space-xl $vyro-space-lg;
 
   @media (max-width: $vyro-bp-mobile) {
-    padding: $vyro-space-xl $vyro-space-md;
+    padding: $vyro-space-md $vyro-space-md;
   }
 }
 
 .detail-container {
-  max-width: 1300px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -29,9 +29,9 @@
   align-items: center;
   gap: $vyro-space-sm;
   color: $vyro-text-secondary;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  margin-bottom: $vyro-space-2xl;
+  margin-bottom: $vyro-space-lg;
   @include transition(color);
 
   svg {
@@ -86,13 +86,13 @@
 
 .detail-content {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: $vyro-space-3xl;
+  grid-template-columns: 1fr 1fr;
+  gap: $vyro-space-2xl;
   align-items: start;
 
   @media (max-width: $vyro-bp-tablet) {
     grid-template-columns: 1fr;
-    gap: $vyro-space-2xl;
+    gap: $vyro-space-lg;
   }
 }
 
@@ -135,7 +135,8 @@
 .detail-info {
   display: flex;
   flex-direction: column;
-  gap: $vyro-space-xl;
+  gap: $vyro-space-lg;
+  max-width: 480px;
 }
 
 .detail-category {
@@ -149,11 +150,11 @@
 
 .detail-name {
   font-family: $vyro-font-heading;
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
   font-weight: 700;
   letter-spacing: -0.015em;
   color: $vyro-text;
-  line-height: 1.1;
+  line-height: 1.2;
   margin: 0;
 }
 
@@ -171,7 +172,7 @@
 
 .detail-price {
   font-family: $vyro-font-heading;
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
   font-weight: 700;
   color: $vyro-accent;
   letter-spacing: -0.01em;
@@ -206,11 +207,11 @@
 // ─────────────────────────────────────────────────────────────
 
 .detail-description {
-  font-size: 1rem;
-  line-height: 1.8;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: $vyro-text-secondary;
   margin: 0;
-  padding: $vyro-space-lg 0;
+  padding: $vyro-space-md 0;
   border-bottom: 1px solid $vyro-border;
 }
 
@@ -243,12 +244,12 @@
   width: fit-content;
 
   button {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border: none;
     border-right: 1px solid $vyro-border;
     background: transparent;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 700;
     color: $vyro-text;
     cursor: pointer;
@@ -284,7 +285,7 @@
 
 .add-btn {
   width: 100%;
-  padding: $vyro-space-lg;
+  padding: $vyro-space-md;
   border: none;
   border-radius: $vyro-radius-md;
   background: $vyro-text;
@@ -344,11 +345,11 @@
 
 @media (max-width: $vyro-bp-mobile) {
   .detail-name {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .detail-price {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .cantidad-control {

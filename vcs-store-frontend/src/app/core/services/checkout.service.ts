@@ -13,9 +13,11 @@ export class CheckoutService {
 
   private getHeaders(): HttpHeaders {
     const token = this.authService.sessionToken();
-    return new HttpHeaders(
-      token ? { Authorization: `Bearer ${token}` } : {}
-    );
+    if (!token) {
+      console.error('[CheckoutService] No hay token de sesión disponible');
+      throw new Error('No hay sesión activa');
+    }
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
   enviarCarritoAlBackend(carrito: any[]): Observable<any> {

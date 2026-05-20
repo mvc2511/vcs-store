@@ -1,20 +1,24 @@
 # TODO - VC'S Store
 
 ## 🔄 Pendiente
-- [ ] Stripe: reactivar y corregir columnas a schema actual
+- [ ] Stripe: reactivar y corregir columnas a schema actual (suspendido)
 
 ## ✅ Completado
 ### UX y Funcionalidad
 - [x] Subida de imagen solo al hacer submit (evita basura en Storage)
-- [x] Search bar + chips layout fijo (2 filas + sticky)
+- [x] Search bar + chips layout fijo (sticky bar en home: search + chips + sort)
 - [x] Signup completo: nombre, confirmar contraseña, términos y condiciones
 - [x] Columna `nombre` en `perfiles` + trigger actualizado
-- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly
-- [x] Navbar: link "Mi Perfil" en desktop y mobile
+- [x] Página `/perfil`: editar nombre, cambiar contraseña, email readonly, avatar upload
+- [x] Navbar: link "Mi Perfil" en desktop (añadido) + mobile, avatar clickable a perfil
+- [x] Navbar: search eliminado de desktop (solo queda sticky home search)
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Success page con resumen completo de la orden (productos, total, punto entrega, fecha/hora)
 - [x] Tracking visual de orden: barra de progreso en mis-pedidos
 - [x] Login combinado Google + Email (intercambio entre sesiones)
+- [x] Product-detail compacto: max-width 1000px, fuentes reducidas, gaps optimizados
+- [x] Product-cards compactos: aspect-ratio 4/5, grid minmax 240px, padding reducido
+- [x] Carrito DB persistente: race condition token corregida, timeout 3s, warnings en dbIdMap
 
 ### Despliegue
 - [x] Despliegue Netlify (frontend) + Render (backend) — funcional con Docker + cron-job
@@ -60,6 +64,7 @@
 - [x] Admin Órdenes: dashboard con lista, filtro por estado, cambio de estado
 - [x] Admin Órdenes: muestra user_email, fecha/hora entrega, permite editar
 - [x] Mis Pedidos: historial del cliente con cancelación + fecha/hora entrega
+- [x] Perfil: avatar upload + cambiar contraseña + editar nombre
 - [x] UploadImageComponent
 - [x] Diseño mobile-first (breakpoints 767px y 500px)
 - [x] Navbar hamburger menu con animación

@@ -13,9 +13,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:4200",
-        "https://vcs-store.netlify.app",
-        "https://store.mariano-ventura.dev",
-        "https://www.mariano-ventura.dev",
+        "https://vyro.boutique",
+        "https://www.vyro.boutique",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -61,13 +60,13 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://store.mariano-ventura.dev/sitemap.xml
+Sitemap: https://vyro.boutique/sitemap.xml
 """
 
 
 @app.get("/sitemap.xml", response_class=Response)
 async def sitemap():
-    base_url = "https://store.mariano-ventura.dev"
+    base_url = "https://vyro.boutique"
     urls = [
         f"""  <url>
     <loc>{base_url}/</loc>

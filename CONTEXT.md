@@ -30,12 +30,12 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 ## 3. Frontend (Angular 18)
 
 - **Gestión de estado:** Signals en AuthService para propagar sesión y roles. Signals en CartService con modo híbrido (API si logueado, localStorage si no).
-- **Carrito persistente:** Sincronizado con backend via `/api/carrito`. Merge modal al login si hay conflicto local vs servidor.
+- **Carrito persistente:** Sincronizado con backend via `/api/carrito`. Merge modal al login si hay conflicto local vs servidor. Token de sesión se setea antes de señal isLoggedIn para evitar race condition. Timeout de polling aumentado a 3s.
 - **Rutas protegidas:** `AdminGuard` + `AuthGuard` (CanActivateFn) para zonas administrativas y checkout.
 - **Lazy loading:** Todas las rutas cargan asíncronamente.
 - **Upload de imágenes:** Preview local con FileReader, subida a Storage diferida al submit del formulario (evita basura en bucket).
 - **Consumo de APIs:** JWT de Supabase en header `Authorization: Bearer <token>`.
-- **Responsive:** Navbar con hamburger menu en mobile, tablas se convierten a cards, grids colapsan a 1 columna.
+- **Responsive:** Navbar con hamburger menu en mobile (incluye búsqueda), tablas se convierten a cards, grids colapsan a 1 columna. Navbar desktop: sin barra de búsqueda (solo en home sticky), link "Mi Perfil" visible si logueado, avatar clickable a perfil.
 
 ### Rutas actuales
 
@@ -47,7 +47,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/login` | LoginComponent (soporta ?returnUrl) | - |
 | `/mis-pedidos` | MisPedidosComponent (historial + cancelar + fecha/hora + barra progreso) | AuthGuard |
 | `/success` | SuccessComponent (resumen completo con productos y entrega) | AuthGuard |
-| `/perfil` | PerfilComponent (editar nombre, cambiar contraseña) | AuthGuard |
+| `/perfil` | PerfilComponent (editar nombre, cambiar contraseña, avatar) | AuthGuard |
 | `/admin` | AdminLayoutComponent → redirect a /admin/productos | AdminGuard |
 | `/admin/productos` | AdminProductosComponent (lista con editar/eliminar) | AdminGuard |
 | `/admin/productos/nuevo` | ProductoFormComponent (crear) | AdminGuard |
@@ -283,6 +283,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Cart merge modal (local vs servidor al login) | ✅ |
 | Login con Google OAuth + Email/Password | ✅ |
 | Login: returnUrl post-auth | ✅ |
+| Perfil con avatar upload + cambiar contraseña | ✅ |
 | Guards de autenticación y admin | ✅ |
 | Admin CRUD productos (listar/crear/editar/eliminar) | ✅ |
 | Admin CRUD categorías (listar/crear/editar/eliminar) | ✅ |
@@ -307,3 +308,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Login Google + Email combinado | ✅ |
 | Stripe (Checkout + Webhooks) | ❌ Suspendido |
 | Despliegue (Netlify + Render) | ✅ Completado |
+| Navbar search duplicado eliminado (solo queda sticky home search) | ✅ |
+| Product-detail compacto (max-width 1000px, fuentes reducidas) | ✅ |
+| Product-cards compactos (4/5 aspect, grid minmax 240px, padding reducido) | ✅ |
+| Carrito DB persistente (race condition token corregida, timeout 3s) | ✅ |

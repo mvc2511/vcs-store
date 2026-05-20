@@ -83,6 +83,19 @@ export class CartService {
     const localItems = this.loadFromStorage();
 
     try {
+      let attempts = 0;
+      while (!this.authService.sessionToken() && attempts < 30) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
+      if (!this.authService.sessionToken()) {
+        console.error('[CartService] No se pudo obtener token tras login, usando localStorage');
+        if (localItems.length > 0) {
+          this.cartItemsSignal.set(localItems);
+        }
+        return;
+      }
+
       const serverData = await firstValueFrom(this.checkoutService.getCarrito());
       const serverItems: CarritoItem[] = [];
       this.dbIdMap.clear();
@@ -110,7 +123,8 @@ export class CartService {
         this.cartItemsSignal.set([]);
         this.saveToStorage([]);
       }
-    } catch {
+    } catch (err) {
+      console.error('[CartService] Error syncing cart after login:', err);
       if (localItems.length > 0) {
         this.cartItemsSignal.set(localItems);
       }
@@ -129,7 +143,8 @@ export class CartService {
       }
       this.cartItemsSignal.set(items);
       this.saveToStorage(items);
-    } catch {
+    } catch (err) {
+      console.error('[CartService] pushLocalToServer falló:', err);
       this.cartItemsSignal.set(items);
       this.saveToStorage(items);
     }
@@ -215,7 +230,8 @@ export class CartService {
         }
         return [...items, { producto, cantidad }];
       });
-    } catch {
+    } catch (err) {
+      console.error('[CartService] addItemAPI falló, usando localStorage:', err);
       this.addItemLocal(producto, cantidad);
     }
   }
@@ -240,7 +256,11 @@ export class CartService {
     if (itemId) {
       try {
         await firstValueFrom(this.checkoutService.removeCarritoItem(itemId));
-      } catch {}
+      } catch (err) {
+        console.error('[CartService] removeItemAPI falló:', err);
+      }
+    } else {
+      console.warn('[CartService] removeItemAPI: no dbIdMap entry for producto', productoId, '— cambios solo locales');
     }
     this.cartItemsSignal.update((items) =>
       items.filter((item) => item.producto.id !== productoId)
@@ -275,7 +295,11 @@ export class CartService {
     if (itemId) {
       try {
         await firstValueFrom(this.checkoutService.updateCarritoItem(itemId, cantidad));
-      } catch {}
+      } catch (err) {
+        console.error('[CartService] updateQuantityAPI falló:', err);
+      }
+    } else {
+      console.warn('[CartService] updateQuantityAPI: no dbIdMap entry for producto', productoId, '— cambios solo locales');
     }
     this.cartItemsSignal.update((items) =>
       items.map((item) =>
@@ -300,7 +324,9 @@ export class CartService {
   private async clearCartAPI(): Promise<void> {
     try {
       await firstValueFrom(this.checkoutService.clearCarrito());
-    } catch {}
+    } catch (err) {
+      console.error('[CartService] clearCartAPI falló:', err);
+    }
     this.cartItemsSignal.set([]);
     this.dbIdMap.clear();
   }

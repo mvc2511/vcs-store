@@ -40,7 +40,7 @@
   position: relative;
   display: block;
   overflow: hidden;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   background: $vyro-silver;
   @include transition(background);
 
@@ -54,7 +54,21 @@
   }
 }
 
+.card-image-bg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--img-url);
+  background-size: cover;
+  background-position: center;
+  filter: blur(30px);
+  transform: scale(1.1);
+  opacity: 0.6;
+  z-index: 0;
+}
+
 .card-image {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -128,11 +142,11 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: $vyro-space-lg;
+  padding: $vyro-space-md;
 }
 
 .card-category {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -141,12 +155,16 @@
 }
 
 .card-title {
-  margin: 0 0 $vyro-space-md;
-  font-size: 0.95rem;
+  margin: 0 0 $vyro-space-sm;
+  font-size: 0.85rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
   color: $vyro-text;
-  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.2em;
 
   a {
     color: inherit;
@@ -171,15 +189,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $vyro-space-md;
+  gap: $vyro-space-sm;
   margin-top: auto;
-  padding-top: $vyro-space-md;
+  padding-top: $vyro-space-sm;
   border-top: 1px solid $vyro-border;
 }
 
 .card-price {
   font-family: $vyro-font-heading;
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: $vyro-accent;
   letter-spacing: -0.01em;
@@ -193,8 +211,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border: 1px solid $vyro-border;
   border-radius: $vyro-radius-md;
@@ -238,24 +256,24 @@
 
 @media (max-width: $vyro-bp-mobile) {
   .card-body {
-    padding: $vyro-space-md;
+    padding: 0.5rem;
   }
 
   .card-title {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .card-price {
-    font-size: 1rem;
+    font-size: 0.85rem;
   }
 
   .card-btn {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
 
     svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
   }
 }

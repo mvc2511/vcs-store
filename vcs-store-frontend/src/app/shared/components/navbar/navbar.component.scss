@@ -59,39 +59,6 @@
   line-height: 1;
 }
 
-// ─── Search Bar ────────────────────────────
-.navbar-search {
-  flex: 1;
-  max-width: 300px;
-  margin: 0 $vyro-space-lg;
-}
-
-.search-input {
-  width: 100%;
-  padding: $vyro-space-sm $vyro-space-md;
-  font-size: 0.875rem;
-  border: 1px solid $vyro-border;
-  border-radius: $vyro-radius-md;
-  background: $vyro-surface;
-  color: $vyro-text;
-  @include transition(border-color, box-shadow);
-
-  &::placeholder {
-    color: $vyro-text-secondary;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: $vyro-accent;
-    box-shadow: 0 0 0 2px rgba($vyro-accent, 0.1);
-  }
-}
-
-.mobile-search {
-  padding: $vyro-space-md;
-  border-bottom: 1px solid $vyro-border;
-}
-
 // ─── Right Navigation ──────────────────────
 .navbar-right {
   display: flex;
@@ -245,6 +212,22 @@
   gap: $vyro-space-md;
 }
 
+.user-avatar-link {
+  display: flex;
+  line-height: 0;
+  @include transition(opacity);
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-radius: $vyro-radius-full;
+  }
+}
+
 .user-avatar {
   width: 36px;
   height: 36px;
@@ -252,6 +235,22 @@
   object-fit: cover;
   border: 2px solid $vyro-border;
   flex-shrink: 0;
+}
+
+.user-name-link {
+  color: inherit;
+  text-decoration: none;
+  @include transition(opacity);
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-radius: $vyro-radius-sm;
+  }
 }
 
 .user-name {
@@ -467,10 +466,6 @@
   .navbar-inner {
     height: 64px;
     padding: 0 $vyro-space-md;
-  }
-
-  .navbar-search {
-    display: none;
   }
 
   .hamburger {
