@@ -173,16 +173,17 @@ async def crear_orden_cod(
             "cantidad": det["cantidad"],
             "subtotal": det["precio_unitario"] * det["cantidad"],
         })
-    email_orden_creada(
-        destinatario=usuario.get("email", ""),
-        orden_id=orden_id,
-        total=total,
-        estado="pendiente",
-        punto_entrega=punto_nombre,
-        fecha_entrega=req.fecha_entrega,
-        hora_entrega=req.hora_entrega,
-        items=email_items,
-    )
+    if usuario.get("email"):
+        email_orden_creada(
+            destinatario=usuario["email"],
+            orden_id=orden_id,
+            total=total,
+            estado="pendiente",
+            punto_entrega=punto_nombre,
+            fecha_entrega=req.fecha_entrega,
+            hora_entrega=req.hora_entrega,
+            items=email_items,
+        )
 
     return {"orden_id": orden_id, "total": total, "estado": "pendiente"}
 

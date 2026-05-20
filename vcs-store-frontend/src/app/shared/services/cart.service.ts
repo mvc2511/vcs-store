@@ -44,6 +44,22 @@ export class CartService {
 
   readonly cartItems = this.cartItemsSignal.asReadonly();
 
+  // Stock warnings
+  readonly stockWarnings = computed(() => {
+    const issues: Array<{ key: string; item: CarritoItem; reason: 'out_of_stock' | 'insufficient_stock'; available: number }> = [];
+    for (const item of this.cartItemsSignal()) {
+      const stock = item.variante?.stock ?? item.producto.stock;
+      if (stock <= 0) {
+        issues.push({ key: cartKey(item.producto.id, item.variante?.id), item, reason: 'out_of_stock', available: 0 });
+      } else if (stock < item.cantidad) {
+        issues.push({ key: cartKey(item.producto.id, item.variante?.id), item, reason: 'insufficient_stock', available: stock });
+      }
+    }
+    return issues;
+  });
+
+  readonly hasStockIssues = computed(() => this.stockWarnings().length > 0);
+
   readonly totalItems = computed(() =>
     this.cartItemsSignal().reduce((sum, item) => sum + item.cantidad, 0)
   );

@@ -36,6 +36,11 @@
               <span class="cart-item-price">
                 {{ getItemPrice(item) | currency:'MXN':'symbol-narrow':'1.0-0' }}
               </span>
+              <!-- Stock warning -->
+              <span *ngIf="getStockWarning(item) as warning" class="stock-warning-badge">
+                <span *ngIf="warning.reason === 'out_of_stock'">Agotado</span>
+                <span *ngIf="warning.reason === 'insufficient_stock'">Solo {{ warning.available }} disp.</span>
+              </span>
             </div>
             <div class="cart-item-actions">
               <div class="qty-selector">
@@ -84,6 +89,11 @@
 
         <!-- Checkout form (logged in) -->
         <ng-container *ngIf="authService.isLoggedIn()">
+          <!-- Stock issues banner -->
+          <div *ngIf="cartService.hasStockIssues()" class="stock-issues-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Algunos productos tienen problemas de stock. Revisá los artículos marcados antes de continuar.
+          </div>
           <!-- Delivery section -->
           <div class="delivery-section">
             <h3 class="delivery-title">Entrega</h3>
@@ -145,7 +155,7 @@
               Pedir por WhatsApp
             </button>
 
-            <button class="payment-btn payment-btn--cod" (click)="onCOD()" [disabled]="loadingCOD() || !selectedPunto() || !telefono.trim()">
+            <button class="payment-btn payment-btn--cod" (click)="onCOD()" [disabled]="loadingCOD() || !selectedPunto() || !telefono.trim() || cartService.hasStockIssues()">
               <span *ngIf="loadingCOD()" class="btn-loader"></span>
               <svg *ngIf="!loadingCOD()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2z"/><path d="M12 2v6l4-3-4-3z"/><circle cx="12" cy="12" r="3"/>
@@ -157,7 +167,7 @@
               <span>O paga en línea</span>
             </div>
 
-            <button class="payment-btn payment-btn--card" (click)="onCheckout()" [disabled]="loading()">
+            <button class="payment-btn payment-btn--card" (click)="onCheckout()" [disabled]="loading() || cartService.hasStockIssues()">
               <span *ngIf="loading()" class="btn-loader"></span>
               <svg *ngIf="!loading()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>

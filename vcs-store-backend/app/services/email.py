@@ -1,12 +1,16 @@
+import logging
 from typing import Optional
 
 import resend
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
+
 
 def _enviar(destinatario: str, asunto: str, html: str) -> bool:
     if not settings.RESEND_API_KEY:
+        logger.warning("RESEND_API_KEY no configurada, email no enviado")
         return False
     try:
         resend.api_key = settings.RESEND_API_KEY
@@ -16,8 +20,10 @@ def _enviar(destinatario: str, asunto: str, html: str) -> bool:
             "subject": asunto,
             "html": html,
         })
+        logger.info("Email enviado a %s — asunto: %s", destinatario, asunto)
         return True
-    except Exception:
+    except Exception as e:
+        logger.error("Error al enviar email a %s: %s", destinatario, e)
         return False
 
 

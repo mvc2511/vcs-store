@@ -61,6 +61,14 @@ export class CartComponent implements OnInit {
     this.cartService.clearCart();
   }
 
+  getStockWarning(item: { producto: { id: number }; variante?: { id?: number } | null }): { reason: string; available: number } | null {
+    const key = `${item.producto.id}:${item.variante?.id ?? 'base'}`;
+    for (const w of this.cartService.stockWarnings()) {
+      if (w.key === key) return { reason: w.reason, available: w.available };
+    }
+    return null;
+  }
+
   getVarianteText(item: { variante?: { talla?: string | null; color?: string | null } | null }): string {
     const v = item.variante;
     if (!v) return '';

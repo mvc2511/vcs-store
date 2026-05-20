@@ -35,9 +35,12 @@
                 *ngFor="let talla of uniqueTallas()"
                 class="variant-pill"
                 [class.active]="selectedTalla() === talla"
+                [class.disabled]="!isTallaAvailable(talla)"
                 (click)="selectTalla(talla)"
+                [disabled]="!isTallaAvailable(talla)"
               >
                 {{ talla }}
+                <span *ngIf="!isTallaAvailable(talla)" class="pill-badge">Agotado</span>
               </button>
             </div>
           </div>
@@ -49,9 +52,12 @@
                 *ngFor="let color of uniqueColores()"
                 class="variant-pill"
                 [class.active]="selectedColor() === color"
+                [class.disabled]="!isColorAvailable(color)"
                 (click)="selectColor(color)"
+                [disabled]="!isColorAvailable(color)"
               >
                 {{ color }}
+                <span *ngIf="!isColorAvailable(color)" class="pill-badge">Agotado</span>
               </button>
             </div>
           </div>

@@ -30,29 +30,49 @@ export class ProductDetailComponent implements OnInit {
   uniqueTallas = computed(() => {
     const p = this.producto();
     if (!p?.variantes?.length) return [];
-    const tallas = new Set(
-      p.variantes.map(v => v.talla).filter((t): t is string => t != null)
-    );
+    const tallas = new Set(p.variantes.map(v => v.talla).filter((t): t is string => t != null));
     return Array.from(tallas);
   });
 
   uniqueColores = computed(() => {
     const p = this.producto();
     if (!p?.variantes?.length) return [];
-    const colores = new Set(
-      p.variantes.map(v => v.color).filter((c): c is string => c != null)
-    );
+    const colores = new Set(p.variantes.map(v => v.color).filter((c): c is string => c != null));
     return Array.from(colores);
   });
 
-  hasVariants = computed(() => {
-    const p = this.producto();
-    return !!p?.variantes?.length;
-  });
-
+  hasVariants = computed(() => !!this.producto()?.variantes?.length);
   hasTalla = computed(() => this.uniqueTallas().length > 0);
   hasColor = computed(() => this.uniqueColores().length > 0);
   noVariantSelected = computed(() => !this.selectedTalla() && !this.selectedColor());
+
+  // Stock status per talla pill (considering selected color if any)
+  tallaStock = computed(() => {
+    const p = this.producto();
+    const color = this.selectedColor();
+    const map = new Map<string, number>();
+    for (const v of p?.variantes ?? []) {
+      if (v.talla && (!color || v.color === color)) {
+        const current = map.get(v.talla) ?? 0;
+        map.set(v.talla, current + v.stock);
+      }
+    }
+    return map;
+  });
+
+  // Stock status per color pill (considering selected talla if any)
+  colorStock = computed(() => {
+    const p = this.producto();
+    const talla = this.selectedTalla();
+    const map = new Map<string, number>();
+    for (const v of p?.variantes ?? []) {
+      if (v.color && (!talla || v.talla === talla)) {
+        const current = map.get(v.color) ?? 0;
+        map.set(v.color, current + v.stock);
+      }
+    }
+    return map;
+  });
 
   selectedVariant = computed(() => {
     const p = this.producto();
@@ -117,9 +137,7 @@ export class ProductDetailComponent implements OnInit {
           this.loading = false;
           if (data) this.updateSeo(data);
         },
-        error: () => {
-          this.loading = false;
-        },
+        error: () => { this.loading = false; },
       });
     }
   }
@@ -130,6 +148,14 @@ export class ProductDetailComponent implements OnInit {
 
   selectColor(color: string): void {
     this.selectedColor.update((prev) => prev === color ? null : color);
+  }
+
+  isTallaAvailable(talla: string): boolean {
+    return (this.tallaStock().get(talla) ?? 0) > 0;
+  }
+
+  isColorAvailable(color: string): boolean {
+    return (this.colorStock().get(color) ?? 0) > 0;
   }
 
   private updateSeo(p: Producto): void {
