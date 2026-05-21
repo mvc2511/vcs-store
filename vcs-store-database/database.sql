@@ -125,12 +125,13 @@ CREATE TABLE public.detalles_orden (
     precio_unitario DECIMAL(10, 2) NOT NULL
 );
 
--- variantes_producto: Tallas, colores y presentaciones por producto
+-- variantes_producto: Tallas, colores, volúmenes y presentaciones por producto
 DROP TABLE IF EXISTS public.variantes_producto CASCADE;
 CREATE TABLE public.variantes_producto (
     id SERIAL PRIMARY KEY,
     producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
-    talla VARCHAR(10),
+    nombre_variante VARCHAR(50),   -- Renamed from talla; stores "S", "M", "50ml", "100ml", etc.
+    tipo_variante VARCHAR(20) DEFAULT 'talla', -- 'talla' | 'volumen' | 'color_solo'
     color VARCHAR(50),
     talla_id INT REFERENCES public.tallas(id) ON DELETE SET NULL,
     color_id INT REFERENCES public.colores(id) ON DELETE SET NULL,
@@ -140,7 +141,18 @@ CREATE TABLE public.variantes_producto (
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 CREATE UNIQUE INDEX unique_producto_variante
-    ON public.variantes_producto (producto_id, COALESCE(talla, ''), COALESCE(color, ''));
+    ON public.variantes_producto (producto_id, COALESCE(nombre_variante, ''), COALESCE(color, ''));
+
+-- opciones_ml: ml configurables por categoría (Perfume/Decant)
+DROP TABLE IF EXISTS public.opciones_ml CASCADE;
+CREATE TABLE public.opciones_ml (
+    id SERIAL PRIMARY KEY,
+    categoria_id INT NOT NULL REFERENCES public.categorias(id) ON DELETE CASCADE,
+    ml INT NOT NULL,
+    orden INT DEFAULT 0,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX idx_opciones_ml_categoria ON public.opciones_ml (categoria_id);
 
 ALTER TABLE public.detalles_orden ADD COLUMN IF NOT EXISTS variante_id INT REFERENCES public.variantes_producto(id) ON DELETE SET NULL;
 
@@ -208,6 +220,7 @@ ALTER TABLE public.variantes_producto ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.carrito ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tallas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.colores ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.opciones_ml ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
 CREATE POLICY "Permitir lectura publica de perfiles"
@@ -236,6 +249,10 @@ CREATE POLICY "Permitir lectura publica de tallas"
 
 CREATE POLICY "Permitir lectura publica de colores"
     ON public.colores FOR SELECT TO anon USING (true);
+
+-- Lectura pública de opciones de ml
+CREATE POLICY "Permitir lectura publica de opciones ml"
+    ON public.opciones_ml FOR SELECT TO anon USING (true);
 
 -- Aislamiento: cada usuario ve solo sus órdenes
 CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
@@ -270,6 +287,7 @@ GRANT SELECT ON public.puntos_entrega TO anon;
 GRANT SELECT ON public.variantes_producto TO anon;
 GRANT SELECT ON public.tallas TO anon;
 GRANT SELECT ON public.colores TO anon;
+GRANT SELECT ON public.opciones_ml TO anon;
 
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT, UPDATE ON public.perfiles TO authenticated;
@@ -277,6 +295,7 @@ GRANT SELECT ON public.puntos_entrega TO authenticated;
 GRANT SELECT ON public.variantes_producto TO authenticated;
 GRANT SELECT ON public.tallas TO authenticated;
 GRANT SELECT ON public.colores TO authenticated;
+GRANT SELECT ON public.opciones_ml TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 
@@ -300,6 +319,8 @@ GRANT SELECT ON public.puntos_entrega TO service_role;
 GRANT USAGE ON SEQUENCE public.puntos_entrega_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO service_role;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.opciones_ml TO service_role;
+GRANT USAGE ON SEQUENCE public.opciones_ml_id_seq TO service_role;
 
 -- =============================================================================
 -- 7. CATÁLOGO SEMILLA (Datos dummy para desarrollo)
@@ -308,7 +329,25 @@ INSERT INTO public.categorias (nombre) VALUES
 ('Camisas y Playeras'),
 ('Pantalones y Jeans'),
 ('Chamarras y Abrigos'),
-('Accesorios');
+('Accesorios'),
+('Perfumes'),
+('Decants')
+ON CONFLICT (nombre) DO NOTHING;
+
+-- Opciones de ml configurables por categoría (Perfumes, Decants)
+INSERT INTO public.opciones_ml (categoria_id, ml, orden)
+SELECT id, v.ml, v.orden
+FROM public.categorias c
+CROSS JOIN (VALUES (50, 1), (90, 2), (100, 3), (125, 4), (200, 5)) AS v(ml, orden)
+WHERE c.nombre IN ('Perfumes', 'Perfume')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.opciones_ml (categoria_id, ml, orden)
+SELECT id, v.ml, v.orden
+FROM public.categorias c
+CROSS JOIN (VALUES (5, 1), (10, 2)) AS v(ml, orden)
+WHERE c.nombre IN ('Decants', 'Decant')
+ON CONFLICT DO NOTHING;
 
 -- Tallas estandarizadas
 INSERT INTO public.tallas (nombre, orden) VALUES
@@ -367,6 +406,24 @@ SELECT id, email, 'admin'::usuario_rol
 FROM auth.users
 WHERE email = 'marianovc251@gmail.com'
 ON CONFLICT (id) DO UPDATE SET rol = 'admin'::usuario_rol;
+
+-- =============================================================================
+-- 10. MIGRATIONS (Para bases de datos existentes con datos reales)
+-- =============================================================================
+-- ALTER TABLE public.variantes_producto
+--     RENAME COLUMN talla TO nombre_variante;
+-- ALTER TABLE public.variantes_producto
+--     ADD COLUMN IF NOT EXISTS tipo_variante VARCHAR(20) DEFAULT 'talla';
+-- ALTER TABLE public.variantes_producto
+--     ALTER COLUMN nombre_variante TYPE VARCHAR(50);
+-- DROP INDEX IF EXISTS unique_producto_variante;
+-- CREATE UNIQUE INDEX unique_producto_variante
+--     ON public.variantes_producto (producto_id, COALESCE(nombre_variante, ''), COALESCE(color, ''));
+-- UPDATE public.variantes_producto SET tipo_variante = 'volumen'
+--     WHERE nombre_variante ~ '^\d+ml$';
+-- Las categorías Perfume/Decant se crean arriba con ON CONFLICT DO NOTHING.
+-- La tabla opciones_ml se crea arriba con datos semilla.
+-- =============================================================================
 
 -- =============================================================================
 -- 9. STORAGE POLICIES (Bucket: productos)

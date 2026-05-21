@@ -2,27 +2,14 @@
 
 ## 🔄 Pendiente — Plan de Implementación por Fases
 
-### Fase 2 — Experiencia Cliente (~2 semanas)
-- [ ] **2.1 Reseñas y Valoraciones** — Tabla resenas, CRUD backend, frontend estrellas (solo compradores)
-- [ ] **2.2 Wishlist / Favoritos** — Tabla favoritos, corazón en cards/detalle, página /favoritos
-- [ ] **2.3 Cupones / Descuentos** — Tabla cupones, validación backend, input en carrito, CRUD admin
-- [ ] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend, tarjeta dashboard admin, badge
-
-### Fase 3 — Validaciones Críticas (~1 semana)
-- [ ] **3.1 Backend:** race condition stock, restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex
-- [ ] **3.2 Frontend:** 401 Interceptor, refresh token Supabase, producto eliminado en carrito, alert()→Toast, refresh precios
-
-### Fase 4 — Estandarización Responsive + Accordion (~1 semana)
-- [ ] **4.1** Mixins mobile-first (min-width), migrar cart.component.scss, reemplazar raw @media en 6 componentes
-- [ ] **4.2** Mis Pedidos: convertir detalles inline en accordion expandible por orden
-
-### Fase 5 — Funcionalidades Medias (~2-3 semanas)
-- [ ] **5.1** Filtros combinados, productos relacionados, dashboard analíticas (Chart.js), carrito abandonado (email), notas del cliente, galería múltiple imágenes
-
-### Fase 6 — Mejoras Bajas (~1-2 semanas)
-- [ ] **6.1** Términos/Privacidad, multi-idioma (i18n), blog, comparación productos, compartir en redes
-
-## ✅ Completado
+### Fase 1.5 — Mejoras Modelo de Datos Variantes ✅ COMPLETADA
+- [x] **1.5.1** Renombrar `talla` → `nombre_variante` en variantes_producto, backend y frontend
+- [x] **1.5.2** Agregar `tipo_variante` ('talla'|'volumen'|'color_solo') para semántica clara
+- [x] **1.5.3** Crear tabla `opciones_ml` con FK a categorías + CRUD admin (backend + frontend)
+- [x] **1.5.4** Eliminar hardcode de ml en frontend (antes: PERFUME_CAT_ID=5, DECANT_CAT_ID=6 hardcoded)
+- [x] **1.5.5** API dinámica: ml options se cargan desde GET /api/opciones-ml?categoria_id=X
+- [x] **1.5.6** Auto-detección tipo_variante: backend detecta Perfume/Decant por categoría
+- [x] **1.5.7** Corregir crash maybe_single() en _resolver_talla_id/_resolver_color_id (variantes 500)
 
 ### Fase 1 — MVP Production
 - [x] **1.1 Notificaciones Email** — SendGrid backend service + integración en checkout, admin, mis_ordenes

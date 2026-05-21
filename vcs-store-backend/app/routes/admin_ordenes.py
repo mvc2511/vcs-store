@@ -27,7 +27,7 @@ async def listar_ordenes(
 ):
     query = (
         supabase_admin.table("ordenes")
-        .select("*, puntos_entrega!left(nombre), detalles_orden(*, productos!left(nombre), variantes_producto!left(talla, color))")
+        .select("*, puntos_entrega!left(nombre), detalles_orden(*, productos!left(nombre), variantes_producto!left(nombre_variante, tipo_variante, color))")
         .order("creado_en", desc=True)
     )
     if estado:

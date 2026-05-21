@@ -50,6 +50,22 @@ async def agregar_al_carrito(
     except APIError:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
+    # NEW VALIDATION: Check if product has variants and require variante_id
+    if body.variante_id is None:
+        variantes_resp = (
+            supabase_admin.table("variantes_producto")
+            .select("id", count="exact")
+            .eq("producto_id", body.producto_id)
+            .execute()
+        )
+        has_variants = variantes_resp.count > 0 if hasattr(variantes_resp, 'count') else len(variantes_resp.data or []) > 0
+        
+        if has_variants:
+            raise HTTPException(
+                status_code=400,
+                detail="Este producto tiene variantes (talla, color, ml, etc). Debe especificar una variante."
+            )
+
     query = (
         supabase_admin.table("carrito")
         .select("id, cantidad")

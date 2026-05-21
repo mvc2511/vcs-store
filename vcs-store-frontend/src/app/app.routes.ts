@@ -114,6 +114,13 @@ export const routes: Routes = [
             (m) => m.ColoresComponent
           ),
       },
+      {
+        path: 'opciones-ml',
+        loadComponent: () =>
+          import('./pages/admin/opciones-ml/opciones-ml.component').then(
+            (m) => m.OpcionesMlComponent
+          ),
+      },
     ],
   },
   {

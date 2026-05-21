@@ -69,11 +69,11 @@ export class CartComponent implements OnInit {
     return null;
   }
 
-  getVarianteText(item: { variante?: { talla?: string | null; color?: string | null } | null }): string {
+  getVarianteText(item: { variante?: { nombre_variante?: string | null; color?: string | null } | null }): string {
     const v = item.variante;
     if (!v) return '';
     const partes: string[] = [];
-    if (v.talla) partes.push(v.talla);
+    if (v.nombre_variante) partes.push(v.nombre_variante);
     if (v.color) partes.push(v.color);
     return partes.length ? ' — ' + partes.join(' / ') : '';
   }

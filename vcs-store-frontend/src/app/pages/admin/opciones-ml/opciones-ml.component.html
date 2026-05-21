@@ -1,0 +1,75 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Opciones de Mililitros</h1>
+      <p class="page-desc">Configurá los ml disponibles por categoría (Perfume, Decant).</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="crearOpcion()" class="ml-form">
+    <div class="form-row">
+      <select formControlName="categoria_id">
+        <option [ngValue]="null">Seleccionar categoría...</option>
+        <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{ cat.nombre }}</option>
+      </select>
+      <input formControlName="ml" type="number" min="1" placeholder="ml (ej: 50)" class="ml-input" />
+      <input formControlName="orden" type="number" min="0" placeholder="Orden" class="orden-input" />
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
+        {{ creando ? 'Agregando...' : 'Agregar' }}
+      </button>
+    </div>
+    <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+  </form>
+
+  <div class="ml-list">
+    <div *ngFor="let op of opciones" class="ml-item">
+      <div *ngIf="editandoId !== op.id; else editTmpl" class="ml-info">
+        <span class="ml-categoria">{{ op.categoria_nombre }}</span>
+        <span class="ml-value">{{ op.ml }} ml</span>
+        <span class="ml-orden">Orden: {{ op.orden }}</span>
+        <span class="ml-id">#{{ op.id }}</span>
+      </div>
+
+      <ng-template #editTmpl>
+        <div class="edit-row">
+          <input
+            #mlInput
+            type="number"
+            min="1"
+            [value]="editMl"
+            (keyup.enter)="guardarEdit(op.id)"
+            (keyup.escape)="cancelarEdit()"
+            class="edit-input edit-ml"
+            autofocus
+          />
+          <input
+            type="number"
+            min="0"
+            [value]="editOrden"
+            (keyup.enter)="guardarEdit(op.id)"
+            (keyup.escape)="cancelarEdit()"
+            class="edit-input edit-orden"
+          />
+          <button class="act-btn" title="Guardar" (click)="guardarEdit(op.id)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+          <button class="act-btn" title="Cancelar" (click)="cancelarEdit()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </ng-template>
+
+      <div class="row-acts" *ngIf="editandoId !== op.id">
+        <button class="act-btn" title="Editar" (click)="iniciarEdit(op)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="act-btn danger" title="Eliminar" (click)="eliminarOpcion(op.id)" [disabled]="eliminandoId === op.id">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="opciones.length === 0" class="empty-state">
+      No hay opciones de ml. Creá la primera.
+    </div>
+  </div>
+</div>

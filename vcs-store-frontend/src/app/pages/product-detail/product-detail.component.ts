@@ -30,7 +30,7 @@ export class ProductDetailComponent implements OnInit {
   uniqueTallas = computed(() => {
     const p = this.producto();
     if (!p?.variantes?.length) return [];
-    const tallas = new Set(p.variantes.map(v => v.talla).filter((t): t is string => t != null));
+    const tallas = new Set(p.variantes.map(v => v.nombre_variante).filter((t): t is string => t != null));
     return Array.from(tallas);
   });
 
@@ -46,27 +46,25 @@ export class ProductDetailComponent implements OnInit {
   hasColor = computed(() => this.uniqueColores().length > 0);
   noVariantSelected = computed(() => !this.selectedTalla() && !this.selectedColor());
 
-  // Stock status per talla pill (considering selected color if any)
   tallaStock = computed(() => {
     const p = this.producto();
     const color = this.selectedColor();
     const map = new Map<string, number>();
     for (const v of p?.variantes ?? []) {
-      if (v.talla && (!color || v.color === color)) {
-        const current = map.get(v.talla) ?? 0;
-        map.set(v.talla, current + v.stock);
+      if (v.nombre_variante && (!color || v.color === color)) {
+        const current = map.get(v.nombre_variante) ?? 0;
+        map.set(v.nombre_variante, current + v.stock);
       }
     }
     return map;
   });
 
-  // Stock status per color pill (considering selected talla if any)
   colorStock = computed(() => {
     const p = this.producto();
     const talla = this.selectedTalla();
     const map = new Map<string, number>();
     for (const v of p?.variantes ?? []) {
-      if (v.color && (!talla || v.talla === talla)) {
+      if (v.color && (!talla || v.nombre_variante === talla)) {
         const current = map.get(v.color) ?? 0;
         map.set(v.color, current + v.stock);
       }
@@ -80,10 +78,10 @@ export class ProductDetailComponent implements OnInit {
     const talla = this.selectedTalla();
     const color = this.selectedColor();
     if (this.hasTalla() && this.hasColor()) {
-      return p.variantes.find(v => v.talla === talla && v.color === color) ?? null;
+      return p.variantes.find(v => v.nombre_variante === talla && v.color === color) ?? null;
     }
     if (this.hasTalla()) {
-      return p.variantes.find(v => v.talla === talla) ?? null;
+      return p.variantes.find(v => v.nombre_variante === talla) ?? null;
     }
     if (this.hasColor()) {
       return p.variantes.find(v => v.color === color) ?? null;
@@ -107,7 +105,7 @@ export class ProductDetailComponent implements OnInit {
 
   canAddToCart = computed(() => {
     if (this.hasVariants() && !this.selectedVariant()) {
-      return this.producto()?.stock ? this.producto()!.stock > 0 : false;
+      return false;
     }
     return this.stockActual() > 0;
   });

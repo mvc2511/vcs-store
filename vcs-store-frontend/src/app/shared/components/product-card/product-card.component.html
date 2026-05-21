@@ -7,8 +7,8 @@
       class="card-image"
       loading="lazy"
     />
-    <span *ngIf="producto().stock <= 5" class="stock-badge">
-      {{ producto().stock === 0 ? 'Agotado' : 'Últimos ' + producto().stock }}
+    <span *ngIf="(producto().stock_real ?? producto().stock) <= 5" class="stock-badge">
+      {{ (producto().stock_real ?? producto().stock) === 0 ? 'Agotado' : 'Últimos ' + (producto().stock_real ?? producto().stock) }}
     </span>
   </a>
   <div class="card-body">
@@ -21,8 +21,8 @@
       <button
         class="card-btn"
         (click)="addToCart()"
-        [disabled]="producto().stock === 0"
-        [title]="producto().stock === 0 ? 'Agotado' : 'Agregar al carrito'"
+        [disabled]="(producto().stock_real ?? producto().stock) === 0"
+        [title]="(producto().stock_real ?? producto().stock) === 0 ? 'Agotado' : (producto().has_variants ? 'Seleccionar variante' : 'Agregar al carrito')"
         aria-label="Agregar al carrito"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

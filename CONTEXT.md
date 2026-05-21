@@ -22,7 +22,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Backend stateless:** FastAPI asíncrono, procesamiento multimedia delegado al cliente.
 - **Seguridad en base de datos:** Row Level Security (RLS) como escudo perimetral, RBAC vía trigger en `auth.users`.
 - **Mínimo Privilegio:** Tres roles segmentados — `anon` (lectura pública), `authenticated` (lectura propia/escritura carrito), `service_role` (escritura backend).
-- **Mobile-first:** Todos los componentes responsivos con breakpoints en 767px y 500px.
+- **Mobile-first:** Todos los componentes responsivos con breakpoints en 767px y 500px. Admin forms (variantes, opciones-ml) stack verticalmente en mobile.
 - **Diseño homogéneo:** Mismo tema claro para clientes y admin.
 - **Diseño visual:** Guiado por `VYRO-REDESIGN.md` (paleta monocromática + champagne, tipografía Space Grotesk + Inter, minimalismo urbano editorial).
 
@@ -66,7 +66,8 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Seguridad:** `verificar_admin()` decodifica JWT, consulta `perfiles.rol` con `service_role`, rechaza con 403 si no es admin.
 - **Validación:** Esquemas Pydantic (`ProductoCreate`, `CODRequest`, `CarritoAddItem`, etc.).
 - **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend. El carrito usa `authenticated` + RLS para que el frontend pueda hacer CRUD directo.
-- **Variantes:** Tabla `variantes_producto` con talla, color, talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional. CRUD completo en `routes/variantes.py`. Auto-resuelve talla_id/color_id desde texto. GET /api/productos/{id} incluye variantes. Carrito y checkout con soporte de variante_id.
+- **Variantes:** Tabla `variantes_producto` con nombre_variante, tipo_variante, color, talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional. CRUD completo en `routes/variantes.py`. Auto-resuelve talla_id/color_id desde texto. Auto-detecta tipo_variante por categoría (volumen para Perfume/Decant). GET /api/productos/{id} incluye variantes. Carrito y checkout con soporte de variante_id.
+- **Opciones de ml:** Tabla `opciones_ml` con FK a categorías, ml configurables desde admin CRUD. Reemplaza hardcode anterior de PERFUME_CAT_ID/DECANT_CAT_ID.
 - **Email:** Servicio Resend (migrado desde SendGrid por bloqueo de cuenta Twilio) en `services/email.py` con 3 templates HTML inline (orden creada, cambio estado, cancelación). Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
 - **Estandarización:** Lookup tables `tallas` y `colores` con CRUD admin. Selectores en formularios de producto.
 - **Endpoints activos:**
@@ -108,6 +109,11 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
   - `POST /api/colores` — Crear color (admin)
   - `PUT /api/colores/{id}` — Actualizar color (admin)
   - `DELETE /api/colores/{id}` — Eliminar color (admin)
+  - `GET /api/opciones-ml?categoria_id=:id` — Listar opciones de ml (público, con filtro opcional)
+  - `GET /api/opciones-ml/{categoria_id}` — Opciones de ml por categoría (público)
+  - `POST /api/opciones-ml` — Crear opción de ml (admin)
+  - `PUT /api/opciones-ml/{id}` — Actualizar opción de ml (admin)
+  - `DELETE /api/opciones-ml/{id}` — Eliminar opción de ml (admin)
   - `GET /` y `GET /health` — Health check
 
 ---
@@ -200,7 +206,8 @@ colores (
 variantes_producto (
     id SERIAL PK,
     producto_id INT → productos(id) ON DELETE CASCADE,
-    talla VARCHAR(10),
+    nombre_variante VARCHAR(50),  -- Renamed from talla; stores "S", "50ml", etc.
+    tipo_variante VARCHAR(20) DEFAULT 'talla',  -- 'talla', 'volumen', 'color_solo'
     color VARCHAR(50),
     talla_id INT → tallas(id) ON DELETE SET NULL,
     color_id INT → colores(id) ON DELETE SET NULL,
@@ -208,7 +215,16 @@ variantes_producto (
     precio_adicional DECIMAL(10,2) DEFAULT 0,
     imagen_url TEXT,
     creado_en TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE INDEX ON (producto_id, COALESCE(talla,''), COALESCE(color,''))
+    UNIQUE INDEX ON (producto_id, COALESCE(nombre_variante,''), COALESCE(color,''))
+)
+
+opciones_ml (
+    id SERIAL PK,
+    categoria_id INT → categorias(id) ON DELETE CASCADE,
+    ml INT NOT NULL,
+    orden INT DEFAULT 0,
+    creado_en TIMESTAMPTZ DEFAULT NOW(),
+    INDEX ON (categoria_id)
 )
 
 ordenes (
@@ -309,6 +325,8 @@ on_auth_user_created AFTER INSERT ON auth.users
       │
       ├── (WhatsApp) ──────────────────────────> Cliente abre wa.me
       │
+      ├── (Opciones ml dinámicas) ──────────────> FastAPI /api/opciones-ml → Supabase DB
+      │
       └── (Contra Entrega / Admin CRUD) ───────> FastAPI (Render)
                                                        │
                                                        └── (CRUD) ──> Supabase DB
@@ -389,3 +407,10 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Admin edición inline categorías/puntos de entrega | ✅ |
 | Admin confirmación modal al eliminar productos | ✅ |
 | WhatsApp botón generador de mensaje en carrito | ✅ |
+| Renombrar talla → nombre_variante (DB + backend + frontend) | ✅ |
+| Agregar tipo_variante ('talla'|'volumen'|'color_solo') | ✅ |
+| Tabla opciones_ml con CRUD admin | ✅ |
+| API dinámica de ml options (no hardcode) | ✅ |
+| Auto-detección tipo_variante por categoría | ✅ |
+| Admin CRUD opciones-ml (nuevo componente) | ✅ |
+| Variant form mobile-first responsive | ✅ |

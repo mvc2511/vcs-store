@@ -1,6 +1,6 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-20
+**Última actualización:** 2026-05-21
 
 ## 🎯 Próximo paso inmediato
 Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
@@ -28,7 +28,8 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] Admin forzado: marianovc251@gmail.com
 - [x] Row Level Security configurado (3 roles: anon, authenticated, service_role)
 - [x] Storage bucket productos con políticas de subida/lectura
-- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores)
+- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores, opciones-ml, rename talla→nombre_variante)
+- [ ] Aplicar migration de rename en Supabase (ver database.sql sección 10) antes de deploy
 
 ### Frontend — Navegación y Layout
 - [x] Arquitectura Standalone con Signals
@@ -104,6 +105,7 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] CRUD completo colores (GET público, POST/PUT/DELETE admin)
 - [x] CRUD completo carrito (GET/POST/PUT/DELETE autenticado)
 - [x] Variantes auto-resuelve talla_id/color_id desde texto
+- [x] Variantes: corregir crash maybe_single() → execute() en _resolver_talla_id/_resolver_color_id
 - [x] POST /api/checkout/cod (crear orden COD: punto entrega + teléfono + fecha/hora + stock validation + user_email)
 - [x] GET /api/admin/ordenes (listar con filtro estado — incluye user_email, fecha/hora)
 - [x] GET /api/admin/ordenes/{id} (detalle orden admin)
@@ -135,6 +137,7 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id. 3-5 días.
 - [x] **1.2b Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores`, FK desde variantes_producto, CRUD admin, selects en formulario.
 - [x] **1.2c Corrección doble stock** — Stock producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe.
+- [x] **1.2d Modelo de datos mejorado** — Renombrar `talla` → `nombre_variante`, agregar `tipo_variante` (talla/volumen/color_solo), crear tabla `opciones_ml` con CRUD admin, eliminar hardcode ml del frontend, api dinámica, auto-detección tipo_variante por categoría.
 - [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro categoría, frontend ProductService con "Ver más".
 - [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito + advertencia + botones checkout deshabilitados.
 
@@ -170,7 +173,9 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `productos` — id (SERIAL PK), nombre, descripcion, precio (DECIMAL), imagen_url, stock, categoria_id (FK→categorias), creado_en
 - `tallas` — id (SERIAL PK), nombre (UNIQUE), orden (INT), creado_en
 - `colores` — id (SERIAL PK), nombre (UNIQUE), hex (VARCHAR), creado_en
-- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), talla (VARCHAR), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(talla,'') + COALESCE(color,''))
+- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), nombre_variante (VARCHAR, renamed from talla), tipo_variante (VARCHAR, 'talla'|'volumen'|'color_solo'), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(nombre_variante,'') + COALESCE(color,''))
+- `opciones_ml` — id (SERIAL PK), categoria_id (FK→categorias), ml (INT), orden (INT), creado_en
+- `opciones_ml` — id (SERIAL PK), categoria_id (FK→categorias), ml (INT), orden (INT), creado_en
 - `ordenes` — id (SERIAL PK), user_id (UUID), user_email, total (DECIMAL), estado (orden_estado), punto_entrega_id (FK), telefono_contacto, fecha_entrega (DATE), hora_entrega (VARCHAR), stripe_session_id (nullable), creado_en, updated_at
 - `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), variante_id (FK→variantes_producto SET NULL), cantidad (INT), precio_unitario (DECIMAL)
 - `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), variante_id (FK→variantes_producto CASCADE), cantidad (INT CHECK >0), created_at, updated_at
@@ -183,6 +188,7 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - productos: SELECT público (anon)
 - tallas: SELECT público (anon)
 - colores: SELECT público (anon)
+- opciones_ml: SELECT público (anon)
 - puntos_entrega: SELECT público (anon)
 - ordenes: SELECT solo propias (authenticated, auth.uid() = user_id)
 - detalles_orden: protegido por RLS por defecto

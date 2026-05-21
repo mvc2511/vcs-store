@@ -83,7 +83,7 @@ async def crear_orden_cod(
         if item.variante_id is not None:
             var_resp = (
                 supabase_admin.table("variantes_producto")
-                .select("precio_adicional, talla, color")
+                .select("precio_adicional, nombre_variante, tipo_variante, color")
                 .eq("id", item.variante_id)
                 .single()
                 .execute()
@@ -91,14 +91,18 @@ async def crear_orden_cod(
             if var_resp.data:
                 precio_adicional = var_resp.data["precio_adicional"]
                 partes = []
-                if var_resp.data.get("talla"):
-                    partes.append(f'Talla {var_resp.data["talla"]}')
+                if var_resp.data.get("nombre_variante"):
+                    tipo = var_resp.data.get("tipo_variante", "talla")
+                    if tipo == "volumen":
+                        partes.append(var_resp.data["nombre_variante"])
+                    else:
+                        partes.append(f'Talla {var_resp.data["nombre_variante"]}')
                 if var_resp.data.get("color"):
                     partes.append(var_resp.data["color"])
                 variante_text = " — " + " / ".join(partes)
                 variantes_info[item.producto_id] = {
                     "variante_text": variante_text,
-                    "talla": var_resp.data.get("talla"),
+                    "nombre_variante": var_resp.data.get("nombre_variante"),
                     "color": var_resp.data.get("color"),
                 }
         precio_total = prod["precio"] + precio_adicional
