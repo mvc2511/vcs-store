@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Producto } from '../models/product.model';
+import { Producto, Variante } from '../models/product.model';
 import { from, Observable } from 'rxjs';
 import { environment } from '../../../environments/environments';
 
@@ -27,7 +27,7 @@ export class SupabaseService {
     );
   }
 
-  private mapProducto(raw: ProductoFromDB): Producto {
+  private mapProducto(raw: ProductoFromDB, variantes?: Variante[]): Producto {
     return {
       id: raw.id,
       nombre: raw.nombre,
@@ -36,6 +36,7 @@ export class SupabaseService {
       imagen_url: raw.imagen_url,
       descripcion: raw.descripcion,
       categoria: raw.categorias.nombre,
+      variantes,
     };
   }
 
@@ -72,17 +73,46 @@ export class SupabaseService {
 
   getProductById(id: number): Observable<Producto | null> {
     return from(
-      this.supabase
-        .from('productos')
-        .select('id, nombre, precio, stock, imagen_url, descripcion, categorias!inner(nombre)')
-        .eq('id', id)
-        .single()
-        .then(({ data, error }) => {
-          if (error) throw error;
-          return data
-            ? this.mapProducto(data as unknown as ProductoFromDB)
-            : null;
-        })
+      (async () => {
+        const { data, error } = await this.supabase
+          .from('productos')
+          .select('id, nombre, precio, stock, imagen_url, descripcion, categorias!inner(nombre)')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+        if (!data) return null;
+
+        const producto = this.mapProducto(data as unknown as ProductoFromDB);
+
+        const { data: variantes } = await this.supabase
+          .from('variantes_producto')
+          .select('*')
+          .eq('producto_id', id)
+          .order('id');
+
+        if (variantes && variantes.length > 0) {
+          producto.variantes = variantes as Variante[];
+        }
+
+        return producto;
+      })()
     );
+  }
+
+  async getPerfil(userId: string): Promise<{ data: { nombre: string } | null }> {
+    return this.supabase
+      .from('perfiles')
+      .select('nombre')
+      .eq('id', userId)
+      .maybeSingle();
+  }
+
+  async actualizarNombre(userId: string, nombre: string): Promise<{ error: any }> {
+    const { error } = await this.supabase
+      .from('perfiles')
+      .update({ nombre })
+      .eq('id', userId);
+    return { error };
   }
 }

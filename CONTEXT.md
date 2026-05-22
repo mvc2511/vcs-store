@@ -1,6 +1,6 @@
-# 🗺️ Contexto de Arquitectura y Estado del Proyecto: VC'S Store
+# 🗺️ Contexto de Arquitectura y Estado del Proyecto: VYRO
 
-Fuente única de verdad sobre el estado técnico, arquitectónico y operativo del proyecto **VC'S Store** (E-Commerce MVP de prendas de ropa). Diseñado para contextualizar a agentes de IA y desarrolladores.
+Fuente única de verdad sobre el estado técnico, arquitectónico y operativo del proyecto **VYRO** (E-commerce de ropa, perfumes y electrónicos al mayoreo/granel). Diseñado para contextualizar a agentes de IA y desarrolladores.
 
 ---
 
@@ -11,7 +11,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | **Frontend** | Angular 18 (Standalone, Signals, Lazyloading) | Netlify | Estructura robusta, estado reactivo con Signals, lazy loading nativo |
 | **Backend** | Python 3.11+ / FastAPI (Docker) | Render | Alto rendimiento asíncrono, validación Pydantic, autodocumentación Swagger |
 | **BBDD & Auth** | PostgreSQL + Supabase Auth | Supabase | DB relacional, Auth listo, Storage para imágenes, RLS nativo |
-| **Pagos** | ~~Stripe~~ (Suspendido) → WhatsApp + Contra Entrega | N/A | Modelo de negocio alternativo sin pasarela |
+| **Pagos** | ~~Stripe~~ (Suspendido permanentemente) → WhatsApp + Contra Entrega | N/A | Modelo de negocio definitivo sin pasarela |
 | **Orquestación** | Docker Compose (dev + prod) | N/A | Un solo comando para backend + frontend |
 
 ---
@@ -22,20 +22,24 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Backend stateless:** FastAPI asíncrono, procesamiento multimedia delegado al cliente.
 - **Seguridad en base de datos:** Row Level Security (RLS) como escudo perimetral, RBAC vía trigger en `auth.users`.
 - **Mínimo Privilegio:** Tres roles segmentados — `anon` (lectura pública), `authenticated` (lectura propia/escritura carrito), `service_role` (escritura backend).
-- **Mobile-first:** Todos los componentes responsivos con breakpoints en 767px y 500px.
+- **Mobile-first:** Todos los componentes responsivos con breakpoints en 767px y 500px. Admin forms (variantes, opciones-ml) stack verticalmente en mobile.
 - **Diseño homogéneo:** Mismo tema claro para clientes y admin.
+- **Diseño visual:** Guiado por `VYRO-REDESIGN.md` (paleta monocromática + champagne, tipografía Space Grotesk + Inter, minimalismo urbano editorial).
 
 ---
 
 ## 3. Frontend (Angular 18)
 
 - **Gestión de estado:** Signals en AuthService para propagar sesión y roles. Signals en CartService con modo híbrido (API si logueado, localStorage si no).
-- **Carrito persistente:** Sincronizado con backend via `/api/carrito`. Merge modal al login si hay conflicto local vs servidor.
+- **Carrito persistente:** Sincronizado con backend via `/api/carrito`. Merge modal al login si hay conflicto local vs servidor. Token de sesión se setea antes de señal isLoggedIn para evitar race condition. Timeout de polling aumentado a 3s.
 - **Rutas protegidas:** `AdminGuard` + `AuthGuard` (CanActivateFn) para zonas administrativas y checkout.
 - **Lazy loading:** Todas las rutas cargan asíncronamente.
 - **Upload de imágenes:** Preview local con FileReader, subida a Storage diferida al submit del formulario (evita basura en bucket).
 - **Consumo de APIs:** JWT de Supabase en header `Authorization: Bearer <token>`.
-- **Responsive:** Navbar con hamburger menu en mobile, tablas se convierten a cards, grids colapsan a 1 columna.
+- **SEO:** JSON-LD LocalBusiness con datos reales (teléfono, área de servicio Chapa de Mota/Jilotepec/San Andrés), Open Graph, Twitter Cards, canonical URLs dinámicas, sitemap.xml con 8 URLs, robots.txt optimizado. SeoService con siteName "VYRO" y descripciones local-SEO.
+
+**Responsive:** Navbar con hamburger menu en mobile (incluye búsqueda), tablas se convierten a cards, grids colapsan a 1 columna. Navbar desktop: sin barra de búsqueda (solo en home sticky), link "Mi Perfil" visible si logueado, avatar clickable a perfil.
+- **Footer:** Footer pegajoso con logo VYRO, zonas de entrega (Chapa de Mota, Jilotepec, San Andrés), WhatsApp 55 2298 8741, y links legales (/privacidad, /terminos).
 
 ### Rutas actuales
 
@@ -45,9 +49,11 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/producto/:id` | ProductDetailComponent | - |
 | `/cart` | CartComponent (fecha/hora entrega) | - |
 | `/login` | LoginComponent (soporta ?returnUrl) | - |
+| `/privacidad` | PrivacidadComponent | - |
+| `/terminos` | TerminosComponent | - |
 | `/mis-pedidos` | MisPedidosComponent (historial + cancelar + fecha/hora + barra progreso) | AuthGuard |
 | `/success` | SuccessComponent (resumen completo con productos y entrega) | AuthGuard |
-| `/perfil` | PerfilComponent (editar nombre, cambiar contraseña) | AuthGuard |
+| `/perfil` | PerfilComponent (editar nombre, cambiar contraseña, avatar) | AuthGuard |
 | `/admin` | AdminLayoutComponent → redirect a /admin/productos | AdminGuard |
 | `/admin/productos` | AdminProductosComponent (lista con editar/eliminar) | AdminGuard |
 | `/admin/productos/nuevo` | ProductoFormComponent (crear) | AdminGuard |
@@ -55,6 +61,11 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/admin/ordenes` | AdminOrdenesComponent (dashboard + estado + editar fecha/hora) | AdminGuard |
 | `/admin/categorias` | CategoriasComponent (CRUD con edición inline) | AdminGuard |
 | `/admin/puntos-entrega` | PuntosEntregaComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/tallas` | TallasComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/colores` | ColoresComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/cupones` | CuponesComponent (CRUD con edición inline) | AdminGuard |
+| `/admin/precios-mayoreo` | PreciosMayoreoComponent (CRUD) | AdminGuard |
+| `/favoritos` | FavoritosComponent (grid de favoritos) | AuthGuard |
 
 ---
 
@@ -63,9 +74,13 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Seguridad:** `verificar_admin()` decodifica JWT, consulta `perfiles.rol` con `service_role`, rechaza con 403 si no es admin.
 - **Validación:** Esquemas Pydantic (`ProductoCreate`, `CODRequest`, `CarritoAddItem`, etc.).
 - **Persistencia:** Cliente Supabase con `service_role` para escritura aislada del frontend. El carrito usa `authenticated` + RLS para que el frontend pueda hacer CRUD directo.
+- **Variantes:** Tabla `variantes_producto` con nombre_variante, tipo_variante, color, talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional. CRUD completo en `routes/variantes.py`. Auto-resuelve talla_id/color_id desde texto. Auto-detecta tipo_variante por categoría (volumen para Perfume/Decant). GET /api/productos/{id} incluye variantes. Carrito y checkout con soporte de variante_id.
+- **Opciones de ml:** Tabla `opciones_ml` con FK a categorías, ml configurables desde admin CRUD. Reemplaza hardcode anterior de PERFUME_CAT_ID/DECANT_CAT_ID.
+- **Email:** Servicio Resend (migrado desde SendGrid por bloqueo de cuenta Twilio) en `services/email.py` con 3 templates HTML inline (orden creada, cambio estado, cancelación). Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
+- **Estandarización:** Lookup tables `tallas` y `colores` con CRUD admin. Selectores en formularios de producto.
 - **Endpoints activos:**
-  - `GET /api/productos?search=:query` — Listar productos (búsqueda por nombre)
-  - `GET /api/productos/{id}` — Obtener producto por ID
+  - `GET /api/productos?search=&categoria_id=&sort_by=&sort_order=&limit=&offset=` — Listar productos paginados
+  - `GET /api/productos/{id}` — Obtener producto por ID (incluye variantes)
   - `POST /api/productos` — Crear producto (admin)
   - `PUT /api/productos/{id}` — Actualizar producto (admin)
   - `DELETE /api/productos/{id}` — Eliminar producto (admin)
@@ -89,7 +104,45 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
   - `PUT /api/admin/ordenes/{id}` — Editar fecha/hora entrega (admin)
   - `GET /api/mis-ordenes` — Órdenes del usuario autenticado
   - `PUT /api/mis-ordenes/{id}/cancelar` — Cancelar orden si pendiente
-  - `GET /` y `GET /health` — Health check
+  - `GET /api/variantes/producto/{id}` — Listar variantes (público)
+  - `POST /api/variantes` — Crear variante (admin)
+  - `PUT /api/variantes/{id}` — Actualizar variante (admin)
+  - `DELETE /api/variantes/{id}` — Eliminar variante (admin)
+  - `POST /api/variantes/generate` — Generar combinaciones talla×color (admin)
+  - `GET /api/tallas` — Listar tallas (público, ordenado por `orden`)
+  - `POST /api/tallas` — Crear talla (admin)
+  - `PUT /api/tallas/{id}` — Actualizar talla (admin)
+  - `DELETE /api/tallas/{id}` — Eliminar talla (admin)
+  - `GET /api/colores` — Listar colores (público)
+  - `POST /api/colores` — Crear color (admin)
+  - `PUT /api/colores/{id}` — Actualizar color (admin)
+  - `DELETE /api/colores/{id}` — Eliminar color (admin)
+  - `GET /api/opciones-ml?categoria_id=:id` — Listar opciones de ml (público, con filtro opcional)
+  - `GET /api/opciones-ml/{categoria_id}` — Opciones de ml por categoría (público)
+  - `POST /api/opciones-ml` — Crear opción de ml (admin)
+  - `PUT /api/opciones-ml/{id}` — Actualizar opción de ml (admin)
+   - `DELETE /api/opciones-ml/{id}` — Eliminar opción de ml (admin)
+   - `GET /api/favoritos` — Listar favoritos (autenticado)
+   - `POST /api/favoritos` — Agregar favorito (autenticado)
+   - `DELETE /api/favoritos/{id}` — Eliminar favorito (autenticado)
+   - `GET /api/favoritos/check?producto_id=X` — Verificar si es favorito (autenticado)
+   - `GET /api/productos/{id}/resenas` — Listar reseñas (público)
+   - `POST /api/productos/{id}/resenas` — Crear reseña (autenticado, requiere compra)
+   - `PUT /api/resenas/{id}` — Editar reseña (autenticado, propia)
+   - `DELETE /api/resenas/{id}` — Eliminar reseña (autenticado, propia)
+   - `GET /api/productos/{id}/resenas/mi-resena` — Mi reseña (autenticado)
+   - `GET /api/cupones` — Listar cupones (admin)
+   - `POST /api/cupones` — Crear cupón (admin)
+   - `PUT /api/cupones/{id}` — Actualizar cupón (admin)
+   - `DELETE /api/cupones/{id}` — Eliminar cupón (admin)
+   - `POST /api/cupones/validar` — Validar código cupón (autenticado)
+   - `GET /api/precios-mayoreo?producto_id=&categoria_id=` — Listar precios mayoreo (público)
+   - `POST /api/admin/precios-mayoreo` — Crear precio mayoreo (admin)
+   - `PUT /api/admin/precios-mayoreo/{id}` — Actualizar precio mayoreo (admin)
+   - `DELETE /api/admin/precios-mayoreo/{id}` — Eliminar precio mayoreo (admin)
+   - `GET /api/admin/stock-bajo?umbral=10` — Alertas stock bajo (admin)
+   - `GET /api/admin/productos?search=&categoria_id=&sort_by=&sort_order=&limit=&offset=` — Listar productos sin filtro visible (admin, incluye ocultos)
+   - `GET /` y `GET /health` — Health check
 
 ---
 
@@ -164,6 +217,44 @@ productos (
     creado_en TIMESTAMPTZ DEFAULT NOW()
 )
 
+tallas (
+    id SERIAL PK,
+    nombre VARCHAR(20) UNIQUE NOT NULL,
+    orden INT DEFAULT 0,
+    creado_en TIMESTAMPTZ DEFAULT NOW()
+)
+
+colores (
+    id SERIAL PK,
+    nombre VARCHAR(50) UNIQUE NOT NULL,
+    hex VARCHAR(7),
+    creado_en TIMESTAMPTZ DEFAULT NOW()
+)
+
+variantes_producto (
+    id SERIAL PK,
+    producto_id INT → productos(id) ON DELETE CASCADE,
+    nombre_variante VARCHAR(50),  -- Renamed from talla; stores "S", "50ml", etc.
+    tipo_variante VARCHAR(20) DEFAULT 'talla',  -- 'talla', 'volumen', 'color_solo'
+    color VARCHAR(50),
+    talla_id INT → tallas(id) ON DELETE SET NULL,
+    color_id INT → colores(id) ON DELETE SET NULL,
+    stock INT DEFAULT 0,
+    precio_adicional DECIMAL(10,2) DEFAULT 0,
+    imagen_url TEXT,
+    creado_en TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE INDEX ON (producto_id, COALESCE(nombre_variante,''), COALESCE(color,''))
+)
+
+opciones_ml (
+    id SERIAL PK,
+    categoria_id INT → categorias(id) ON DELETE CASCADE,
+    ml INT NOT NULL,
+    orden INT DEFAULT 0,
+    creado_en TIMESTAMPTZ DEFAULT NOW(),
+    INDEX ON (categoria_id)
+)
+
 ordenes (
     id SERIAL PK,
     user_id UUID NOT NULL,
@@ -183,6 +274,7 @@ detalles_orden (
     id SERIAL PK,
     orden_id INT → ordenes(id) ON DELETE CASCADE,
     producto_id INT → productos(id) ON DELETE SET NULL,
+    variante_id INT → variantes_producto(id) ON DELETE SET NULL,
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10,2) NOT NULL
 )
@@ -191,9 +283,56 @@ carrito (
     id SERIAL PK,
     user_id UUID NOT NULL,
     producto_id INT → productos(id) ON DELETE CASCADE,
+    variante_id INT → variantes_producto(id) ON DELETE CASCADE,
     cantidad INT NOT NULL CHECK (cantidad > 0),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
+)
+
+resenas (
+    id SERIAL PK,
+    producto_id INT → productos(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL,
+    puntuacion INT NOT NULL CHECK (puntuacion >= 1 AND puntuacion <= 5),
+    comentario TEXT,
+    anonima BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (producto_id, user_id)
+)
+
+favoritos (
+    id SERIAL PK,
+    user_id UUID NOT NULL,
+    producto_id INT → productos(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (user_id, producto_id)
+)
+
+cupones (
+    id SERIAL PK,
+    codigo VARCHAR(50) UNIQUE NOT NULL,
+    tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('porcentaje', 'fijo')),
+    valor DECIMAL(10,2) NOT NULL,
+    minimo_compra DECIMAL(10,2) DEFAULT 0,
+    usos_maximos INT,
+    usos_actuales INT DEFAULT 0,
+    fecha_expiracion TIMESTAMPTZ,
+    activo BOOLEAN DEFAULT TRUE,
+    producto_id INT → productos(id) ON DELETE SET NULL,
+    categoria_id INT → categorias(id) ON DELETE SET NULL
+)
+
+precios_mayoreo (
+    id SERIAL PK,
+    producto_id INT → productos(id) ON DELETE CASCADE,
+    categoria_id INT → categorias(id) ON DELETE CASCADE,
+    cantidad_minima INT NOT NULL CHECK (cantidad_minima >= 2),
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    CHECK (
+        (producto_id IS NOT NULL AND categoria_id IS NULL)
+        OR
+        (producto_id IS NULL AND categoria_id IS NOT NULL)
+    )
 )
 ```
 
@@ -212,11 +351,17 @@ on_auth_user_created AFTER INSERT ON auth.users
 | `perfiles` | SELECT libre (necesario para AuthService) | anon, authenticated |
 | `categorias` | SELECT libre | anon |
 | `productos` | SELECT libre | anon |
+| `variantes_producto` | SELECT libre | anon |
 | `puntos_entrega` | SELECT libre | anon |
 | `ordenes` | SELECT solo propias (`auth.uid() = user_id`) | authenticated |
 | `ordenes` | SELECT todas (para service_role) | service_role |
 | `detalles_orden` | (Sin política explícita, protegida por RLS por defecto) | - |
 | `carrito` | SELECT/INSERT/UPDATE/DELETE solo propias (`auth.uid() = user_id`) | authenticated |
+| `resenas` | SELECT libre | anon |
+| `resenas` | SELECT/INSERT/UPDATE/DELETE solo propias (`auth.uid() = user_id`) | authenticated |
+| `favoritos` | SELECT/INSERT/DELETE solo propias (`auth.uid() = user_id`) | authenticated |
+| `cupones` | SELECT libre | anon |
+| `precios_mayoreo` | SELECT libre | anon |
 
 ### 6.4. Matriz de Privilegios
 
@@ -224,17 +369,26 @@ on_auth_user_created AFTER INSERT ON auth.users
 - SELECT en perfiles (verificar admin)
 - SELECT, INSERT, DELETE en categorias + secuencia
 - SELECT, INSERT, UPDATE en productos + secuencia
+- SELECT, INSERT, UPDATE, DELETE en variantes_producto + secuencia
 - SELECT, INSERT, UPDATE en ordenes + secuencia
 - SELECT, INSERT en detalles_orden + secuencia
 - SELECT, INSERT, UPDATE, DELETE en puntos_entrega + secuencia
 - SELECT, INSERT, UPDATE, DELETE en carrito + secuencia
+- SELECT, INSERT, UPDATE, DELETE en resenas + secuencia
+- SELECT, INSERT, DELETE en favoritos + secuencia
+- SELECT, INSERT, UPDATE, DELETE en cupones + secuencia
+- SELECT, INSERT, UPDATE, DELETE en precios_mayoreo + secuencia
 
 **anon** (Frontend - navegación pública):
-- SELECT en categorias, productos, perfiles, puntos_entrega
+- SELECT en categorias, productos, variantes_producto, perfiles, puntos_entrega
+- SELECT en resenas, favoritos, cupones, precios_mayoreo
 
 **authenticated** (Frontend - sesión activa):
-- SELECT en perfiles, puntos_entrega
+- SELECT en perfiles, puntos_entrega, variantes_producto
 - SELECT, INSERT, UPDATE, DELETE en carrito + secuencia
+- SELECT, INSERT, UPDATE, DELETE en resenas + secuencia
+- SELECT, INSERT, DELETE en favoritos + secuencia
+- SELECT en cupones, precios_mayoreo
 
 ### 6.5. Storage (Bucket `productos`)
 
@@ -258,12 +412,14 @@ on_auth_user_created AFTER INSERT ON auth.users
       │
       ├── (WhatsApp) ──────────────────────────> Cliente abre wa.me
       │
+      ├── (Opciones ml dinámicas) ──────────────> FastAPI /api/opciones-ml → Supabase DB
+      │
       └── (Contra Entrega / Admin CRUD) ───────> FastAPI (Render)
                                                        │
                                                        └── (CRUD) ──> Supabase DB
 ```
 
-**Stripe queda suspendido** — el código existe en `checkout.py` y `webhooks.py` pero con columnas que no corresponden al schema actual. Si se reactiva, requiere corregir nombres de columnas.
+**Stripe queda suspendido permanentemente** — el código existe en `checkout.py` y `webhooks.py` pero con columnas que no corresponden al schema actual. WhatsApp + Contra Entrega es el modelo de pago definitivo, no hay planes de reactivarlo.
 
 ---
 
@@ -273,6 +429,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 |---------|--------|
 | Infraestructura Supabase (DB, Auth, Storage, RLS) | ✅ |
 | Tabla puntos_entrega + seed 6 puntos | ✅ |
+| Tablas tallas (7) + colores (15) + seed | ✅ |
 | Tabla carrito con RLS | ✅ |
 | Columnas user_email, fecha_entrega, hora_entrega en ordenes | ✅ |
 | ENUM orden_estado (6 estados) | ✅ |
@@ -283,6 +440,7 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Cart merge modal (local vs servidor al login) | ✅ |
 | Login con Google OAuth + Email/Password | ✅ |
 | Login: returnUrl post-auth | ✅ |
+| Perfil con avatar upload + cambiar contraseña | ✅ |
 | Guards de autenticación y admin | ✅ |
 | Admin CRUD productos (listar/crear/editar/eliminar) | ✅ |
 | Admin CRUD categorías (listar/crear/editar/eliminar) | ✅ |
@@ -301,9 +459,62 @@ on_auth_user_created AFTER INSERT ON auth.users
 | Admin órdenes: muestra user_email + fecha/hora entrega | ✅ |
 | Historial de pedidos del cliente + cancelación + fecha/hora entrega | ✅ |
 | Búsqueda de productos (client-side) | ✅ |
+| Servicio de email Resend (services/email.py) — migrado desde SendGrid | ✅ |
+| Email: notificación orden creada en checkout.py | ✅ |
+| Email: notificación cambio estado en admin_ordenes.py | ✅ |
+| Email: notificación cancelación en mis_ordenes.py | ✅ |
 | Docker Compose (backend + frontend) | ✅ |
 | Frontend multi-stage Dockerfile (node → nginx) | ✅ |
 | Migraciones idempotentes (puntos-entrega, carrito-entrega) | ✅ |
-| Login Google + Email combinado | ⏳ Pendiente |
-| Stripe (Checkout + Webhooks) | ❌ Suspendido |
+| Login Google + Email combinado | ✅ |
+| Stripe (Checkout + Webhooks) | ⛔ Suspendido permanentemente (WhatsApp + COD es modelo definitivo) |
 | Despliegue (Netlify + Render) | ✅ Completado |
+| Navbar search duplicado eliminado (solo queda sticky home search) | ✅ |
+| Product-detail compacto (max-width 1000px, fuentes reducidas) | ✅ |
+| Product-cards compactos (4/5 aspect, grid minmax 240px, padding reducido) | ✅ |
+| Carrito DB persistente (race condition token corregida, timeout 3s) | ✅ |
+| Rediseño Login VYRO (password strength, Google OAuth, alerts) | ✅ |
+| Rediseño Mis Pedidos VYRO (progress tracker animado, badges) | ✅ |
+| Rediseño Cart VYRO (editorial grid, payment methods hierarchy) | ✅ |
+| Variantes de producto (tabla variantes_producto + CRUD backend) | ✅ |
+| Variantes: selector en product-detail (talla pills + color pills) | ✅ |
+| Variantes: carrito con clave compuesta (producto_id + variante_id) | ✅ |
+| Variantes: checkout con variante_id (stock validation + precio) | ✅ |
+| Variantes: admin inline editor (agregar, generar combinaciones) | ✅ |
+| Toast Service + Container (4 tipos, SVG icons, slideIn animation) | ✅ |
+| Animaciones globales (_animations.scss: fadeIn, slideUp, stagger, shimmer) | ✅ |
+| Sistema de diseño VYRO (_variables, _typography, _components, _mixins) | ✅ |
+| Search bar + chips layout fijo sticky en home | ✅ |
+| Signup completo (nombre, confirmar contraseña, términos) | ✅ |
+| Columna `nombre` en perfiles + trigger actualizado | ✅ |
+| Navbar: link Mi Perfil + avatar clickable | ✅ |
+| Subida de imagen diferida al submit (UploadImage) | ✅ |
+| Ordenar productos por precio (menor→mayor, mayor→menor) | ✅ |
+| Diseño homogéneo claro (admin y clientes mismo tema light) | ✅ |
+| Admin edición inline categorías/puntos de entrega | ✅ |
+| Admin confirmación modal al eliminar productos | ✅ |
+| WhatsApp botón generador de mensaje en carrito | ✅ |
+| Renombrar talla → nombre_variante (DB + backend + frontend) | ✅ |
+| Agregar tipo_variante ('talla'|'volumen'|'color_solo') | ✅ |
+| Tabla opciones_ml con CRUD admin | ✅ |
+| API dinámica de ml options (no hardcode) | ✅ |
+| Auto-detección tipo_variante por categoría | ✅ |
+| Admin CRUD opciones-ml (nuevo componente) | ✅ |
+| Variant form mobile-first responsive | ✅ |
+| Reseñas y Valoraciones (verificación compra, anónimas) | ✅ |
+| Wishlist / Favoritos (solo DB, Signals) | ✅ |
+| Cupones de descuento (códigos + CRUD admin) | ✅ |
+| Precios Mayoreo por producto/categoría | ✅ |
+| Control de visibilidad de productos (columna `visible`) | ✅ |
+| Alertas Stock Bajo (admin badge con count) | ✅ |
+| Fix maybe_single() → limit(1) en favoritos y resenas (backend 500) | ✅ |
+| Fix cupon validación 422 (payload completo) + descuento mal calculado | ✅ |
+| Fix resenas 500 (perfiles join sin FK → query separada) | ✅ |
+| Fix favoritos DELETE por producto_id, response aplanado a Producto[] | ✅ |
+| Admin endpoint GET /api/admin/productos (sin filtro visible) | ✅ |
+| Variantes inline editing en admin producto-form | ✅ |
+| WhatsApp button en product-detail (cuando stock total = 0) | ✅ |
+| Wishlist heart en product-detail (solo logueados) | ✅ |
+| Home filter bar mobile (chips nowrap, sort reducido) | ✅ |
+| Docker entrypoint.sh CRLF→LF fix | ✅ |
+| Product-detail VYRO redesign: stock bar, specs grid, editorial spacing | ✅ |

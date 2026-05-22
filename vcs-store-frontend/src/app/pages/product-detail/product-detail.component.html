@@ -13,39 +13,180 @@
       <div class="detail-gallery">
         <img [src]="p.imagen_url" [alt]="p.nombre" class="detail-image" loading="lazy" />
       </div>
+
       <div class="detail-info">
         <span class="detail-category">{{ p.categoria }}</span>
         <h1 class="detail-name">{{ p.nombre }}</h1>
 
         <div class="detail-price-row">
-          <span class="detail-price">{{ p.precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-          <span class="detail-stock" [class.low-stock]="p.stock <= 5">
-            {{ p.stock > 0 ? (p.stock <= 5 ? 'Últimas ' + p.stock + ' unidades' : 'En stock') : 'Agotado' }}
-          </span>
+          <span class="detail-price">{{ precioActual() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          <button *ngIf="authService.isLoggedIn()" class="wishlist-btn" (click)="toggleWishlist()" [attr.aria-label]="isFavorited() ? 'Quitar de favoritos' : 'Agregar a favoritos'" [title]="isFavorited() ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" [attr.fill]="isFavorited() ? 'currentColor' : 'none'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Stock Indicator Bar -->
+        <div class="stock-bar-wrap" *ngIf="!showWhatsApp()">
+          <div class="stock-bar">
+            <div class="stock-bar-fill" [class]="stockBarClass()" [style.width.%]="stockBarPercent()"></div>
+          </div>
+          <span class="stock-bar-label" [class]="stockClass()">{{ stockText() }}</span>
+        </div>
+        <div class="stock-bar-wrap out" *ngIf="showWhatsApp()">
+          <span class="stock-bar-label out-of-stock">Agotado</span>
         </div>
 
         <p class="detail-description">{{ p.descripcion }}</p>
 
-        <div class="selector-group">
-          <label class="selector-label">Cantidad</label>
-          <div class="cantidad-control">
-            <button (click)="cantidad.set(Math.max(1, cantidad() - 1))">-</button>
-            <span>{{ cantidad() }}</span>
-            <button (click)="cantidad.set(cantidad() + 1)">+</button>
+        <!-- Specs Grid -->
+        <div class="detail-specs" *ngIf="hasVariants()">
+          <div class="spec-item" *ngIf="hasTalla()">
+            <span class="spec-label">TALLAS</span>
+            <span class="spec-value">{{ uniqueTallas().join(', ') }}</span>
+          </div>
+          <div class="spec-item" *ngIf="hasColor()">
+            <span class="spec-label">COLORES</span>
+            <span class="spec-value">{{ uniqueColores().join(', ') }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">CATEGORÍA</span>
+            <span class="spec-value">{{ p.categoria }}</span>
           </div>
         </div>
 
-        <button
-          class="add-btn"
-          (click)="addToCart()"
-          [disabled]="p.stock === 0"
-        >
+        <!-- Variant Selectors -->
+        <div *ngIf="hasVariants()" class="variants-section">
+          <div *ngIf="hasTalla()" class="selector-group">
+            <label class="selector-label">Talla</label>
+            <div class="variant-pills">
+              <button *ngFor="let talla of uniqueTallas()" class="variant-pill" [class.active]="selectedTalla() === talla" [class.disabled]="!isTallaAvailable(talla)" (click)="selectTalla(talla)" [disabled]="!isTallaAvailable(talla)">
+                {{ talla }}
+                <span *ngIf="!isTallaAvailable(talla)" class="pill-badge">Agotado</span>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="hasColor()" class="selector-group">
+            <label class="selector-label">Color</label>
+            <div class="variant-pills">
+              <button *ngFor="let color of uniqueColores()" class="variant-pill" [class.active]="selectedColor() === color" [class.disabled]="!isColorAvailable(color)" (click)="selectColor(color)" [disabled]="!isColorAvailable(color)">
+                {{ color }}
+                <span *ngIf="!isColorAvailable(color)" class="pill-badge">Agotado</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="selector-group">
+          <label class="selector-label">Cantidad</label>
+          <div class="cantidad-control">
+            <button (click)="cantidad.set(Math.max(1, cantidad() - 1))" aria-label="Reducir cantidad">-</button>
+            <span>{{ cantidad() }}</span>
+            <button (click)="cantidad.set(cantidad() + 1)" aria-label="Aumentar cantidad">+</button>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <button class="add-btn" (click)="addToCart()" [disabled]="!canAddToCart()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
           Agregar al carrito
         </button>
+
+        <a *ngIf="showWhatsApp()" [href]="whatsappLink()" target="_blank" rel="noopener" class="whatsapp-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Consultar por WhatsApp
+        </a>
       </div>
+    </div>
+
+    <!-- Sección Reseñas -->
+    <div class="reviews-section" *ngIf="producto()">
+      <h2 class="reviews-title">VALORACIONES</h2>
+
+      <div class="reviews-summary">
+        <div class="rating-stars">
+          <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= Math.round(promedio())">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </span>
+        </div>
+        <span class="rating-average">{{ promedio().toFixed(1) }}</span>
+        <span class="rating-count">({{ resenas().length }} reseñas)</span>
+      </div>
+
+      <div class="review-form" *ngIf="authService.isLoggedIn() && haComprado() && !miResena()">
+        <h3 class="review-form-title">ESCRIBE UNA RESEÑA</h3>
+        <div class="star-selector">
+          <span *ngFor="let i of [1,2,3,4,5]" class="star clickable" [class.filled]="i <= (hoverPuntuacion() || newPuntuacion())" (click)="newPuntuacion.set(i)" (mouseenter)="hoverPuntuacion.set(i)" (mouseleave)="hoverPuntuacion.set(0)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </span>
+        </div>
+        <textarea class="review-textarea" [(ngModel)]="newComentario" placeholder="Comparte tu experiencia con este producto..." rows="4"></textarea>
+        <label class="anonima-toggle">
+          <input type="checkbox" [(ngModel)]="newAnonima" />
+          <span class="toggle-label">Publicar anónimamente</span>
+        </label>
+        <button class="review-submit" (click)="enviarResena()">PUBLICAR RESEÑA</button>
+      </div>
+
+      <div class="review-form edit" *ngIf="miResena() as r">
+        <h3 class="review-form-title">TU RESEÑA</h3>
+        <div class="star-selector">
+          <span *ngFor="let i of [1,2,3,4,5]" class="star clickable" [class.filled]="i <= editPuntuacion()" (click)="editPuntuacion.set(i)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </span>
+        </div>
+        <textarea class="review-textarea" [(ngModel)]="editComentario" placeholder="Comparte tu experiencia con este producto..." rows="4"></textarea>
+        <label class="anonima-toggle">
+          <input type="checkbox" [(ngModel)]="editAnonima" />
+          <span class="toggle-label">Publicar anónimamente</span>
+        </label>
+        <div class="review-actions">
+          <button class="review-submit" (click)="editarResena()">ACTUALIZAR</button>
+          <button class="review-delete" (click)="eliminarResena()">ELIMINAR</button>
+        </div>
+      </div>
+
+      <p class="review-prompt" *ngIf="authService.isLoggedIn() && !haComprado() && !miResena()">
+        Compra este producto para dejar una reseña
+      </p>
+
+      <p class="review-prompt" *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/login" class="review-login-link">Inicia sesión</a> para dejar una reseña
+      </p>
+
+      <div class="reviews-list" *ngIf="resenas().length > 0">
+        <div class="review-card" *ngFor="let r of resenas()">
+          <div class="review-header">
+            <span class="review-author">{{ r.anonima ? 'Anónimo' : r.nombre }}</span>
+            <span class="review-date">{{ r.created_at | date:'longDate' }}</span>
+          </div>
+          <div class="review-stars">
+            <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= r.puntuacion">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </span>
+          </div>
+          <p class="review-comment" *ngIf="r.comentario">{{ r.comentario }}</p>
+        </div>
+      </div>
+
+      <p class="review-prompt" *ngIf="resenas().length === 0">
+        Aún no hay reseñas. Sé el primero en opinar.
+      </p>
     </div>
   </div>
 </div>

@@ -1,131 +1,221 @@
 <div class="cart">
   <div class="cart-container">
-    <h1 class="cart-title">Tu Carrito</h1>
+    <header class="cart-header">
+      <h1 class="cart-title">Tu carrito</h1>
+      <span class="cart-count" *ngIf="cartService.cartItems().length > 0">
+        {{ cartService.totalItems() }} {{ cartService.totalItems() === 1 ? 'artículo' : 'artículos' }}
+      </span>
+    </header>
 
+    <!-- Empty state -->
     <div *ngIf="cartService.cartItems().length === 0" class="cart-empty">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <svg class="cart-empty-icon" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
         <path d="m1 1 4 0 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
       </svg>
-      <p>Tu carrito está vacío</p>
-      <a routerLink="/" class="cart-cta">Ir al catálogo</a>
+      <p class="cart-empty-text">Tu carrito está vacío</p>
+      <p class="cart-empty-sub">Explora nuestra colección y encuentra tu próxima prenda</p>
+      <a routerLink="/" class="cart-empty-cta">Explorar colección</a>
     </div>
 
+    <!-- Cart content -->
     <div *ngIf="cartService.cartItems().length > 0" class="cart-layout">
       <div class="cart-items">
         <div *ngFor="let item of cartService.cartItems()" class="cart-item">
           <img [src]="item.producto.imagen_url" [alt]="item.producto.nombre" class="cart-item-image" loading="lazy" />
-          <div class="cart-item-info">
-            <h3><a [routerLink]="['/producto', item.producto.id]">{{ item.producto.nombre }}</a></h3>
-            <span class="cart-item-price">{{ item.producto.precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          <div class="cart-item-body">
+            <div class="cart-item-info">
+              <h3>
+                <a [routerLink]="['/producto', item.producto.id]" class="cart-item-name">
+                  {{ item.producto.nombre }}
+                </a>
+              </h3>
+              <span class="cart-item-variant" *ngIf="item.variante">
+                {{ getVarianteText(item) }}
+              </span>
+              <span class="cart-item-price">
+                <ng-container *ngIf="getWholesalePrice(item.producto.id, item.cantidad) as wp; else normalPrice">
+                  <span class="price-old">{{ getBasePrice(item) | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                  <span class="price-wholesale">{{ wp | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                </ng-container>
+                <ng-template #normalPrice>{{ getItemPrice(item) | currency:'MXN':'symbol-narrow':'1.0-0' }}</ng-template>
+              </span>
+              <!-- Stock warning -->
+              <span *ngIf="getStockWarning(item) as warning" class="stock-warning-badge">
+                <span *ngIf="warning.reason === 'out_of_stock'">Agotado</span>
+                <span *ngIf="warning.reason === 'insufficient_stock'">Solo {{ warning.available }} disp.</span>
+              </span>
+            </div>
+            <div class="cart-item-actions">
+              <div class="qty-selector">
+                <button (click)="updateQuantity(item.producto.id, item.cantidad - 1, item.variante?.id)" class="qty-btn" aria-label="Reducir cantidad">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>
+                </button>
+                <span class="qty-value">{{ item.cantidad }}</span>
+                <button (click)="updateQuantity(item.producto.id, item.cantidad + 1, item.variante?.id)" class="qty-btn" aria-label="Aumentar cantidad">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+              </div>
+              <div class="cart-item-total">
+                {{ getItemPrice(item) * item.cantidad | currency:'MXN':'symbol-narrow':'1.0-0' }}
+                <span *ngIf="getWholesalePrice(item.producto.id, item.cantidad)" class="total-wholesale-hint">Mayoreo</span>
+              </div>
+              <button class="cart-item-remove" (click)="removeItem(item.producto.id, item.variante?.id)" [attr.aria-label]="'Eliminar ' + item.producto.nombre">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
           </div>
-          <div class="cart-item-qty">
-            <button (click)="updateQuantity(item.producto.id, item.cantidad - 1)">-</button>
-            <span>{{ item.cantidad }}</span>
-            <button (click)="updateQuantity(item.producto.id, item.cantidad + 1)">+</button>
-          </div>
-          <div class="cart-item-subtotal">
-            {{ item.producto.precio * item.cantidad | currency:'MXN':'symbol-narrow':'1.0-0' }}
-          </div>
-          <button class="cart-item-remove" (click)="removeItem(item.producto.id)" [attr.aria-label]="'Eliminar ' + item.producto.nombre">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M18 6 6 18M6 6l12 12"/>
-            </svg>
-          </button>
         </div>
       </div>
 
-      <div class="cart-summary">
-        <h2>Resumen</h2>
-        <div class="summary-line">
-          <span>Artículos</span>
-          <span>{{ cartService.totalItems() }}</span>
-        </div>
-        <div class="summary-divider"></div>
-        <div class="summary-line summary-total">
-          <span>Total</span>
-          <span>{{ cartService.totalPrice() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+      <!-- Summary sidebar -->
+      <aside class="cart-summary">
+        <!-- Coupon section -->
+        <div class="summary-section coupon-section">
+          <h3 class="delivery-title">Cupón de descuento</h3>
+          <div *ngIf="!cuponAplicado()" class="coupon-form">
+            <input
+              type="text"
+              placeholder="Código"
+              [(ngModel)]="cuponCode"
+              class="coupon-input"
+              (keyup.enter)="aplicarCupon()"
+            />
+            <button class="coupon-btn" (click)="aplicarCupon()" [disabled]="cuponLoading() || !cuponCode().trim()">
+              {{ cuponLoading() ? '...' : 'Aplicar' }}
+            </button>
+          </div>
+          <div *ngIf="cuponError()" class="coupon-error">{{ cuponError() }}</div>
+          <div *ngIf="cuponAplicado() as cupon" class="coupon-applied">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Código <strong>{{ cupon.codigo }}</strong> aplicado</span>
+            <span class="coupon-discount">-{{ cupon.tipo === 'porcentaje' ? cupon.valor + '%' : (cupon.valor | currency:'MXN':'symbol-narrow':'1.0-0') }}</span>
+            <button class="coupon-remove" (click)="quitarCupon()" title="Quitar cupón">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
         </div>
 
-        <div *ngIf="!authService.isLoggedIn()" class="cart-login-cta">
-          <p>Inicia sesión para completar tu compra</p>
-          <a routerLink="/login" [queryParams]="{returnUrl: '/cart'}" class="btn-login-cta">Iniciar sesión</a>
+        <div class="summary-section">
+          <h2 class="summary-title">Resumen</h2>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ subtotalConMayoreo() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+          <div class="summary-row" *ngIf="descuentoTotal() > 0">
+            <span>Descuento</span>
+            <span class="summary-discount">-{{ descuentoTotal() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+          <div class="summary-row summary-divider">
+            <span>Envío</span>
+            <span class="summary-free">Gratis</span>
+          </div>
+          <div class="summary-total">
+            <span>Total</span>
+            <span>{{ totalConDescuento() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          </div>
         </div>
 
+        <!-- Login gate -->
+        <div *ngIf="!authService.isLoggedIn()" class="summary-login">
+          <p class="summary-login-text">Inicia sesión para completar tu compra</p>
+          <a routerLink="/login" [queryParams]="{returnUrl: '/cart'}" class="btn btn-primary">Iniciar sesión</a>
+        </div>
+
+        <!-- Checkout form (logged in) -->
         <ng-container *ngIf="authService.isLoggedIn()">
-          <div class="checkout-delivery">
-            <h3>Punto de entrega</h3>
-            <div class="puntos-grid">
-              <label *ngFor="let punto of puntosEntrega()" class="punto-option" [class.selected]="selectedPunto() === punto.id">
-                <input type="radio" name="punto" [value]="punto.id" (change)="selectedPunto.set(punto.id)" />
-                <span class="punto-nombre">{{ punto.nombre }}</span>
-              </label>
-            </div>
+          <!-- Stock issues banner -->
+          <div *ngIf="cartService.hasStockIssues()" class="stock-issues-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Algunos productos tienen problemas de stock. Revisá los artículos marcados antes de continuar.
+          </div>
+          <!-- Delivery section -->
+          <div class="delivery-section">
+            <h3 class="delivery-title">Entrega</h3>
 
-            <div class="checkout-phone">
-              <label for="telefono">Teléfono de contacto</label>
+            <div class="delivery-field">
+              <label class="delivery-label" for="telefono">Teléfono de contacto</label>
               <input
                 id="telefono"
                 type="tel"
                 placeholder="55 1234 5678"
                 [(ngModel)]="telefono"
-                class="phone-input"
+                class="input-field"
               />
             </div>
 
-            <div class="checkout-delivery-time">
-              <label for="fecha-entrega">Fecha de entrega</label>
-              <input
-                id="fecha-entrega"
-                type="date"
-                [min]="tomorrow()"
-                [(ngModel)]="fechaEntrega"
-                class="date-input"
-              />
-            </div>
-
-            <div class="checkout-delivery-time">
-              <label>Horario de entrega</label>
-              <div class="franjas-grid">
-                <label
-                  *ngFor="let franja of FRANJAS"
-                  class="franja-option"
-                  [class.selected]="horaEntrega() === franja"
-                >
-                  <input type="radio" name="hora" [value]="franja" (change)="horaEntrega.set(franja)" />
-                  <span class="franja-nombre">{{ franja }}</span>
+            <div class="delivery-field">
+              <label class="delivery-label">Punto de entrega</label>
+              <div class="radio-group">
+                <label *ngFor="let punto of puntosEntrega()" class="radio-option" [class.radio-option--selected]="selectedPunto() === punto.id">
+                  <input type="radio" name="punto" [value]="punto.id" (change)="selectedPunto.set(punto.id)" class="radio-input" />
+                  <span class="radio-dot"></span>
+                  <span class="radio-label">{{ punto.nombre }}</span>
                 </label>
+              </div>
+            </div>
+
+            <div class="delivery-row">
+              <div class="delivery-field delivery-field--half">
+                <label class="delivery-label" for="fecha-entrega">Fecha</label>
+                <input
+                  id="fecha-entrega"
+                  type="date"
+                  [min]="tomorrow()"
+                  [(ngModel)]="fechaEntrega"
+                  class="input-field"
+                />
+              </div>
+              <div class="delivery-field delivery-field--half">
+                <label class="delivery-label">Horario</label>
+                <div class="radio-group radio-group--compact">
+                  <label *ngFor="let franja of FRANJAS" class="radio-option radio-option--sm" [class.radio-option--selected]="horaEntrega() === franja">
+                    <input type="radio" name="hora" [value]="franja" (change)="horaEntrega.set(franja)" class="radio-input" />
+                    <span class="radio-dot"></span>
+                    <span class="radio-label">{{ franja }}</span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="checkout-options">
-            <button class="btn-whatsapp" (click)="onWhatsApp()" aria-label="Pedir por WhatsApp">
+          <!-- Payment methods -->
+          <div class="payment-section">
+            <h3 class="delivery-title">Método de pago</h3>
+
+            <button class="payment-btn payment-btn--whatsapp" (click)="onWhatsApp()" aria-label="Pedir por WhatsApp">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
               </svg>
               Pedir por WhatsApp
             </button>
-            <button class="btn-cod" (click)="onCOD()" [disabled]="loadingCOD() || !selectedPunto() || !telefono.trim()">
+
+            <button class="payment-btn payment-btn--cod" (click)="onCOD()" [disabled]="loadingCOD() || !selectedPunto() || !telefono.trim() || cartService.hasStockIssues()">
               <span *ngIf="loadingCOD()" class="btn-loader"></span>
+              <svg *ngIf="!loadingCOD()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2z"/><path d="M12 2v6l4-3-4-3z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
               {{ loadingCOD() ? 'Procesando...' : 'Contra Entrega' }}
+            </button>
+
+            <div class="payment-divider">
+              <span>O paga en línea</span>
+            </div>
+
+            <button class="payment-btn payment-btn--card" (click)="onCheckout()" [disabled]="loading() || cartService.hasStockIssues()">
+              <span *ngIf="loading()" class="btn-loader"></span>
+              <svg *ngIf="!loading()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              {{ loading() ? 'Procesando...' : 'Pagar con tarjeta' }}
             </button>
           </div>
 
-          <div class="checkout-divider">
-            <span>O paga en línea</span>
-          </div>
-
-          <button class="checkout-btn" (click)="onCheckout()" [disabled]="loading()">
-            <span *ngIf="loading()" class="btn-loader"></span>
-            {{ loading() ? 'Procesando...' : 'Pagar con Tarjeta' }}
+          <button class="clear-btn" (click)="clearCart()">
+            Vaciar carrito
           </button>
         </ng-container>
-
-        <button class="clear-btn" (click)="clearCart()">
-          Vaciar carrito
-        </button>
-      </div>
+      </aside>
     </div>
   </div>
 </div>

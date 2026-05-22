@@ -1,0 +1,60 @@
+<div class="admin-shell">
+  <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" aria-label="Toggle navigation">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <aside class="admin-sidebar" [class.open]="sidebarOpen" aria-label="Panel de administración">
+    <div class="sidebar-brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span class="brand-text">VYRO</span>
+      <span class="brand-accent">Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact }"
+        class="nav-item"
+        (click)="sidebarOpen = false"
+      >
+        <span class="nav-icon" [innerHTML]="item.icon"></span>
+        {{ item.label }}
+        <span class="nav-badge" *ngIf="item.badge === 'stock' && stockBajoCount() > 0">{{ stockBajoCount() }}</span>
+      </a>
+    </nav>
+
+    <a routerLink="/" class="back-link" (click)="sidebarOpen = false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Volver a la tienda
+    </a>
+  </aside>
+
+  <div class="sidebar-overlay" *ngIf="sidebarOpen" (click)="sidebarOpen = false"></div>
+
+  <main class="admin-main">
+    <nav class="mobile-nav" aria-label="Navegación administración">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.path"
+        routerLinkActive="active-mobile"
+        [routerLinkActiveOptions]="{ exact: item.exact }"
+        class="m-nav-item"
+      >
+        <span class="nav-icon" [innerHTML]="item.icon"></span>
+        {{ item.label }}
+        <span class="nav-badge" *ngIf="item.badge === 'stock' && stockBajoCount() > 0">{{ stockBajoCount() }}</span>
+      </a>
+    </nav>
+    <router-outlet />
+  </main>
+</div>

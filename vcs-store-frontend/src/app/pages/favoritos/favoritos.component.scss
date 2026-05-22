@@ -1,0 +1,125 @@
+@import '../../shared/styles/variables';
+@import '../../shared/styles/mixins';
+
+.favoritos-page {
+  background: $vyro-bg;
+  min-height: 100vh;
+  @include page-entrance;
+}
+
+.favoritos-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $vyro-space-3xl $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    padding: $vyro-space-2xl $vyro-space-lg;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: $vyro-space-xl $vyro-space-md;
+  }
+}
+
+.favoritos-title {
+  font-family: $vyro-font-heading;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: $vyro-text;
+  margin-bottom: $vyro-space-2xl;
+  line-height: 1.1;
+
+  @media (max-width: $vyro-bp-tablet) {
+    text-align: center;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Empty State
+// ─────────────────────────────────────────────────────────────
+
+.favoritos-empty {
+  text-align: center;
+  padding: $vyro-space-3xl $vyro-space-lg;
+  color: $vyro-text-secondary;
+}
+
+.empty-icon {
+  margin-bottom: $vyro-space-lg;
+  opacity: 0.4;
+  display: flex;
+  justify-content: center;
+
+  svg {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.empty-title {
+  font-family: $vyro-font-heading;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $vyro-text;
+  margin-bottom: $vyro-space-sm;
+}
+
+.empty-text {
+  font-size: 1rem;
+  margin-bottom: $vyro-space-2xl;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-btn {
+  display: inline-flex;
+  padding: $vyro-space-md $vyro-space-2xl;
+  background: $vyro-text;
+  color: $vyro-surface;
+  font-family: $vyro-font-heading;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: $vyro-radius-md;
+  text-decoration: none;
+  @include transition(all);
+
+  &:hover {
+    background: $vyro-accent;
+    color: $vyro-text;
+    transform: translateY(-2px);
+    box-shadow: $vyro-shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Products Grid
+// ─────────────────────────────────────────────────────────────
+
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: $vyro-space-md;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-sm;
+  }
+
+  > * {
+    animation: fadeInUp 0.4s ease both;
+  }
+}

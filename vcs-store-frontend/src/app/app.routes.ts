@@ -26,6 +26,14 @@ export const routes: Routes = [
       import('./pages/cart/cart.component').then((m) => m.CartComponent),
   },
   {
+    path: 'favoritos',
+    loadComponent: () =>
+      import('./pages/favoritos/favoritos.component').then(
+        (m) => m.FavoritosComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'mis-pedidos',
     loadComponent: () =>
       import('./pages/mis-pedidos/mis-pedidos.component').then(
@@ -100,7 +108,56 @@ export const routes: Routes = [
             (m) => m.PuntosEntregaComponent
           ),
       },
+      {
+        path: 'tallas',
+        loadComponent: () =>
+          import('./pages/admin/tallas/tallas.component').then(
+            (m) => m.TallasComponent
+          ),
+      },
+      {
+        path: 'colores',
+        loadComponent: () =>
+          import('./pages/admin/colores/colores.component').then(
+            (m) => m.ColoresComponent
+          ),
+      },
+      {
+        path: 'opciones-ml',
+        loadComponent: () =>
+          import('./pages/admin/opciones-ml/opciones-ml.component').then(
+            (m) => m.OpcionesMlComponent
+          ),
+      },
+      {
+        path: 'cupones',
+        loadComponent: () =>
+          import('./pages/admin/cupones/cupones.component').then(
+            (m) => m.CuponesComponent
+          ),
+      },
+      {
+        path: 'precios-mayoreo',
+        loadComponent: () =>
+          import('./pages/admin/precios-mayoreo/precios-mayoreo.component').then(
+            (m) => m.PreciosMayoreoComponent
+          ),
+      },
     ],
+  },
+  {
+    path: 'privacidad',
+    loadComponent: () =>
+      import('./pages/legal/privacidad/privacidad.component').then(
+        (m) => m.PrivacidadComponent
+      ),
+  },
+  {
+    path: 'terminos',
+    loadComponent: () =>
+      import('./pages/legal/terminos/terminos.component').then(
+        (m) => m.TerminosComponent
+      ),
   },
   {
     path: '**',

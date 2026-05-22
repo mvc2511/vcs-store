@@ -4,7 +4,7 @@ from fastapi.responses import PlainTextResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import settings
-from app.routes import checkout, webhooks, productos, categorias, puntos_entrega, admin_ordenes, mis_ordenes, carrito
+from app.routes import checkout, webhooks, productos, categorias, puntos_entrega, admin_ordenes, mis_ordenes, carrito, variantes, tallas, colores, opciones_ml, cupones, precios_mayoreo, favoritos, resenas, admin_stock, admin_productos
 from app.core.supabase_client import supabase_admin
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
@@ -13,9 +13,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:4200",
-        "https://vcs-store.netlify.app",
-        "https://store.mariano-ventura.dev",
-        "https://www.mariano-ventura.dev",
+        "https://vyro.boutique",
+        "https://www.vyro.boutique",
+        "https://qa-vyro-boutique.netlify.app",
+        "https://qa.vyro.boutique",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -42,6 +43,16 @@ app.include_router(puntos_entrega.router)
 app.include_router(admin_ordenes.router)
 app.include_router(mis_ordenes.router)
 app.include_router(carrito.router)
+app.include_router(variantes.router)
+app.include_router(tallas.router)
+app.include_router(colores.router)
+app.include_router(opciones_ml.router)
+app.include_router(cupones.router)
+app.include_router(precios_mayoreo.router)
+app.include_router(favoritos.router)
+app.include_router(resenas.router)
+app.include_router(admin_stock.router)
+app.include_router(admin_productos.router)
 
 
 @app.get("/")
@@ -61,13 +72,13 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://store.mariano-ventura.dev/sitemap.xml
+Sitemap: https://vyro.boutique/sitemap.xml
 """
 
 
 @app.get("/sitemap.xml", response_class=Response)
 async def sitemap():
-    base_url = "https://store.mariano-ventura.dev"
+    base_url = "https://vyro.boutique"
     urls = [
         f"""  <url>
     <loc>{base_url}/</loc>

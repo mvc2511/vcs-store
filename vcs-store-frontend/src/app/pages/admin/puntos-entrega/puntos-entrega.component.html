@@ -1,0 +1,51 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Puntos de Entrega</h1>
+      <p class="page-desc">Gestioná los puntos donde los clientes reciben sus pedidos.</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="crear()" class="cat-form">
+    <div class="form-row">
+      <input formControlName="nombre" type="text" placeholder="Nombre del punto de entrega" />
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
+        {{ creando ? 'Agregando...' : 'Agregar' }}
+      </button>
+    </div>
+    <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+  </form>
+
+  <div class="cat-list">
+    <div *ngFor="let punto of puntos" class="cat-item">
+      <div *ngIf="editandoId !== punto.id; else editTmpl" class="cat-info">
+        <span class="cat-name">{{ punto.nombre }}</span>
+        <span class="cat-id">#{{ punto.id }}</span>
+      </div>
+
+      <ng-template #editTmpl>
+        <input
+          #editInput
+          [value]="editNombre"
+          (keyup.enter)="guardarEdit(punto.id, editInput.value)"
+          (keyup.escape)="cancelarEdit()"
+          (blur)="guardarEdit(punto.id, editInput.value)"
+          class="edit-input"
+          autofocus
+        />
+      </ng-template>
+
+      <div class="row-acts" *ngIf="editandoId !== punto.id">
+        <button class="act-btn" title="Editar" (click)="iniciarEdit(punto)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="act-btn danger" title="Eliminar" (click)="eliminar(punto.id)" [disabled]="eliminandoId === punto.id">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="puntos.length === 0" class="empty-state">
+      No hay puntos de entrega. Creá el primero.
+    </div>
+  </div>
+</div>

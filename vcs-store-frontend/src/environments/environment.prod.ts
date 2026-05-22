@@ -1,6 +1,6 @@
 export const environment = {
-  supabaseUrl: 'https://uruewqhwfyqhdhvfbsvj.supabase.co',
-  supabaseKey: 'sb_publishable_mFhs-D_I_bhotAvK54b5og_4zes8N9O',
-  apiUrl: 'https://api.mariano-ventura.dev',
-  whatsappNumber: '5210000000000'
+  supabaseUrl: 'https://yprfitraqcitwuqllvzz.supabase.co',
+  supabaseKey: 'sb_publishable_Swuc3jf93iq6GiecBZ_t0A_yQrNARcC',
+  apiUrl: 'https://api.vyro.boutique',
+  whatsappNumber: '525522988741'
 };

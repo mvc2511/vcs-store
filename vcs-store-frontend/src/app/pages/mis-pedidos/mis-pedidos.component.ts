@@ -28,7 +28,7 @@ interface DetalleOrden {
   standalone: true,
   imports: [NgIf, NgFor, CurrencyPipe, DatePipe, RouterLink],
   templateUrl: './mis-pedidos.component.html',
-  styleUrl: './mis-pedidos.component.css',
+  styleUrl: './mis-pedidos.component.scss',
 })
 export class MisPedidosComponent implements OnInit {
   private http = inject(HttpClient);

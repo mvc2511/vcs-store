@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.security import verificar_usuario_google
 from app.core.supabase_client import supabase_admin
+from app.services.email import email_orden_cancelada
 
 router = APIRouter(prefix="/api/mis-ordenes", tags=["mis-ordenes"])
 
@@ -14,7 +15,7 @@ async def listar_mis_ordenes(
 ):
     resp = (
         supabase_admin.table("ordenes")
-        .select("*, puntos_entrega!left(nombre), detalles_orden(*, productos!left(nombre))")
+        .select("*, puntos_entrega!left(nombre), detalles_orden(*, productos!left(nombre), variantes_producto!left(nombre_variante, tipo_variante, color))")
         .eq("user_id", usuario["user_id"])
         .order("creado_en", desc=True)
         .execute()
@@ -29,7 +30,7 @@ async def cancelar_orden(
 ):
     resp = (
         supabase_admin.table("ordenes")
-        .select("id, estado, user_id")
+        .select("id, estado, user_id, user_email")
         .eq("id", orden_id)
         .single()
         .execute()
@@ -51,4 +52,12 @@ async def cancelar_orden(
         .eq("id", orden_id)
         .execute()
     )
+
+    user_email = orden.get("user_email") or usuario.get("email", "")
+    if user_email:
+        email_orden_cancelada(
+            destinatario=user_email,
+            orden_id=orden_id,
+        )
+
     return update_resp.data[0]

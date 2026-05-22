@@ -1,0 +1,89 @@
+// ═══════════════════════════════════════════════
+// VYRO — Design Tokens
+// ═══════════════════════════════════════════════
+
+// ─── Brand Colors ──────────────────────────────
+$vyro-bg: #F5F5F2;
+$vyro-text: #111111;
+$vyro-gray: #D1D5DB;
+$vyro-silver: #BFC3C9;
+$vyro-accent: #C6A969;
+
+// ─── Functional Colors ─────────────────────────
+$vyro-surface: #FFFFFF;
+$vyro-border: #E5E5E1;
+$vyro-text-secondary: #6B7280;
+$vyro-success: #10B981;
+$vyro-error: #EF4444;
+$vyro-warning: #F59E0B;
+
+// ─── Shadows ───────────────────────────────────
+$vyro-shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.04);
+$vyro-shadow-md: 0 4px 12px rgba(17, 17, 17, 0.06);
+$vyro-shadow-lg: 0 8px 32px rgba(17, 17, 17, 0.1);
+
+// ─── Border Radius ─────────────────────────────
+$vyro-radius-sm: 6px;
+$vyro-radius-md: 10px;
+$vyro-radius-lg: 16px;
+$vyro-radius-full: 9999px;
+
+// ─── Spacing ───────────────────────────────────
+$vyro-space-xs: 0.25rem;
+$vyro-space-sm: 0.5rem;
+$vyro-space-md: 1rem;
+$vyro-space-lg: 1.5rem;
+$vyro-space-xl: 2rem;
+$vyro-space-2xl: 3rem;
+$vyro-space-3xl: 4rem;
+
+// ─── Breakpoints ───────────────────────────────
+$vyro-bp-mobile: 500px;
+$vyro-bp-tablet: 768px;
+$vyro-bp-desktop: 1024px;
+
+// ─── Transitions ───────────────────────────────
+$vyro-transition-fast: 0.15s ease;
+$vyro-transition-base: 0.25s ease;
+$vyro-transition-slow: 0.4s ease;
+
+// ─── Font Families ─────────────────────────────
+$vyro-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$vyro-font-heading: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
+$vyro-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+// ─── CSS Custom Properties ─────────────────────
+:root {
+  --vyro-bg: #{$vyro-bg};
+  --vyro-text: #{$vyro-text};
+  --vyro-gray: #{$vyro-gray};
+  --vyro-silver: #{$vyro-silver};
+  --vyro-accent: #{$vyro-accent};
+  --vyro-surface: #{$vyro-surface};
+  --vyro-border: #{$vyro-border};
+  --vyro-text-secondary: #{$vyro-text-secondary};
+  --vyro-success: #{$vyro-success};
+  --vyro-error: #{$vyro-error};
+  --vyro-warning: #{$vyro-warning};
+
+  --shadow-sm: #{$vyro-shadow-sm};
+  --shadow-md: #{$vyro-shadow-md};
+  --shadow-lg: #{$vyro-shadow-lg};
+
+  --radius-sm: #{$vyro-radius-sm};
+  --radius-md: #{$vyro-radius-md};
+  --radius-lg: #{$vyro-radius-lg};
+  --radius-full: #{$vyro-radius-full};
+
+  // ─── Legacy aliases (backward compat during migration) ──
+  --primary: #{$vyro-text};
+  --primary-light: #{$vyro-silver};
+  --secondary: #{$vyro-error};
+  --bg: #{$vyro-bg};
+  --surface: #{$vyro-surface};
+  --text: #{$vyro-text};
+  --text-secondary: #{$vyro-text-secondary};
+  --border: #{$vyro-border};
+  --success: #{$vyro-success};
+  --gradient: #{$vyro-text};
+}

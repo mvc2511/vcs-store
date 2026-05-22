@@ -9,7 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, NgIf],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css',
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
   cartService = inject(CartService);
@@ -30,5 +30,10 @@ export class NavbarComponent implements OnInit {
 
   closeMenu(): void {
     this.menuOpen.set(false);
+  }
+
+  handleLogout(): void {
+    this.authService.logout();
+    this.router.navigateByUrl('/');
   }
 }

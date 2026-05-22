@@ -1,0 +1,97 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Productos</h1>
+      <p class="page-desc">Gestioná el catálogo de tu tienda.</p>
+    </div>
+    <a routerLink="/admin/productos/nuevo" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span class="btn-label">Nuevo Producto</span>
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="load-state">
+    <div class="spinner"></div>
+    <span>Cargando productos...</span>
+  </div>
+
+  <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+
+  <div class="table-wrap" *ngIf="!loading && productos.length > 0">
+    <table class="data-table" *ngIf="productos.length > 0">
+      <thead>
+        <tr>
+          <th class="col-img"></th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Visible</th>
+          <th>Categoría</th>
+          <th class="col-acts"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productos">
+          <td class="col-img" data-label="">
+            <div class="thumb" *ngIf="p.imagen_url; else noImg">
+              <img [src]="p.imagen_url" [alt]="p.nombre" loading="lazy" />
+            </div>
+            <ng-template #noImg>
+              <div class="thumb thumb-empty">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            </ng-template>
+          </td>
+          <td class="col-name" data-label="Nombre">
+            <span class="pname">{{ p.nombre }}</span>
+          </td>
+          <td class="col-price" data-label="Precio">{{ p.precio | currency:'ARS':'symbol-narrow':'1.2-2' }}</td>
+          <td class="col-stock" data-label="Stock">
+            <span class="stock" [class.low]="p.stock < 10">{{ p.stock }}</span>
+          </td>
+          <td class="col-vis" data-label="Visible">
+            <span *ngIf="p.visible !== false" class="vis-yes" title="Visible en catálogo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span *ngIf="p.visible === false" class="vis-no" title="Oculto del catálogo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </td>
+          <td class="col-cat" data-label="Categoría">{{ p.categorias?.nombre || '—' }}</td>
+          <td class="col-acts" data-label="">
+            <div class="row-acts">
+              <a [routerLink]="['/admin/productos', p.id, 'editar']" class="act-btn" title="Editar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </a>
+              <button class="act-btn danger" title="Eliminar" (click)="eliminar(p)" [disabled]="eliminandoId === p.id">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && productos.length === 0" class="empty-state">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    <h3>No hay productos</h3>
+    <p>Agregá tu primer producto al catálogo.</p>
+    <a routerLink="/admin/productos/nuevo" class="btn-primary">Agregar Producto</a>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="confirmarEliminar" (click)="cerrarModal()" role="dialog" aria-modal="true" aria-label="Confirmar eliminación">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>¿Eliminar producto?</h3>
+    <p>Esta acción no se puede deshacer.</p>
+    <div class="modal-acts">
+      <button class="btn-sec" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-danger" (click)="confirmarDelete()" [disabled]="eliminandoId !== null">
+        {{ eliminandoId ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>
