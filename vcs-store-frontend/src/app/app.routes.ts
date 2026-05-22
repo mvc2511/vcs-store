@@ -26,6 +26,14 @@ export const routes: Routes = [
       import('./pages/cart/cart.component').then((m) => m.CartComponent),
   },
   {
+    path: 'favoritos',
+    loadComponent: () =>
+      import('./pages/favoritos/favoritos.component').then(
+        (m) => m.FavoritosComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'mis-pedidos',
     loadComponent: () =>
       import('./pages/mis-pedidos/mis-pedidos.component').then(
@@ -119,6 +127,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/admin/opciones-ml/opciones-ml.component').then(
             (m) => m.OpcionesMlComponent
+          ),
+      },
+      {
+        path: 'cupones',
+        loadComponent: () =>
+          import('./pages/admin/cupones/cupones.component').then(
+            (m) => m.CuponesComponent
+          ),
+      },
+      {
+        path: 'precios-mayoreo',
+        loadComponent: () =>
+          import('./pages/admin/precios-mayoreo/precios-mayoreo.component').then(
+            (m) => m.PreciosMayoreoComponent
           ),
       },
     ],

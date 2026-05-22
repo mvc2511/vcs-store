@@ -11,13 +11,20 @@
 - [x] **1.5.6** Auto-detección tipo_variante: backend detecta Perfume/Decant por categoría
 - [x] **1.5.7** Corregir crash maybe_single() en _resolver_talla_id/_resolver_color_id (variantes 500)
 
-### Fase 1 — MVP Production
+### Fase 1 — MVP Production ✅ COMPLETADA
 - [x] **1.1 Notificaciones Email** — SendGrid backend service + integración en checkout, admin, mis_ordenes
 - [x] **1.2 Variantes de Producto (Talla, Color)** — Variantes_producto table, CRUD backend, selector product-detail, carrito con variante_id, checkout con variante_id, admin inline editor
 - [x] **1.2 Extra: Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores` con valores predefinidos, FK desde variantes_producto, CRUD admin, selectores en formulario
 - [x] **1.2 Extra: Corrección doble stock** — Stock de producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe
+- [x] **1.2 Extra: Modelo de datos mejorado** — Renombrar talla→nombre_variante, tipo_variante, tabla opciones_ml, api dinámica, auto-detección por categoría
 - [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro por categoría, frontend con ProductService, "Ver más" button
 - [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito, botones checkout deshabilitados con advertencia
+
+### Fase 2 — Experiencia Cliente ✅ COMPLETADA
+- [x] **2.1 Reseñas y Valoraciones** — Tabla `resenas`, CRUD backend con verificación de compra, estrellas frontend, soporte anónimo, sección en product-detail
+- [x] **2.2 Wishlist / Favoritos** — Tabla `favoritos`, solo DB (sin localStorage), WishlistService con Signals, corazón en cards/detalle, página `/favoritos`, link navbar
+- [x] **2.3 Cupones / Descuentos + Mayoreo** — Sistema dual: cupones con código (porcentaje/fijo, filtro producto/categoría) + precios por volumen (mayoreo). Input cupón en carrito, precios mayoreo automáticos. CRUD admin para ambos.
+- [x] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend `GET /api/admin/stock-bajo?umbral=10`. Badge rojo sidebar admin con count. Actualización automática cada 60s.
 
 ### Infraestructura y Base de Datos
 - [x] Proyecto Supabase (PostgreSQL + Auth + Storage + RLS)
@@ -84,7 +91,7 @@
 - [x] Rediseño Navbar VYRO (logo, animaciones, focus rings champagne)
 - [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
 - [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
-- [x] Rediseño ProductDetail VYRO (compacto 1000px, variant pills con stock indicator)
+- [x] Rediseño ProductDetail VYRO (2-columnas desktop, stock bar, specs grid, editorial spacing)
 - [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar, stock warnings)
 - [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss

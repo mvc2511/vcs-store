@@ -36,6 +36,7 @@ export class ProductoFormComponent implements OnInit {
     precio: ['', [Validators.required, Validators.min(0.01)]],
     stock: ['', [Validators.min(0)]],
     categoria_id: [null as number | null],
+    visible: [true],
   });
 
   categorias: Categoria[] = [];
@@ -63,6 +64,11 @@ export class ProductoFormComponent implements OnInit {
   genColores = '';
   genStockDefault = 0;
   genPrecioDefault = 0;
+
+  // Inline edit state
+  editandoVarianteId: number | null = null;
+  editStockValue = 0;
+  editPrecioValue = 0;
 
   // ML options from API
   mlOptions: number[] = [];
@@ -95,6 +101,7 @@ export class ProductoFormComponent implements OnInit {
           precio: String(p.precio),
           stock: String(p.stock),
           categoria_id: p.categoria_id,
+          visible: p.visible !== false,
         });
         this.imagenUrl = p.imagen_url || '';
         this.loading = false;
@@ -237,6 +244,33 @@ export class ProductoFormComponent implements OnInit {
     } catch { this.errorMsg = 'Error al eliminar variante'; }
   }
 
+  iniciarEdicion(v: Variante): void {
+    this.editandoVarianteId = v.id;
+    this.editStockValue = v.stock;
+    this.editPrecioValue = v.precio_adicional;
+  }
+
+  cancelarEdicion(): void {
+    this.editandoVarianteId = null;
+  }
+
+  async guardarEdicion(varianteId: number): Promise<void> {
+    try {
+      const resp = await firstValueFrom(
+        this.http.put(`${environment.apiUrl}/api/variantes/${varianteId}`, {
+          stock: this.editStockValue,
+          precio_adicional: this.editPrecioValue,
+        }, { headers: this.getHeaders() })
+      );
+      this.variantes = this.variantes.map(v => v.id === varianteId ? (resp as Variante) : v);
+      const totalStock = this.variantes.reduce((sum, v) => sum + v.stock, 0);
+      this.form.patchValue({ stock: String(totalStock) });
+      this.editandoVarianteId = null;
+    } catch (err: any) {
+      this.errorMsg = err.error?.detail || 'Error al guardar variante';
+    }
+  }
+
   async generarVariantes(): Promise<void> {
     if (!this.productoId || !this.genTallas.trim() || (!this.isPerfumeOrDecant && !this.genColores.trim())) return;
     try {
@@ -282,6 +316,7 @@ export class ProductoFormComponent implements OnInit {
         precio: parseFloat(this.form.value.precio ?? '0'),
         stock: stockValue ? parseInt(stockValue, 10) : 0,
         imagen_url: this.imagenUrl,
+        visible: this.form.value.visible ?? true,
       };
       if (this.form.value.categoria_id) body['categoria_id'] = this.form.value.categoria_id;
 

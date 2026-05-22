@@ -15,6 +15,7 @@ class ProductoCreate(BaseModel):
     stock: int
     imagen_url: str
     categoria_id: Optional[int] = None
+    visible: Optional[bool] = True
 
 
 class ProductoUpdate(BaseModel):
@@ -24,6 +25,7 @@ class ProductoUpdate(BaseModel):
     stock: Optional[int] = None
     imagen_url: Optional[str] = None
     categoria_id: Optional[int] = None
+    visible: Optional[bool] = None
 
 
 @router.get("")
@@ -36,9 +38,9 @@ async def listar_productos(
     offset: int = Query(0, ge=0),
 ):
     # Count query (without pagination)
-    count_query = supabase_admin.table("productos").select("id", count="exact")
+    count_query = supabase_admin.table("productos").select("id", count="exact").eq("visible", True)
     # Data query
-    data_query = supabase_admin.table("productos").select("*, categorias(nombre)")
+    data_query = supabase_admin.table("productos").select("*, categorias(nombre)").eq("visible", True)
 
     if search:
         count_query = count_query.ilike("nombre", f"%{search}%")
@@ -129,6 +131,8 @@ async def crear_producto(
     admin: dict = Depends(verificar_admin),
 ):
     data = producto.model_dump(exclude_none=True)
+    if "visible" not in data:
+        data["visible"] = True
     resp = supabase_admin.table("productos").insert(data).execute()
     if not resp.data:
         raise HTTPException(status_code=500, detail="Error al crear el producto")

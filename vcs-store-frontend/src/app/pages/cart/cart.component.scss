@@ -593,6 +593,143 @@
   svg { flex-shrink: 0; margin-top: 1px; }
 }
 
+/* ── Coupon Section ──────────────────────────── */
+.coupon-section {
+  margin-bottom: 0;
+}
+
+.coupon-form {
+  display: flex;
+  gap: 0.5rem;
+
+  .coupon-input {
+    flex: 1;
+    padding: 0.5rem 0.7rem;
+    border: 1.5px solid $vyro-border;
+    border-radius: $vyro-radius-sm;
+    font-size: 0.82rem;
+    font-family: inherit;
+    background: $vyro-bg;
+    color: $vyro-text;
+    outline: none;
+    transition: border-color 0.2s ease;
+
+    &::placeholder {
+      color: $vyro-text-secondary;
+      opacity: 0.5;
+    }
+
+    &:focus {
+      border-color: $vyro-text;
+    }
+  }
+
+  .coupon-btn {
+    padding: 0.5rem 0.9rem;
+    background: $vyro-text;
+    color: $vyro-surface;
+    border: none;
+    border-radius: $vyro-radius-sm;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      opacity: 0.85;
+    }
+  }
+}
+
+.coupon-error {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: $vyro-error;
+  font-weight: 500;
+}
+
+.coupon-applied {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  background: color-mix(in srgb, $vyro-accent 8%, transparent);
+  border: 1px solid color-mix(in srgb, $vyro-accent 20%, transparent);
+  border-radius: $vyro-radius-sm;
+  font-size: 0.78rem;
+  color: $vyro-text;
+  flex-wrap: wrap;
+
+  svg {
+    color: $vyro-accent;
+    flex-shrink: 0;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.coupon-discount {
+  font-weight: 700;
+  color: $vyro-accent;
+  margin-left: auto;
+}
+
+.coupon-remove {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: $vyro-text-secondary;
+  cursor: pointer;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($vyro-error, 0.1);
+    color: $vyro-error;
+  }
+}
+
+.summary-discount {
+  color: $vyro-accent;
+  font-weight: 600;
+}
+
+/* ── Wholesale Price ─────────────────────────── */
+.price-old {
+  text-decoration: line-through;
+  color: $vyro-text-secondary;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+.price-wholesale {
+  color: $vyro-accent;
+  font-weight: 700;
+}
+
+.total-wholesale-hint {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $vyro-accent;
+  margin-top: 0.1rem;
+}
+
 /* ── Loader ────────────────────────────────── */
 .btn-loader {
   display: inline-block;

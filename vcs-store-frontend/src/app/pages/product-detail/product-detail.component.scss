@@ -1,28 +1,23 @@
 @import '../../shared/styles/variables';
 @import '../../shared/styles/mixins';
 
-// ═══════════════════════════════════════════════════════════════
-// VYRO Product Detail — 2-Column Premium Layout
-// ═══════════════════════════════════════════════════════════════
-
 .detail {
   background: $vyro-bg;
   min-height: 100vh;
   padding: $vyro-space-xl $vyro-space-lg;
 
-  @media (max-width: $vyro-bp-mobile) {
-    padding: $vyro-space-md $vyro-space-md;
+  @include mobile {
+    padding: $vyro-space-md;
   }
 }
 
 .detail-container {
   max-width: 1000px;
   margin: 0 auto;
+  padding: 0 $vyro-space-md;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Back Link
-// ─────────────────────────────────────────────────────────────
+// ── Back Link ──────────────────────────────────
 
 .back-link {
   display: inline-flex;
@@ -37,25 +32,17 @@
   svg {
     width: 20px;
     height: 20px;
+    @include transition(transform, $vyro-transition-fast);
   }
 
   &:hover {
     color: $vyro-accent;
-
-    svg {
-      transform: translateX(-4px);
-    }
+    svg { transform: translateX(-4px); }
   }
-
-  &:focus-visible {
-    outline: 2px solid $vyro-accent;
-    outline-offset: 4px;
-  }
+  @include focus-ring;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Loading State
-// ─────────────────────────────────────────────────────────────
+// ── Loading ────────────────────────────────────
 
 .loading {
   display: flex;
@@ -75,14 +62,10 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Detail Content — 2 Column Layout
-// ─────────────────────────────────────────────────────────────
+// ── 2-Column Grid ──────────────────────────────
 
 .detail-content {
   display: grid;
@@ -90,15 +73,13 @@
   gap: $vyro-space-2xl;
   align-items: start;
 
-  @media (max-width: $vyro-bp-tablet) {
+  @include tablet {
     grid-template-columns: 1fr;
     gap: $vyro-space-lg;
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Gallery / Image Section
-// ─────────────────────────────────────────────────────────────
+// ── Gallery ────────────────────────────────────
 
 .detail-gallery {
   position: sticky;
@@ -109,13 +90,11 @@
   border: 1px solid $vyro-border;
   aspect-ratio: 3 / 4;
 
-  @media (max-width: $vyro-bp-tablet) {
+  @include tablet {
     position: static;
-    top: auto;
     aspect-ratio: 3 / 4;
   }
-
-  @media (max-width: $vyro-bp-mobile) {
+  @include mobile {
     aspect-ratio: 1 / 1.2;
   }
 }
@@ -128,9 +107,7 @@
   display: block;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Detail Info Section
-// ─────────────────────────────────────────────────────────────
+// ── Info Column ────────────────────────────────
 
 .detail-info {
   display: flex;
@@ -144,23 +121,19 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: $vyro-accent;
-  margin-bottom: $vyro-space-sm;
+  color: $vyro-text-secondary;
+  margin-bottom: 0;
 }
 
 .detail-name {
   font-family: $vyro-font-heading;
-  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.015em;
   color: $vyro-text;
-  line-height: 1.2;
+  line-height: 1.15;
   margin: 0;
 }
-
-// ─────────────────────────────────────────────────────────────
-// Price & Stock Section
-// ─────────────────────────────────────────────────────────────
 
 .detail-price-row {
   display: flex;
@@ -172,52 +145,130 @@
 
 .detail-price {
   font-family: $vyro-font-heading;
-  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-size: clamp(1.3rem, 2.5vw, 1.6rem);
   font-weight: 700;
   color: $vyro-accent;
   letter-spacing: -0.01em;
 }
 
-.detail-stock {
-  padding: $vyro-space-xs $vyro-space-md;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: color-mix(in srgb, $vyro-success 12%, transparent);
-  color: $vyro-success;
+.wishlist-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $vyro-border;
   border-radius: $vyro-radius-full;
-  border: 1px solid color-mix(in srgb, $vyro-success 30%, transparent);
+  background: $vyro-surface;
+  cursor: pointer;
+  @include transition(all);
+  color: $vyro-text;
 
-  &.low-stock {
-    background: color-mix(in srgb, $vyro-warning 12%, transparent);
-    color: $vyro-warning;
-    border-color: color-mix(in srgb, $vyro-warning 30%, transparent);
-  }
-
-  &.out-of-stock {
-    background: color-mix(in srgb, $vyro-error 12%, transparent);
+  &:hover {
+    border-color: $vyro-error;
     color: $vyro-error;
-    border-color: color-mix(in srgb, $vyro-error 30%, transparent);
+    background: color-mix(in srgb, $vyro-error 6%, transparent);
+  }
+  @include focus-ring;
+}
+
+// ── Stock Indicator Bar ────────────────────────
+
+.stock-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  padding: 0 0 $vyro-space-md;
+
+  &.out {
+    padding: 0;
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Description
-// ─────────────────────────────────────────────────────────────
+.stock-bar {
+  flex: 1;
+  height: 6px;
+  background: $vyro-border;
+  border-radius: $vyro-radius-full;
+  overflow: hidden;
+  max-width: 160px;
+}
+
+.stock-bar-fill {
+  height: 100%;
+  border-radius: $vyro-radius-full;
+  background: $vyro-success;
+  @include transition(width, 0.4s ease);
+
+  &.low {
+    background: $vyro-warning;
+  }
+  &.critical {
+    background: $vyro-error;
+  }
+}
+
+.stock-bar-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $vyro-success;
+  white-space: nowrap;
+
+  &.low-stock {
+    color: $vyro-warning;
+  }
+  &.out-of-stock {
+    color: $vyro-error;
+  }
+}
+
+// ── Description ────────────────────────────────
 
 .detail-description {
   font-size: 0.9rem;
   line-height: 1.6;
   color: $vyro-text-secondary;
   margin: 0;
+  max-width: 40ch;
   padding: $vyro-space-md 0;
   border-bottom: 1px solid $vyro-border;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Variant Selectors (Talla, Color)
-// ─────────────────────────────────────────────────────────────
+// ── Specs Grid ─────────────────────────────────
+
+.detail-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $vyro-space-md $vyro-space-lg;
+  padding: $vyro-space-lg 0;
+  border-top: 1px solid $vyro-border;
+  border-bottom: 1px solid $vyro-border;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spec-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $vyro-silver;
+}
+
+.spec-value {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $vyro-text;
+}
+
+// ── Variant Selectors ──────────────────────────
 
 .variants-section {
   display: flex;
@@ -246,20 +297,14 @@
   min-width: 48px;
   text-align: center;
 
-  &:hover {
-    border-color: $vyro-text;
-  }
+  &:hover { border-color: $vyro-text; }
 
   &.active {
     background: $vyro-text;
     color: $vyro-surface;
     border-color: $vyro-text;
   }
-
-  &:focus-visible {
-    outline: 2px solid $vyro-accent;
-    outline-offset: 2px;
-  }
+  @include focus-ring;
 
   &.disabled {
     opacity: 0.4;
@@ -274,15 +319,12 @@
   font-size: 0.6rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--vyro-error);
+  color: $vyro-error;
   text-decoration: none;
   margin-top: 1px;
 }
 
-// ─────────────────────────────────────────────────────────────
-// Selector Group (Cantidad)
-// ─────────────────────────────────────────────────────────────
+// ── Selector Group ─────────────────────────────
 
 .selector-group {
   display: flex;
@@ -292,7 +334,7 @@
 
 .selector-label {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -309,12 +351,12 @@
   width: fit-content;
 
   button {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border: none;
     border-right: 1px solid $vyro-border;
     background: transparent;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: $vyro-text;
     cursor: pointer;
@@ -329,24 +371,18 @@
       background: $vyro-border;
       color: $vyro-accent;
     }
-
-    &:focus-visible {
-      outline: 2px solid $vyro-accent;
-      outline-offset: -2px;
-    }
+    @include focus-ring;
   }
 
   span {
-    min-width: 50px;
+    min-width: 48px;
     text-align: center;
     font-weight: 600;
     font-size: 1rem;
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Add to Cart Button
-// ─────────────────────────────────────────────────────────────
+// ── CTAs ───────────────────────────────────────
 
 .add-btn {
   width: 100%;
@@ -359,7 +395,7 @@
   font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -367,10 +403,7 @@
   cursor: pointer;
   @include transition(all);
 
-  svg {
-    width: 22px;
-    height: 22px;
-  }
+  svg { width: 22px; height: 22px; }
 
   &:hover:not(:disabled) {
     background: $vyro-silver;
@@ -378,15 +411,9 @@
     transform: translateY(-2px);
     box-shadow: $vyro-shadow-md;
   }
+  @include focus-ring;
 
-  &:focus-visible {
-    outline: 2px solid $vyro-accent;
-    outline-offset: 2px;
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
+  &:active:not(:disabled) { transform: translateY(0); }
 
   &:disabled {
     opacity: 0.5;
@@ -394,38 +421,350 @@
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Responsive Adjustments
-// ─────────────────────────────────────────────────────────────
+.whatsapp-btn {
+  width: 100%;
+  padding: $vyro-space-md;
+  border: 1px solid #25d366;
+  border-radius: $vyro-radius-md;
+  background: #25d366;
+  color: white;
+  font-family: $vyro-font-heading;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $vyro-space-md;
+  cursor: pointer;
+  text-decoration: none;
+  @include transition(all);
 
-@media (max-width: $vyro-bp-tablet) {
-  .detail {
-    padding: $vyro-space-xl 0;
+  svg { width: 20px; height: 20px; }
+
+  &:hover {
+    background: #1ebe5d;
+    transform: translateY(-2px);
+    box-shadow: $vyro-shadow-md;
   }
+  @include focus-ring;
+}
 
-  .detail-gallery {
-    aspect-ratio: 1 / 1;
+// ══════════════════════════════════════════════════════════════
+// Reviews Section
+// ══════════════════════════════════════════════════════════════
+
+.reviews-section {
+  margin-top: $vyro-space-3xl;
+  padding-top: $vyro-space-2xl;
+  border-top: 1px solid $vyro-border;
+}
+
+.reviews-title {
+  font-family: $vyro-font-heading;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: $vyro-text-secondary;
+  margin: 0 0 $vyro-space-xl;
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  margin-bottom: $vyro-space-xl;
+  padding-bottom: $vyro-space-xl;
+  border-bottom: 1px solid $vyro-border;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 2px;
+  .star {
+    color: $vyro-gray;
+    &.filled { color: $vyro-accent; }
   }
 }
 
-@media (max-width: $vyro-bp-mobile) {
-  .detail-name {
-    font-size: 1.25rem;
-  }
+.rating-average {
+  font-family: $vyro-font-heading;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: $vyro-text;
+  line-height: 1;
+}
 
-  .detail-price {
-    font-size: 1.25rem;
+.rating-count {
+  font-size: 0.85rem;
+  color: $vyro-text-secondary;
+}
+
+.star-selector {
+  display: flex;
+  gap: 4px;
+  .star {
+    color: $vyro-gray;
+    @include transition(color);
+    &.filled { color: $vyro-accent; }
+    &.clickable {
+      cursor: pointer;
+      &:hover { color: $vyro-accent; }
+    }
+  }
+}
+
+.review-form {
+  background: $vyro-surface;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-lg;
+  padding: $vyro-space-xl;
+  margin-bottom: $vyro-space-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-lg;
+
+  &.edit { border-color: $vyro-accent; }
+
+  @include mobile { padding: $vyro-space-lg; }
+}
+
+.review-form-title {
+  font-family: $vyro-font-heading;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: $vyro-text;
+  margin: 0;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: $vyro-space-md;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  background: $vyro-bg;
+  font-family: $vyro-font-sans;
+  font-size: 0.9rem;
+  color: $vyro-text;
+  resize: vertical;
+  min-height: 100px;
+  @include transition(all);
+  box-sizing: border-box;
+
+  &::placeholder { color: $vyro-silver; }
+
+  &:focus {
+    outline: none;
+    border-color: $vyro-accent;
+    box-shadow: 0 0 0 3px rgba($vyro-accent, 0.15);
+  }
+}
+
+.anonima-toggle {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: $vyro-text-secondary;
+  user-select: none;
+
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid $vyro-border;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    @include transition(all);
+    flex-shrink: 0;
+
+    &:checked {
+      background: $vyro-accent;
+      border-color: $vyro-accent;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 2px;
+        width: 6px;
+        height: 10px;
+        border: solid $vyro-surface;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+    }
+    @include focus-ring;
+  }
+}
+
+.toggle-label { font-size: 0.85rem; }
+
+.review-submit {
+  width: 100%;
+  padding: $vyro-space-md $vyro-space-lg;
+  border: none;
+  border-radius: $vyro-radius-md;
+  background: $vyro-text;
+  color: $vyro-surface;
+  font-family: $vyro-font-heading;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  @include transition(all);
+
+  &:hover {
+    background: $vyro-accent;
+    transform: translateY(-1px);
+    box-shadow: $vyro-shadow-md;
+  }
+  @include focus-ring;
+  &:active { transform: translateY(0); }
+}
+
+.review-actions {
+  display: flex;
+  gap: $vyro-space-md;
+  .review-submit { flex: 1; }
+  @include mobile { flex-direction: column; }
+}
+
+.review-delete {
+  padding: $vyro-space-md $vyro-space-lg;
+  border: 1px solid $vyro-error;
+  border-radius: $vyro-radius-md;
+  background: transparent;
+  color: $vyro-error;
+  font-family: $vyro-font-heading;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  @include transition(all);
+
+  &:hover {
+    background: color-mix(in srgb, $vyro-error 8%, transparent);
+    transform: translateY(-1px);
+  }
+  @include focus-ring;
+}
+
+.review-prompt {
+  text-align: center;
+  font-size: 0.9rem;
+  color: $vyro-text-secondary;
+  padding: $vyro-space-xl 0;
+  margin: 0;
+}
+
+.review-login-link {
+  color: $vyro-accent;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-lg;
+}
+
+.review-card {
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  padding: $vyro-space-lg;
+  background: $vyro-surface;
+  @include transition(all);
+
+  &:hover {
+    border-color: $vyro-accent;
+    box-shadow: $vyro-shadow-sm;
+  }
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $vyro-space-sm;
+}
+
+.review-author {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $vyro-text;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: $vyro-silver;
+}
+
+.review-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: $vyro-space-sm;
+  .star {
+    color: $vyro-gray;
+    &.filled { color: $vyro-accent; }
+  }
+}
+
+.review-comment {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: $vyro-text-secondary;
+  margin: 0;
+}
+
+// ── Responsive ─────────────────────────────────
+
+@include tablet {
+  .detail { padding: $vyro-space-xl 0; }
+  .detail-gallery { aspect-ratio: 1 / 1; }
+}
+
+@include mobile {
+  .detail { padding: $vyro-space-md; }
+
+  .detail-category { font-size: 0.7rem; }
+  .detail-name { font-size: 1.3rem; }
+  .detail-price { font-size: 1.25rem; }
+
+  .detail-description { font-size: 0.85rem; }
+
+  .detail-specs {
+    grid-template-columns: 1fr;
+    gap: $vyro-space-sm;
   }
 
   .cantidad-control {
     width: 100%;
+    button { flex: 1; }
+    span { flex: 1; }
+  }
 
-    button {
-      flex: 1;
-    }
+  .add-btn { font-size: 0.9rem; padding: $vyro-space-sm $vyro-space-md; }
+  .whatsapp-btn { font-size: 0.85rem; padding: $vyro-space-sm $vyro-space-md; }
+  .wishlist-btn { width: 34px; height: 34px; }
+  .variant-pill { font-size: 0.8rem; padding: $vyro-space-xs $vyro-space-md; }
 
-    span {
-      flex: 1;
-    }
+  .reviews-section { margin-top: $vyro-space-2xl; padding-top: $vyro-space-xl; }
+  .reviews-summary { flex-wrap: wrap; }
+  .review-card { padding: $vyro-space-md; }
+
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $vyro-space-xs;
   }
 }

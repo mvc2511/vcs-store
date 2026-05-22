@@ -27,6 +27,7 @@
       >
         <span class="nav-icon" [innerHTML]="item.icon"></span>
         {{ item.label }}
+        <span class="nav-badge" *ngIf="item.badge === 'stock' && stockBajoCount() > 0">{{ stockBajoCount() }}</span>
       </a>
     </nav>
 
@@ -51,6 +52,7 @@
       >
         <span class="nav-icon" [innerHTML]="item.icon"></span>
         {{ item.label }}
+        <span class="nav-badge" *ngIf="item.badge === 'stock' && stockBajoCount() > 0">{{ stockBajoCount() }}</span>
       </a>
     </nav>
     <router-outlet />

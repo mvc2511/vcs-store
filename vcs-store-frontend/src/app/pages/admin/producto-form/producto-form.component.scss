@@ -76,6 +76,17 @@
 
   &.full { grid-column: 1 / -1; }
 
+  &--toggle {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--vyro-border);
+
+    label { font-size: 0.8rem; font-weight: 600; color: var(--vyro-text-secondary); min-width: 120px; }
+  }
+
   label {
     font-size: 0.8rem;
     font-weight: 600;
@@ -118,6 +129,65 @@
     background: rgba(17, 17, 17, 0.03);
     cursor: not-allowed;
   }
+}
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--vyro-border);
+  border-radius: 999px;
+  @include transition(background);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    @include transition(transform);
+  }
+}
+
+.toggle--off .toggle-slider {
+  background: var(--vyro-border);
+}
+
+.toggle-input:checked + .toggle-slider {
+  background: var(--vyro-text);
+}
+
+.toggle-input:checked + .toggle-slider::before {
+  transform: translateX(18px);
+}
+
+.toggle-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--vyro-text);
 }
 
 .color-dot {
@@ -253,7 +323,7 @@
 
 .variants-table-header {
   display: grid;
-  grid-template-columns: 1fr 1fr 80px 100px 40px;
+  grid-template-columns: 1fr 1fr 80px 100px 80px;
   gap: 0.5rem;
   padding: 0.5rem 0;
   font-weight: 600;
@@ -266,12 +336,12 @@
 }
 
 .variants-table--no-color .variants-table-header {
-  grid-template-columns: 1fr 80px 100px 40px;
+  grid-template-columns: 1fr 80px 100px 80px;
 }
 
 .variants-table-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 80px 100px 40px;
+  grid-template-columns: 1fr 1fr 80px 100px 80px;
   gap: 0.5rem;
   padding: 0.55rem 0;
   align-items: center;
@@ -280,7 +350,30 @@
 }
 
 .variants-table-row--no-color {
-  grid-template-columns: 1fr 80px 100px 40px;
+  grid-template-columns: 1fr 80px 100px 80px;
+}
+
+.variants-table-row--editing {
+  background: color-mix(in srgb, var(--vyro-accent) 6%, transparent);
+}
+
+.variants-table-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.edit-input {
+  width: 70px;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--vyro-accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  background: var(--vyro-surface);
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--vyro-accent), 0.2);
+  }
 }
 
 .btn-icon {
@@ -454,7 +547,7 @@
 
   .variants-table-header,
   .variants-table-row {
-    grid-template-columns: 1fr 1fr 70px 80px 36px;
+    grid-template-columns: 1fr 1fr 70px 80px 70px;
     gap: 0.35rem;
     font-size: 0.75rem;
     min-width: 360px;
@@ -462,7 +555,12 @@
 
   .variants-table--no-color .variants-table-header,
   .variants-table-row--no-color {
-    grid-template-columns: 1fr 70px 80px 36px;
+    grid-template-columns: 1fr 70px 80px 70px;
+  }
+
+  .edit-input {
+    width: 58px;
+    padding: 0.2rem 0.3rem;
   }
 
   // Add variant form - full width stacking

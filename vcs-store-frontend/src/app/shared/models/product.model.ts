@@ -24,9 +24,11 @@ export interface Producto {
   nombre: string;
   precio: number;
   categoria: string;
+  categoria_id?: number;
   stock: number;
   stock_real?: number;
   has_variants?: boolean;
+  visible?: boolean;
   imagen_url: string;
   descripcion: string;
   variantes?: Variante[];
@@ -36,4 +38,15 @@ export interface CarritoItem {
   producto: Producto;
   variante?: Variante | null;
   cantidad: number;
+}
+
+export interface Resena {
+  id: number;
+  producto_id: number;
+  user_id: string;
+  puntuacion: number;
+  comentario?: string | null;
+  anonima: boolean;
+  created_at: string;
+  nombre?: string;
 }

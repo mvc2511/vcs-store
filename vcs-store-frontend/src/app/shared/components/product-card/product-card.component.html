@@ -12,7 +12,20 @@
     </span>
   </a>
   <div class="card-body">
-    <span class="card-category">{{ producto().categoria }}</span>
+      <div class="card-header-row">
+        <span class="card-category">{{ producto().categoria }}</span>
+        <button
+          *ngIf="isLoggedIn()"
+          class="wishlist-btn"
+          (click)="toggleWishlist($event)"
+          [attr.aria-label]="isFavorited() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+          [title]="isFavorited() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" [attr.fill]="isFavorited() ? 'currentColor' : 'none'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      </div>
     <h3 class="card-title">
       <a [routerLink]="['/producto', producto().id]">{{ producto().nombre }}</a>
     </h3>

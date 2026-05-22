@@ -1,11 +1,30 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../shared/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
 import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environments';
+
+interface CuponValidado {
+  valido: boolean;
+  descuento: number;
+  cupon_id: number;
+  codigo: string;
+  tipo: 'porcentaje' | 'fijo';
+  valor: number;
+  mensaje: string;
+}
+
+interface PrecioMayoreoItem {
+  id: number;
+  producto_id: number | null;
+  categoria_id: number | null;
+  cantidad_minima: number;
+  precio_unitario: number;
+}
 
 @Component({
   selector: 'app-cart',
@@ -20,6 +39,7 @@ export class CartComponent implements OnInit {
   private checkoutService = inject(CheckoutService);
   authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   loading = signal(false);
   loadingCOD = signal(false);
@@ -30,6 +50,36 @@ export class CartComponent implements OnInit {
   horaEntrega = signal('');
 
   readonly FRANJAS = ['Mañana (9:00 - 12:00)', 'Tarde (12:00 - 17:00)', 'Noche (17:00 - 20:00)'];
+
+  // Coupon state
+  cuponCode = signal('');
+  cuponAplicado = signal<CuponValidado | null>(null);
+  cuponLoading = signal(false);
+  cuponError = signal('');
+
+  // Wholesale state
+  preciosMayoreo = signal<PrecioMayoreoItem[]>([]);
+
+  subtotalConMayoreo = computed(() => {
+    let total = 0;
+    for (const item of this.cartService.cartItems()) {
+      const wp = this.getWholesalePrice(item.producto.id, item.cantidad);
+      const precio = wp ?? (item.producto.precio + (item.variante?.precio_adicional ?? 0));
+      total += precio * item.cantidad;
+    }
+    return total;
+  });
+
+  descuentoTotal = computed(() => {
+    const cupon = this.cuponAplicado();
+    if (!cupon) return 0;
+    if (cupon.tipo === 'fijo') return Math.min(cupon.valor, this.subtotalConMayoreo());
+    return this.subtotalConMayoreo() * (cupon.valor / 100);
+  });
+
+  totalConDescuento = computed(() => {
+    return Math.max(0, this.subtotalConMayoreo() - this.descuentoTotal());
+  });
 
   tomorrow(): string {
     const d = new Date();
@@ -43,10 +93,69 @@ export class CartComponent implements OnInit {
     this.checkoutService.getPuntosEntrega().subscribe({
       next: (data) => this.puntosEntrega.set(data),
     });
+    this.cargarPreciosMayoreo();
   }
 
-  getItemPrice(item: { producto: { precio: number }; variante?: { precio_adicional?: number } | null }): number {
+  private cargarPreciosMayoreo(): void {
+    const items = this.cartService.cartItems();
+    if (items.length === 0) return;
+    const productIds = items.map(i => i.producto.id).filter(Boolean);
+    if (productIds.length === 0) return;
+    const params = productIds.map(id => `producto_ids=${id}`).join('&');
+    this.http.get<PrecioMayoreoItem[]>(`${environment.apiUrl}/api/precios-mayoreo?${params}`).subscribe({
+      next: (data) => this.preciosMayoreo.set(data),
+      error: () => {},
+    });
+  }
+
+  getItemPrice(item: { producto: { id: number; precio: number }; variante?: { precio_adicional?: number } | null; cantidad: number }): number {
+    const basePrice = item.producto.precio + (item.variante?.precio_adicional ?? 0);
+    const wp = this.getWholesalePrice(item.producto.id, item.cantidad);
+    return wp ?? basePrice;
+  }
+
+  getWholesalePrice(productoId: number, cantidad: number): number | null {
+    for (const wp of this.preciosMayoreo()) {
+      if (wp.producto_id === productoId && cantidad >= wp.cantidad_minima) {
+        return wp.precio_unitario;
+      }
+    }
+    return null;
+  }
+
+  getBasePrice(item: { producto: { precio: number }; variante?: { precio_adicional?: number } | null }): number {
     return item.producto.precio + (item.variante?.precio_adicional ?? 0);
+  }
+
+  aplicarCupon(): void {
+    const codigo = this.cuponCode().trim();
+    if (!codigo) return;
+    this.cuponLoading.set(true);
+    this.cuponError.set('');
+    const token = this.authService.sessionToken();
+    const headers = new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+    const items = this.cartService.cartItems().map(item => ({
+      producto_id: item.producto.id,
+      categoria_id: item.producto.categoria_id ?? null,
+      cantidad: item.cantidad,
+    }));
+    const total = this.cartService.totalPrice();
+    this.http.post<CuponValidado>(`${environment.apiUrl}/api/cupones/validar`, { codigo, total, items }, { headers }).subscribe({
+      next: (res) => {
+        this.cuponAplicado.set(res);
+        this.cuponLoading.set(false);
+        this.cuponCode.set('');
+      },
+      error: (err) => {
+        this.cuponLoading.set(false);
+        this.cuponError.set(err.error?.detail || 'Cupón inválido o expirado');
+      },
+    });
+  }
+
+  quitarCupon(): void {
+    this.cuponAplicado.set(null);
+    this.cuponError.set('');
   }
 
   updateQuantity(productoId: number, cantidad: number, varianteId?: number | null): void {
@@ -88,7 +197,11 @@ export class CartComponent implements OnInit {
         precio * item.cantidad
       ).toLocaleString()}%0A`;
     });
-    mensaje += `%0ATotal: $${this.cartService.totalPrice().toLocaleString()}`;
+    const totalFinal = this.totalConDescuento();
+    mensaje += `%0ATotal: $${totalFinal.toLocaleString()}`;
+    if (this.cuponAplicado()) {
+      mensaje += ` (cupón: ${this.cuponAplicado()!.codigo})`;
+    }
     window.open(
       `https://wa.me/${this.WHATSAPP_NUMBER}?text=${mensaje}`,
       '_blank'
@@ -102,6 +215,7 @@ export class CartComponent implements OnInit {
       producto_id: item.producto.id,
       cantidad: item.cantidad,
       variante_id: item.variante?.id ?? null,
+      precio_unitario: this.getItemPrice(item),
     }));
 
     this.checkoutService
