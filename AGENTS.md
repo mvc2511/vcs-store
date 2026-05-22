@@ -1,17 +1,19 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22 (2)
+**Última actualización:** 2026-05-22 (3)
 
 ## 🎯 Próximo paso inmediato
 Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh token, DAG transiciones).
 
 ## 📍 Contexto del Proyecto
-- **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
+- **Proyecto:** VYRO — E-commerce de ropa, perfumes y electrónicos (mayoreo/granel)
 - **Frontend:** Angular 18 (Standalone, Signals, lazy loading, guards, responsive mobile-first)
 - **Backend:** Python 3.11+ / FastAPI (Docker)
 - **Infra:** Supabase (PostgreSQL + Auth + Storage + RLS)
 - **Orquestación:** Docker Compose (backend + frontend)
 - **Hosting:** Netlify (frontend) / Render (backend) — desplegado
+- **Supabase QA:** uruewqhwfyqhdhvfbsvj — Google OAuth con credenciales propias
+- **Supabase Prod:** yprfitraqcitwuqllvzz — pendiente Google OAuth
 - **Pagos:** Stripe suspendido → reemplazado por WhatsApp + Contra Entrega
 - **Estado:** Funcional y en desarrollo activo
 
@@ -101,6 +103,14 @@ Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh toke
 - [x] SCSS consistente en todos los componentes con paleta VYRO
 - [x] Toast Service + Container: Signal + Observable, 4 tipos, SVG icons, slideIn animation, responsive
 - [x] SEO completo: JSON-LD LocalBusiness, Open Graph, Twitter Cards, canonical URLs, sitemap, robots.txt
+- [x] Footer responsive con datos de contacto, entregas locales y links legales
+- [x] Páginas legales: /privacidad (Aviso de Privacidad) y /terminos (Términos y Condiciones)
+
+### Infraestructura — Entornos
+- [x] environment.prod.ts con Supabase producción y anon key real
+- [x] environment.qa.ts con apiUrl de QA
+- [x] WhatsApp number corregido en todos los entornos (525522988741)
+- [x] Config backend (config.py + .env.example) actualizado a VYRO
 
 ### Backend (FastAPI)
 - [x] Servicio de email con SendGrid (services/email.py): 3 templates HTML (orden creada, cambio estado, cancelación)

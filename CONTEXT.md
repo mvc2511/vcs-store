@@ -1,6 +1,6 @@
-# 🗺️ Contexto de Arquitectura y Estado del Proyecto: VC'S Store
+# 🗺️ Contexto de Arquitectura y Estado del Proyecto: VYRO
 
-Fuente única de verdad sobre el estado técnico, arquitectónico y operativo del proyecto **VC'S Store** (E-Commerce MVP de prendas de ropa). Diseñado para contextualizar a agentes de IA y desarrolladores.
+Fuente única de verdad sobre el estado técnico, arquitectónico y operativo del proyecto **VYRO** (E-commerce de ropa, perfumes y electrónicos al mayoreo/granel). Diseñado para contextualizar a agentes de IA y desarrolladores.
 
 ---
 
