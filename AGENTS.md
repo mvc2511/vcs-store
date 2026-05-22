@@ -1,17 +1,19 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-20
+**Última actualización:** 2026-05-22 (3)
 
 ## 🎯 Próximo paso inmediato
-Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
+Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh token, DAG transiciones).
 
 ## 📍 Contexto del Proyecto
-- **Proyecto:** VC'S Store — E-commerce MVP de prendas de ropa
+- **Proyecto:** VYRO — E-commerce de ropa, perfumes y electrónicos (mayoreo/granel)
 - **Frontend:** Angular 18 (Standalone, Signals, lazy loading, guards, responsive mobile-first)
 - **Backend:** Python 3.11+ / FastAPI (Docker)
 - **Infra:** Supabase (PostgreSQL + Auth + Storage + RLS)
 - **Orquestación:** Docker Compose (backend + frontend)
 - **Hosting:** Netlify (frontend) / Render (backend) — desplegado
+- **Supabase QA:** uruewqhwfyqhdhvfbsvj — Google OAuth con credenciales propias
+- **Supabase Prod:** yprfitraqcitwuqllvzz — pendiente Google OAuth
 - **Pagos:** Stripe suspendido → reemplazado por WhatsApp + Contra Entrega
 - **Estado:** Funcional y en desarrollo activo
 
@@ -28,7 +30,14 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] Admin forzado: marianovc251@gmail.com
 - [x] Row Level Security configurado (3 roles: anon, authenticated, service_role)
 - [x] Storage bucket productos con políticas de subida/lectura
-- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores)
+- [x] Migraciones idempotentes (puntos-entrega, carrito-entrega, variantes, tallas-colores, opciones-ml, rename talla→nombre_variante)
+- [x] Tabla `favoritos` + RLS (per-user isolation, como carrito)
+- [x] Tabla `resenas` + RLS (lectura pública, escritura propia)
+- [x] Tabla `cupones` + RLS (lectura pública, CRUD admin)
+- [x] Tabla `precios_mayoreo` + RLS (lectura pública, CRUD admin)
+- [x] Columna `visible` en productos (control admin de visibilidad en catálogo)
+- [x] Columna `cupon_id` + `descuento` en ordenes
+- [x] Columna `anonima` en resenas
 
 ### Frontend — Navegación y Layout
 - [x] Arquitectura Standalone con Signals
@@ -40,10 +49,12 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
-- [x] Rutas públicas: /, /producto/:id, /cart, /login
+- [x] Rutas públicas: /, /producto/:id, /cart, /login, /privacidad, /terminos
 - [x] Rutas protegidas: /success, /mis-pedidos, /perfil, /admin/*
 - [x] Diseño mobile-first (breakpoints 767px y 500px)
 - [x] Diseño homogéneo claro (admin y clientes mismo tema light)
+- [x] Footer responsive con datos de contacto, entregas locales y links legales
+- [x] Páginas legales: /privacidad (Aviso de Privacidad) y /terminos (Términos y Condiciones)
 
 ### Frontend — Auth y Perfil
 - [x] Login con Google OAuth + Email/Password
@@ -84,13 +95,22 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] Rediseño Navbar VYRO (logo, animaciones, focus rings champagne)
 - [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
 - [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
-- [x] Rediseño ProductDetail VYRO (compacto 1000px, fonts reducidos ~30%)
+- [x] Rediseño ProductDetail VYRO (2-columnas desktop, stock bar, specs grid, editorial spacing)
 - [x] Selector de variantes (talla pills + color pills), precio/stock dinámico según variante seleccionada
 - [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar)
 - [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
 - [x] SCSS consistente en todos los componentes con paleta VYRO
 - [x] Toast Service + Container: Signal + Observable, 4 tipos, SVG icons, slideIn animation, responsive
+- [x] SEO completo: JSON-LD LocalBusiness, Open Graph, Twitter Cards, canonical URLs, sitemap, robots.txt
+- [x] Footer responsive con datos de contacto, entregas locales y links legales
+- [x] Páginas legales: /privacidad (Aviso de Privacidad) y /terminos (Términos y Condiciones)
+
+### Infraestructura — Entornos
+- [x] environment.prod.ts con Supabase producción y anon key real
+- [x] environment.qa.ts con apiUrl de QA
+- [x] WhatsApp number corregido en todos los entornos (525522988741)
+- [x] Config backend (config.py + .env.example) actualizado a VYRO
 
 ### Backend (FastAPI)
 - [x] Servicio de email con SendGrid (services/email.py): 3 templates HTML (orden creada, cambio estado, cancelación)
@@ -104,6 +124,7 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] CRUD completo colores (GET público, POST/PUT/DELETE admin)
 - [x] CRUD completo carrito (GET/POST/PUT/DELETE autenticado)
 - [x] Variantes auto-resuelve talla_id/color_id desde texto
+- [x] Variantes: corregir crash maybe_single() → execute() en _resolver_talla_id/_resolver_color_id
 - [x] POST /api/checkout/cod (crear orden COD: punto entrega + teléfono + fecha/hora + stock validation + user_email)
 - [x] GET /api/admin/ordenes (listar con filtro estado — incluye user_email, fecha/hora)
 - [x] GET /api/admin/ordenes/{id} (detalle orden admin)
@@ -135,14 +156,15 @@ Fase 2 — Experiencia Cliente (Reseñas, Wishlist, Cupones, Alertas Stock).
 - [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id. 3-5 días.
 - [x] **1.2b Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores`, FK desde variantes_producto, CRUD admin, selects en formulario.
 - [x] **1.2c Corrección doble stock** — Stock producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe.
+- [x] **1.2d Modelo de datos mejorado** — Renombrar `talla` → `nombre_variante`, agregar `tipo_variante` (talla/volumen/color_solo), crear tabla `opciones_ml` con CRUD admin, eliminar hardcode ml del frontend, api dinámica, auto-detección tipo_variante por categoría.
 - [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro categoría, frontend ProductService con "Ver más".
 - [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito + advertencia + botones checkout deshabilitados.
 
-### Fase 2 — Experiencia Cliente (~2 semanas)
-- [ ] **2.1 Reseñas y Valoraciones** — Tabla resenas, CRUD backend, estrellas frontend (solo compradores). 2-3 días.
-- [ ] **2.2 Wishlist / Favoritos** — Tabla favoritos, corazón cards/detalle, página /favoritos. 1-2 días.
-- [ ] **2.3 Cupones / Descuentos** — Tabla cupones, validación backend, input carrito, CRUD admin. 2-3 días.
-- [ ] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend, tarjeta dashboard, badge admin. 1 día.
+### Fase 2 — Experiencia Cliente ✅ COMPLETADA
+- [x] **2.1 Reseñas y Valoraciones** — Tabla `resenas` con puntuación 1-5, comentario y soporte anónimo. CRUD backend con verificación de compra (solo compradores pueden reseñar). Sección de valoraciones en product-detail con estrellas interactivas, formulario de reseña con toggle anónimo, y lista de reseñas. Backend verifica compra via ordenes+detalles_orden.
+- [x] **2.2 Wishlist / Favoritos** — Tabla `favoritos`, solo DB (sin localStorage). WishlistService con Signals. Corazón en product-card y product-detail. Página `/favoritos` protegida con grid de productos. Link en navbar para logueados. CRUD backend completo con endpoints listar/agregar/eliminar/check.
+- [x] **2.3 Cupones / Descuentos + Mayoreo** — Sistema dual: (a) Cupones con código (porcentaje/fijo, fechas, usos, filtro producto/categoría) con validación backend y CRUD admin; (b) Precios por volumen (mayoreo) por producto o categoría. Input de cupón en carrito con validación en tiempo real. Precios mayoreo se aplican automáticamente al alcanzar cantidad mínima. Descuento integrado en checkout COD con columnas `cupon_id` y `descuento` en ordenes.
+- [x] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend `GET /api/admin/stock-bajo?umbral=10`. Badge rojo en sidebar admin con count de productos con stock bajo. Actualización automática cada 60s.
 
 ### Fase 3 — Validaciones Críticas (~1 semana)
 - [ ] **3.1 Backend (7):** Race condition stock (UPDATE atómico), restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex.
@@ -170,10 +192,16 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `productos` — id (SERIAL PK), nombre, descripcion, precio (DECIMAL), imagen_url, stock, categoria_id (FK→categorias), creado_en
 - `tallas` — id (SERIAL PK), nombre (UNIQUE), orden (INT), creado_en
 - `colores` — id (SERIAL PK), nombre (UNIQUE), hex (VARCHAR), creado_en
-- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), talla (VARCHAR), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(talla,'') + COALESCE(color,''))
+- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), nombre_variante (VARCHAR, renamed from talla), tipo_variante (VARCHAR, 'talla'|'volumen'|'color_solo'), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(nombre_variante,'') + COALESCE(color,''))
+- `opciones_ml` — id (SERIAL PK), categoria_id (FK→categorias), ml (INT), orden (INT), creado_en
+- `opciones_ml` — id (SERIAL PK), categoria_id (FK→categorias), ml (INT), orden (INT), creado_en
 - `ordenes` — id (SERIAL PK), user_id (UUID), user_email, total (DECIMAL), estado (orden_estado), punto_entrega_id (FK), telefono_contacto, fecha_entrega (DATE), hora_entrega (VARCHAR), stripe_session_id (nullable), creado_en, updated_at
 - `detalles_orden` — id (SERIAL PK), orden_id (FK→ordenes CASCADE), producto_id (FK→productos SET NULL), variante_id (FK→variantes_producto SET NULL), cantidad (INT), precio_unitario (DECIMAL)
 - `carrito` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), variante_id (FK→variantes_producto CASCADE), cantidad (INT CHECK >0), created_at, updated_at
+- `favoritos` — id (SERIAL PK), user_id (UUID), producto_id (FK→productos CASCADE), created_at (UNIQUE user_id+producto_id)
+- `resenas` — id (SERIAL PK), producto_id (FK→productos CASCADE), user_id (UUID), puntuacion (INT 1-5), comentario (TEXT), anonima (BOOLEAN), created_at (UNIQUE producto_id+user_id)
+- `cupones` — id (SERIAL PK), codigo (UNIQUE), tipo (porcentaje/fijo), valor, minimo_compra, usos_maximos, usos_actuales, fecha_expiracion, activo, producto_id (FK), categoria_id (FK)
+- `precios_mayoreo` — id (SERIAL PK), producto_id (FK), categoria_id (FK), cantidad_minima (INT >=2), precio_unitario (DECIMAL) — validación: exactamente uno de producto_id/categoria_id
 
 **Secuencias:** Service_role tiene USAGE en todas las secuencias SERIAL.
 
@@ -183,6 +211,7 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - productos: SELECT público (anon)
 - tallas: SELECT público (anon)
 - colores: SELECT público (anon)
+- opciones_ml: SELECT público (anon)
 - puntos_entrega: SELECT público (anon)
 - ordenes: SELECT solo propias (authenticated, auth.uid() = user_id)
 - detalles_orden: protegido por RLS por defecto

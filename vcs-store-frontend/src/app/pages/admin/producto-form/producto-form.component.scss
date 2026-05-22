@@ -76,10 +76,28 @@
 
   &.full { grid-column: 1 / -1; }
 
+  &--toggle {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--vyro-border);
+
+    label { font-size: 0.8rem; font-weight: 600; color: var(--vyro-text-secondary); min-width: 120px; }
+  }
+
   label {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--vyro-text-secondary);
+  }
+
+  .field-required {
+    color: var(--vyro-error);
+    font-weight: 700;
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
   }
 
   input,
@@ -111,6 +129,65 @@
     background: rgba(17, 17, 17, 0.03);
     cursor: not-allowed;
   }
+}
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--vyro-border);
+  border-radius: 999px;
+  @include transition(background);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    @include transition(transform);
+  }
+}
+
+.toggle--off .toggle-slider {
+  background: var(--vyro-border);
+}
+
+.toggle-input:checked + .toggle-slider {
+  background: var(--vyro-text);
+}
+
+.toggle-input:checked + .toggle-slider::before {
+  transform: translateX(18px);
+}
+
+.toggle-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--vyro-text);
 }
 
 .color-dot {
@@ -215,6 +292,23 @@
   margin-bottom: 1rem;
 }
 
+.section-sub {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--vyro-text-secondary);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+.hidden { display: none !important; }
+
 .variants-empty {
   color: var(--vyro-text-secondary);
   font-size: 0.85rem;
@@ -224,11 +318,12 @@
 .variants-table {
   margin-bottom: 1rem;
   font-size: 0.88rem;
+  overflow-x: auto;
 }
 
 .variants-table-header {
   display: grid;
-  grid-template-columns: 1fr 1fr 80px 100px 40px;
+  grid-template-columns: 1fr 1fr 80px 100px 80px;
   gap: 0.5rem;
   padding: 0.5rem 0;
   font-weight: 600;
@@ -237,15 +332,48 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border-bottom: 1px solid var(--vyro-border);
+  min-width: 400px;
+}
+
+.variants-table--no-color .variants-table-header {
+  grid-template-columns: 1fr 80px 100px 80px;
 }
 
 .variants-table-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 80px 100px 40px;
+  grid-template-columns: 1fr 1fr 80px 100px 80px;
   gap: 0.5rem;
   padding: 0.55rem 0;
   align-items: center;
   border-bottom: 1px solid var(--vyro-border);
+  min-width: 400px;
+}
+
+.variants-table-row--no-color {
+  grid-template-columns: 1fr 80px 100px 80px;
+}
+
+.variants-table-row--editing {
+  background: color-mix(in srgb, var(--vyro-accent) 6%, transparent);
+}
+
+.variants-table-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.edit-input {
+  width: 70px;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--vyro-accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  background: var(--vyro-surface);
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--vyro-accent), 0.2);
+  }
 }
 
 .btn-icon {
@@ -274,17 +402,53 @@
   color: var(--vyro-success);
 }
 
+// ─────────────────────────────────────────────────────────────
+// Add variant form - grid layout for alignment
+// ─────────────────────────────────────────────────────────────
+
 .variants-add-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 80px 80px auto;
+  gap: 0.75rem;
+  align-items: start;
   padding: 0.75rem;
   background: var(--vyro-bg);
   border-radius: var(--radius-sm);
   margin-bottom: 1rem;
+
+  .field--inline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &.field--sm { min-width: 0; }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--vyro-text-secondary);
+    }
+  }
+
+  .variants-add-actions {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    align-self: flex-end;
+    padding-bottom: 0.1rem;
+  }
 }
 
-.field-input {
+// Perfume/Decant: 3 columns (ml + stock + precio + actions)
+.variants-add-form .variants-add-row {
+  grid-template-columns: 1fr 80px 80px auto;
+}
+
+.variants-add-form .field-input {
+  margin-top: 0.35rem;
+}
+
+.field-input, .field-input--sm {
   padding: 0.5rem 0.7rem;
   border: 1.5px solid var(--vyro-border);
   border-radius: var(--radius-sm);
@@ -293,11 +457,8 @@
   background: var(--vyro-surface);
   color: var(--vyro-text);
   outline: none;
-  flex: 1;
 
   &:focus { border-color: var(--vyro-text); }
-
-  &--sm { max-width: 80px; }
 }
 
 .variants-actions {
@@ -321,7 +482,7 @@
 
 .generator-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 100px 100px;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 
@@ -339,6 +500,10 @@
     &--sm { min-width: 0; }
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Mobile-first (tablet breakpoint and below)
+// ─────────────────────────────────────────────────────────────
 
 @include tablet {
   .page { max-width: 100%; }
@@ -374,4 +539,65 @@
     .btn-primary,
     .btn-outline { width: 100%; text-align: center; justify-content: center; }
   }
+
+  // Mobile variant section - stack everything vertically
+  .variants-table {
+    font-size: 0.82rem;
+  }
+
+  .variants-table-header,
+  .variants-table-row {
+    grid-template-columns: 1fr 1fr 70px 80px 70px;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    min-width: 360px;
+  }
+
+  .variants-table--no-color .variants-table-header,
+  .variants-table-row--no-color {
+    grid-template-columns: 1fr 70px 80px 70px;
+  }
+
+  .edit-input {
+    width: 58px;
+    padding: 0.2rem 0.3rem;
+  }
+
+  // Add variant form - full width stacking
+  .variants-add-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem;
+
+    .field--inline {
+      width: 100%;
+
+      &.field--sm { width: 100%; }
+    }
+
+    .field-input,
+    .field-input--sm {
+      width: 100%;
+    }
+
+    .variants-add-actions {
+      align-self: flex-end;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
+
+  .generator-row {
+    grid-template-columns: 1fr;
+
+    .field--sm { grid-column: 1; }
+  }
+
+  .variants-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .btn-outline { width: 100%; justify-content: center; }
+  }
+
+  .variants-generator .btn-primary { width: 100%; justify-content: center; }
 }

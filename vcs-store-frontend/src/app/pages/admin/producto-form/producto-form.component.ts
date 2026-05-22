@@ -9,7 +9,7 @@ import { UploadImageComponent } from '../../../shared/components/upload-image/up
 import { StorageService } from '../../../shared/services/storage.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environments';
-import { Variante } from '../../../shared/models/product.model';
+import { Variante, OpcionMl } from '../../../shared/models/product.model';
 
 interface Categoria { id: number; nombre: string; }
 interface Talla { id: number; nombre: string; }
@@ -34,8 +34,9 @@ export class ProductoFormComponent implements OnInit {
     nombre: ['', Validators.required],
     descripcion: ['', Validators.required],
     precio: ['', [Validators.required, Validators.min(0.01)]],
-    stock: ['', [Validators.required, Validators.min(0)]],
+    stock: ['', [Validators.min(0)]],
     categoria_id: [null as number | null],
+    visible: [true],
   });
 
   categorias: Categoria[] = [];
@@ -54,6 +55,7 @@ export class ProductoFormComponent implements OnInit {
   variantes: Variante[] = [];
   showAddVariant = false;
   nuevaTallaId: number | null = null;
+  nuevoNombreVariante: string = '';
   nuevoColorId: number | null = null;
   nuevoStock = 0;
   nuevoPrecioAdic = 0;
@@ -62,6 +64,15 @@ export class ProductoFormComponent implements OnInit {
   genColores = '';
   genStockDefault = 0;
   genPrecioDefault = 0;
+
+  // Inline edit state
+  editandoVarianteId: number | null = null;
+  editStockValue = 0;
+  editPrecioValue = 0;
+
+  // ML options from API
+  mlOptions: number[] = [];
+  mlLoading = false;
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -73,6 +84,11 @@ export class ProductoFormComponent implements OnInit {
     this.cargarCategorias();
     this.cargarTallas();
     this.cargarColores();
+
+    // Watch category changes to load ml options
+    this.form.get('categoria_id')?.valueChanges.subscribe((catId) => {
+      this.cargarMlOptions(catId);
+    });
   }
 
   private cargarProducto(): void {
@@ -85,11 +101,16 @@ export class ProductoFormComponent implements OnInit {
           precio: String(p.precio),
           stock: String(p.stock),
           categoria_id: p.categoria_id,
+          visible: p.visible !== false,
         });
         this.imagenUrl = p.imagen_url || '';
         this.loading = false;
         if (p.variantes?.length) {
           this.variantes = p.variantes;
+        }
+        // Load ml options for the category
+        if (p.categoria_id) {
+          this.cargarMlOptions(p.categoria_id);
         }
       },
       error: () => {
@@ -117,6 +138,22 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
+  private cargarMlOptions(categoriaId: number | null): void {
+    this.mlOptions = [];
+    if (!categoriaId) return;
+    this.mlLoading = true;
+    this.http.get<OpcionMl[]>(`${environment.apiUrl}/api/opciones-ml?categoria_id=${categoriaId}`).subscribe({
+      next: (data) => {
+        this.mlOptions = data.map(o => o.ml);
+        this.mlLoading = false;
+      },
+      error: () => {
+        this.mlOptions = [];
+        this.mlLoading = false;
+      },
+    });
+  }
+
   onArchivoSeleccionado(file: File): void {
     this.archivoSeleccionado = file;
   }
@@ -141,15 +178,38 @@ export class ProductoFormComponent implements OnInit {
     return this.colores.find(c => c.id === colorId)?.hex || '#ccc';
   }
 
+  // ─────────────────────────────────────────────
+  // Category-aware helpers (API-driven)
+  // ─────────────────────────────────────────────
+
+  get isPerfumeOrDecant(): boolean {
+    return this.mlOptions.length > 0;
+  }
+
+  get showColorField(): boolean {
+    return !this.isPerfumeOrDecant;
+  }
+
+  get variantLabel(): string {
+    return this.isPerfumeOrDecant ? 'Mililitros' : 'Talla / Volumen';
+  }
+
+  hasMlOptions(): boolean {
+    return this.mlOptions.length > 0;
+  }
+
   // Variant methods
   async agregarVariante(): Promise<void> {
-    if (!this.productoId || (!this.nuevaTallaId && !this.nuevoColorId)) return;
+    if (!this.productoId) return;
+    if (!this.nuevaTallaId && !this.nuevoNombreVariante.trim() && !this.nuevoColorId) return;
     try {
       const body: Record<string, unknown> = { producto_id: this.productoId, stock: this.nuevoStock, precio_adicional: this.nuevoPrecioAdic };
       if (this.nuevaTallaId) {
         const talla = this.tallas.find(t => t.id === this.nuevaTallaId);
-        body['talla'] = talla?.nombre;
+        body['nombre_variante'] = talla?.nombre;
         body['talla_id'] = this.nuevaTallaId;
+      } else if (this.nuevoNombreVariante?.trim()) {
+        body['nombre_variante'] = this.nuevoNombreVariante.trim();
       }
       if (this.nuevoColorId) {
         const color = this.colores.find(c => c.id === this.nuevoColorId);
@@ -159,8 +219,12 @@ export class ProductoFormComponent implements OnInit {
       const resp = await firstValueFrom(
         this.http.post(`${environment.apiUrl}/api/variantes`, body, { headers: this.getHeaders() })
       );
-      this.variantes = [...this.variantes, resp as Variante];
+      const updatedVariants = [...this.variantes, resp as Variante];
+      this.variantes = updatedVariants;
+      const totalStock = updatedVariants.reduce((sum, v) => sum + v.stock, 0);
+      this.form.patchValue({ stock: String(totalStock) });
       this.nuevaTallaId = null;
+      this.nuevoNombreVariante = '';
       this.nuevoColorId = null;
       this.nuevoStock = 0;
       this.nuevoPrecioAdic = 0;
@@ -173,12 +237,42 @@ export class ProductoFormComponent implements OnInit {
   async eliminarVariante(varianteId: number): Promise<void> {
     try {
       await firstValueFrom(this.http.delete(`${environment.apiUrl}/api/variantes/${varianteId}`, { headers: this.getHeaders() }));
-      this.variantes = this.variantes.filter(v => v.id !== varianteId);
+      const updatedVariants = this.variantes.filter(v => v.id !== varianteId);
+      this.variantes = updatedVariants;
+      const totalStock = updatedVariants.reduce((sum, v) => sum + v.stock, 0);
+      this.form.patchValue({ stock: String(totalStock) });
     } catch { this.errorMsg = 'Error al eliminar variante'; }
   }
 
+  iniciarEdicion(v: Variante): void {
+    this.editandoVarianteId = v.id;
+    this.editStockValue = v.stock;
+    this.editPrecioValue = v.precio_adicional;
+  }
+
+  cancelarEdicion(): void {
+    this.editandoVarianteId = null;
+  }
+
+  async guardarEdicion(varianteId: number): Promise<void> {
+    try {
+      const resp = await firstValueFrom(
+        this.http.put(`${environment.apiUrl}/api/variantes/${varianteId}`, {
+          stock: this.editStockValue,
+          precio_adicional: this.editPrecioValue,
+        }, { headers: this.getHeaders() })
+      );
+      this.variantes = this.variantes.map(v => v.id === varianteId ? (resp as Variante) : v);
+      const totalStock = this.variantes.reduce((sum, v) => sum + v.stock, 0);
+      this.form.patchValue({ stock: String(totalStock) });
+      this.editandoVarianteId = null;
+    } catch (err: any) {
+      this.errorMsg = err.error?.detail || 'Error al guardar variante';
+    }
+  }
+
   async generarVariantes(): Promise<void> {
-    if (!this.productoId || !this.genTallas.trim() || !this.genColores.trim()) return;
+    if (!this.productoId || !this.genTallas.trim() || (!this.isPerfumeOrDecant && !this.genColores.trim())) return;
     try {
       const tallas = this.genTallas.split(',').map(s => s.trim()).filter(Boolean);
       const colores = this.genColores.split(',').map(s => s.trim()).filter(Boolean);
@@ -188,7 +282,10 @@ export class ProductoFormComponent implements OnInit {
           stock_default: this.genStockDefault, precio_adicional_default: this.genPrecioDefault,
         }, { headers: this.getHeaders() })
       );
-      this.variantes = [...this.variantes, ...(resp as Variante[])];
+      const updatedVariants = [...this.variantes, ...(resp as Variante[])];
+      this.variantes = updatedVariants;
+      const totalStock = updatedVariants.reduce((sum, v) => sum + v.stock, 0);
+      this.form.patchValue({ stock: String(totalStock) });
       this.showGenerador = false;
       this.genTallas = '';
       this.genColores = '';
@@ -212,12 +309,14 @@ export class ProductoFormComponent implements OnInit {
       }
 
       const headers = this.getHeaders();
+      const stockValue = this.form.value.stock;
       const body: Record<string, unknown> = {
         nombre: this.form.value.nombre,
         descripcion: this.form.value.descripcion,
         precio: parseFloat(this.form.value.precio ?? '0'),
-        stock: parseInt(this.form.value.stock ?? '0', 10),
+        stock: stockValue ? parseInt(stockValue, 10) : 0,
         imagen_url: this.imagenUrl,
+        visible: this.form.value.visible ?? true,
       };
       if (this.form.value.categoria_id) body['categoria_id'] = this.form.value.categoria_id;
 

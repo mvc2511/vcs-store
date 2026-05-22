@@ -15,7 +15,7 @@ async def listar_mis_ordenes(
 ):
     resp = (
         supabase_admin.table("ordenes")
-        .select("*, puntos_entrega!left(nombre), detalles_orden(*, productos!left(nombre), variantes_producto!left(talla, color))")
+        .select("*, puntos_entrega!left(nombre), detalles_orden(*, productos!left(nombre), variantes_producto!left(nombre_variante, tipo_variante, color))")
         .eq("user_id", usuario["user_id"])
         .order("creado_en", desc=True)
         .execute()

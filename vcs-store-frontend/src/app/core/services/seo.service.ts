@@ -16,8 +16,9 @@ export class SeoService {
   private title = inject(Title);
   private meta = inject(Meta);
 
-  private readonly siteName = "VC'S Store";
-  private readonly defaultDescription = 'Tu tienda de moda urbana. Descubre las últimas tendencias en ropa con estilo único y personalidad. Envíos a todo México.';
+  private readonly siteName = 'VYRO';
+  private readonly defaultDescription = 'Venta de ropa, perfumes y electrónicos al mayoreo y granel. Entregas locales en Chapa de Mota, Jilotepec y San Andrés, Estado de México.';
+  private readonly defaultOgImage = 'https://vyro.boutique/og-image.jpg';
 
   update(data: SeoData): void {
     const fullTitle = `${data.title} | ${this.siteName}`;
@@ -30,6 +31,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:description', content: data.ogDescription || description });
     this.meta.updateTag({ name: 'twitter:title', content: data.ogTitle || data.title });
     this.meta.updateTag({ name: 'twitter:description', content: data.ogDescription || description });
+    this.meta.updateTag({ property: 'og:site_name', content: this.siteName });
 
     if (data.ogImage) {
       this.meta.updateTag({ property: 'og:image', content: data.ogImage });
@@ -118,9 +120,8 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:description', content: this.defaultDescription });
     this.meta.updateTag({ name: 'twitter:title', content: this.siteName });
     this.meta.updateTag({ name: 'twitter:description', content: this.defaultDescription });
-    this.meta.removeTag('property="og:image"');
-    this.meta.removeTag('name="twitter:image"');
-    this.meta.removeTag('property="og:url"');
+    this.meta.updateTag({ property: 'og:image', content: this.defaultOgImage });
+    this.meta.updateTag({ name: 'twitter:image', content: this.defaultOgImage });
     this.removeProductJsonLd();
     this.removeBreadcrumbJsonLd();
   }

@@ -4,7 +4,8 @@ from typing import Optional
 
 class VarianteCreate(BaseModel):
     producto_id: int
-    talla: Optional[str] = None
+    nombre_variante: Optional[str] = None
+    tipo_variante: Optional[str] = None
     color: Optional[str] = None
     talla_id: Optional[int] = None
     color_id: Optional[int] = None
@@ -14,7 +15,8 @@ class VarianteCreate(BaseModel):
 
 
 class VarianteUpdate(BaseModel):
-    talla: Optional[str] = None
+    nombre_variante: Optional[str] = None
+    tipo_variante: Optional[str] = None
     color: Optional[str] = None
     talla_id: Optional[int] = None
     color_id: Optional[int] = None
@@ -26,7 +28,8 @@ class VarianteUpdate(BaseModel):
 class VarianteOut(BaseModel):
     id: int
     producto_id: int
-    talla: Optional[str] = None
+    nombre_variante: Optional[str] = None
+    tipo_variante: Optional[str] = None
     color: Optional[str] = None
     talla_id: Optional[int] = None
     color_id: Optional[int] = None

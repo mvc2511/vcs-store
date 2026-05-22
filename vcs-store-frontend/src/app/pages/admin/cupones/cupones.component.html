@@ -1,0 +1,84 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Cupones</h1>
+      <p class="page-desc">Administrá los cupones de descuento para clientes.</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="crearCupon()" class="cat-form">
+    <div class="form-row form-row--multi">
+      <input formControlName="codigo" type="text" placeholder="Código (ej: BIENVENIDO10)" class="input-sm" />
+      <select formControlName="tipo" class="input-sm">
+        <option value="porcentaje">% Porcentaje</option>
+        <option value="fijo">$ Fijo</option>
+      </select>
+      <input formControlName="valor" type="number" step="0.01" min="0.01" placeholder="Valor" class="input-sm" />
+      <input formControlName="minimo_compra" type="number" step="0.01" min="0" placeholder="Mín. compra" class="input-sm" />
+      <input formControlName="usos_maximos" type="number" min="0" placeholder="Usos máx" class="input-sm input-xs" />
+      <input formControlName="fecha_expiracion" type="date" class="input-sm input-xs" />
+      <label class="toggle-inline">
+        <input formControlName="activo" type="checkbox" />
+        <span>Activo</span>
+      </label>
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
+        {{ creando ? 'Agregando...' : 'Agregar' }}
+      </button>
+    </div>
+    <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+  </form>
+
+  <div class="cat-list">
+    <div *ngFor="let c of cupones" class="cat-item">
+      <div *ngIf="editandoId !== c.id; else editTmpl" class="cat-info">
+        <span class="cat-name">{{ c.codigo }}</span>
+        <span class="cat-badge" [class.badge-pct]="c.tipo === 'porcentaje'" [class.badge-fijo]="c.tipo === 'fijo'">
+          {{ c.tipo === 'porcentaje' ? c.valor + '%' : (c.valor | currency:'MXN':'symbol-narrow':'1.0-0') }}
+        </span>
+        <span *ngIf="c.minimo_compra" class="cat-meta">Mín: {{ c.minimo_compra | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+        <span class="cat-meta">Usos: {{ c.usos_actuales }}/{{ c.usos_maximos || '∞' }}</span>
+        <span *ngIf="c.fecha_expiracion" class="cat-meta">Exp: {{ c.fecha_expiracion | date:'shortDate' }}</span>
+        <span class="cat-status" [class.active]="c.activo" [class.inactive]="!c.activo">
+          {{ c.activo ? 'Activo' : 'Inactivo' }}
+        </span>
+      </div>
+
+      <ng-template #editTmpl>
+        <div class="edit-group edit-group--wide">
+          <input [formControl]="editForm.controls.codigo" class="edit-input input-sm" placeholder="Código" />
+          <select [formControl]="editForm.controls.tipo" class="edit-input input-sm">
+            <option value="porcentaje">%</option>
+            <option value="fijo">$</option>
+          </select>
+          <input [formControl]="editForm.controls.valor" type="number" step="0.01" min="0.01" class="edit-input input-sm" placeholder="Valor" />
+          <input [formControl]="editForm.controls.minimo_compra" type="number" step="0.01" min="0" class="edit-input input-sm" placeholder="Mín" />
+          <input [formControl]="editForm.controls.usos_maximos" type="number" min="0" class="edit-input input-xs" placeholder="Usos" />
+          <input [formControl]="editForm.controls.fecha_expiracion" type="date" class="edit-input input-xs" />
+          <label class="toggle-inline">
+            <input [formControl]="editForm.controls.activo" type="checkbox" />
+          </label>
+          <div class="edit-acts">
+            <button class="act-btn" (click)="guardarEdit(c.id)" title="Guardar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="act-btn" (click)="cancelarEdit()" title="Cancelar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </ng-template>
+
+      <div class="row-acts" *ngIf="editandoId !== c.id">
+        <button class="act-btn" title="Editar" (click)="iniciarEdit(c)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="act-btn danger" title="Eliminar" (click)="eliminarCupon(c.id)" [disabled]="eliminandoId === c.id">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="cupones.length === 0" class="empty-state">
+      No hay cupones. Creá el primero.
+    </div>
+  </div>
+</div>

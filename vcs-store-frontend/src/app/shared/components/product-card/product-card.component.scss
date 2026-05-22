@@ -145,13 +145,58 @@
   padding: $vyro-space-md;
 }
 
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $vyro-space-xs;
+}
+
 .card-category {
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: $vyro-accent;
-  margin-bottom: $vyro-space-xs;
+}
+
+.wishlist-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $vyro-text-secondary;
+  cursor: pointer;
+  border-radius: $vyro-radius-full;
+  @include transition(all);
+
+  svg {
+    width: 16px;
+    height: 16px;
+    @include transition(all);
+  }
+
+  &:hover {
+    color: $vyro-error;
+    transform: scale(1.15);
+
+    svg {
+      stroke: $vyro-error;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
 }
 
 .card-title {

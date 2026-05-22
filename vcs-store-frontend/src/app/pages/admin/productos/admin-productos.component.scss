@@ -114,6 +114,18 @@
 
 .pname { font-weight: 600; }
 
+.col-vis { width: 60px; text-align: center; }
+
+.vis-yes {
+  display: inline-flex;
+  color: #059669;
+}
+
+.vis-no {
+  display: inline-flex;
+  color: var(--vyro-error);
+}
+
 .stock {
   display: inline-block;
   padding: 0.1rem 0.45rem;

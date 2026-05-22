@@ -20,14 +20,36 @@
       </div>
 
       <div class="field">
-        <label for="precio">Precio</label>
-        <input id="precio" formControlName="precio" type="number" step="0.01" min="0" placeholder="0.00" />
+        <label for="precio">Precio Base</label>
+        <input 
+          id="precio" 
+          formControlName="precio" 
+          type="number" 
+          step="0.01" 
+          min="0" 
+          placeholder="0.00"
+          [readonly]="variantes.length > 0"
+        />
+        <span *ngIf="variantes.length > 0" class="field-hint">Precio base del producto (recargo por variante en la sección abajo)</span>
       </div>
 
-      <div class="field">
+      <div class="field" *ngIf="variantes.length === 0">
         <label for="stock">Stock</label>
-        <input id="stock" formControlName="stock" type="number" min="0" placeholder="0" [readonly]="variantes.length > 0" />
-        <span *ngIf="variantes.length > 0" class="field-hint">Auto-calculado desde variantes</span>
+        <input id="stock" formControlName="stock" type="number" min="0" placeholder="0" />
+        <span class="field-hint">Stock total del producto (si no hay variantes)</span>
+      </div>
+
+      <div *ngIf="variantes.length > 0" class="field field--disabled">
+        <label for="stock-disabled">Stock</label>
+        <input 
+          id="stock-disabled" 
+          formControlName="stock" 
+          type="number" 
+          min="0" 
+          placeholder="0"
+          readonly
+        />
+        <span class="field-hint">Auto-calculado: suma de stocks de variantes</span>
       </div>
 
       <div class="field">
@@ -36,6 +58,18 @@
           <option [ngValue]="null">Sin categoría</option>
           <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{ cat.nombre }}</option>
         </select>
+      </div>
+
+      <div class="field field--toggle">
+        <label for="visible">Visible en catálogo</label>
+        <div class="toggle-wrap">
+          <label class="toggle" [class.toggle--off]="!form.get('visible')?.value">
+            <input id="visible" formControlName="visible" type="checkbox" class="toggle-input" />
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">{{ form.get('visible')?.value ? 'Visible' : 'Oculto' }}</span>
+        </div>
+        <span *ngIf="!form.get('visible')?.value" class="field-hint">Oculto: no aparece en el catálogo público</span>
       </div>
 
       <div class="field full">
@@ -52,49 +86,101 @@
 
     <!-- Variants section (edit mode only) -->
     <div *ngIf="editMode && productoId" class="variants-section">
-      <h2 class="section-title">Variantes (Talla / Color)</h2>
+      <h2 class="section-title">Variantes <span class="section-sub">({{ variantLabel }}{{ showColorField ? ' / Color' : '' }})</span></h2>
 
       <div *ngIf="variantes.length === 0" class="variants-empty">
         Este producto no tiene variantes aún.
       </div>
 
-      <div *ngIf="variantes.length > 0" class="variants-table">
+      <div *ngIf="variantes.length > 0" class="variants-table" [class.variants-table--no-color]="!showColorField">
         <div class="variants-table-header">
-          <span>Talla</span>
-          <span>Color</span>
+          <span>{{ variantLabel }}</span>
+          <span *ngIf="showColorField">Color</span>
           <span>Stock</span>
           <span>Precio +</span>
-          <span></span>
+          <span>Acciones</span>
         </div>
-        <div *ngFor="let v of variantes" class="variants-table-row">
-          <span>{{ v.talla || tallaNombre(v.talla_id) || '—' }}</span>
-          <span><span class="color-dot" *ngIf="v.color_id" [style.background]="getColorHex(v.color_id)"></span>{{ v.color || colorNombre(v.color_id) || '—' }}</span>
-          <span>{{ v.stock }}</span>
-          <span>{{ v.precio_adicional | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-          <button type="button" class="btn-icon btn-icon--danger" (click)="eliminarVariante(v.id)" title="Eliminar variante">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </button>
+        <div *ngFor="let v of variantes" class="variants-table-row" [class.variants-table-row--editing]="editandoVarianteId === v.id" [class.variants-table-row--no-color]="!showColorField">
+          <span>{{ v.nombre_variante || tallaNombre(v.talla_id) || '—' }}</span>
+          <span *ngIf="showColorField"><span class="color-dot" *ngIf="v.color_id" [style.background]="getColorHex(v.color_id)"></span>{{ v.color || colorNombre(v.color_id) || '—' }}</span>
+          <ng-container *ngIf="editandoVarianteId !== v.id; else editMode">
+            <span>{{ v.stock }}</span>
+            <span>{{ v.precio_adicional | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+            <span class="variants-table-actions">
+              <button type="button" class="btn-icon" (click)="iniciarEdicion(v)" title="Editar variante">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button type="button" class="btn-icon btn-icon--danger" (click)="eliminarVariante(v.id)" title="Eliminar variante">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </span>
+          </ng-container>
+          <ng-template #editMode>
+            <span>
+              <input [(ngModel)]="editStockValue" [ngModelOptions]="{standalone: true}" type="number" min="0" class="edit-input" />
+            </span>
+            <span>
+              <input [(ngModel)]="editPrecioValue" [ngModelOptions]="{standalone: true}" type="number" step="0.01" min="0" class="edit-input" />
+            </span>
+            <span class="variants-table-actions">
+              <button type="button" class="btn-icon btn-icon--confirm" (click)="guardarEdicion(v.id)" title="Guardar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="btn-icon" (click)="cancelarEdicion()" title="Cancelar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </span>
+          </ng-template>
         </div>
       </div>
 
       <!-- Add variant inline form -->
-      <div *ngIf="showAddVariant" class="variants-add-row">
-        <select [(ngModel)]="nuevaTallaId" [ngModelOptions]="{standalone: true}" class="field-input">
-          <option [ngValue]="null">Sin talla</option>
-          <option *ngFor="let t of tallas" [ngValue]="t.id">{{ t.nombre }}</option>
-        </select>
-        <select [(ngModel)]="nuevoColorId" [ngModelOptions]="{standalone: true}" class="field-input">
-          <option [ngValue]="null">Sin color</option>
-          <option *ngFor="let c of colores" [ngValue]="c.id">{{ c.nombre }}</option>
-        </select>
-        <input [(ngModel)]="nuevoStock" [ngModelOptions]="{standalone: true}" type="number" min="0" placeholder="Stock" class="field-input field-input--sm" />
-        <input [(ngModel)]="nuevoPrecioAdic" [ngModelOptions]="{standalone: true}" type="number" step="0.01" min="0" placeholder="+$" class="field-input field-input--sm" />
-        <button type="button" class="btn-icon btn-icon--confirm" (click)="agregarVariante()" title="Guardar variante">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>
-        <button type="button" class="btn-icon" (click)="showAddVariant = false" title="Cancelar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
+      <div *ngIf="showAddVariant" class="variants-add-form">
+        <div class="variants-add-row">
+          <!-- Perfume/Decant: ml options from API -->
+          <ng-container *ngIf="isPerfumeOrDecant; else generalVariantFields">
+            <div class="field field--inline">
+              <label for="new-ml">{{ variantLabel }} <span class="field-required">*</span></label>
+              <select [(ngModel)]="nuevoNombreVariante" [ngModelOptions]="{standalone: true}" id="new-ml" class="field-input">
+                <option value="">Seleccionar...</option>
+                <option *ngFor="let ml of mlOptions" [value]="ml + 'ml'">{{ ml }} ml</option>
+              </select>
+            </div>
+          </ng-container>
+          <ng-template #generalVariantFields>
+            <div class="field field--inline">
+              <label for="new-talla">{{ variantLabel }}</label>
+              <select [(ngModel)]="nuevaTallaId" [ngModelOptions]="{standalone: true}" id="new-talla" class="field-input">
+                <option [ngValue]="null">Seleccionar...</option>
+                <option *ngFor="let t of tallas" [ngValue]="t.id">{{ t.nombre }}</option>
+              </select>
+              <input [(ngModel)]="nuevoNombreVariante" [ngModelOptions]="{standalone: true}" id="new-talla-text" class="field-input" placeholder="Ej: 5ml, 10ml (opcional)" />
+            </div>
+            <div class="field field--inline">
+              <label for="new-color">Color</label>
+              <select [(ngModel)]="nuevoColorId" [ngModelOptions]="{standalone: true}" id="new-color" class="field-input">
+                <option [ngValue]="null">Seleccionar...</option>
+                <option *ngFor="let c of colores" [ngValue]="c.id">{{ c.nombre }}</option>
+              </select>
+            </div>
+          </ng-template>
+          <div class="field field--inline field--sm">
+            <label for="new-stock">Stock <span class="field-required">*</span></label>
+            <input [(ngModel)]="nuevoStock" [ngModelOptions]="{standalone: true}" id="new-stock" type="number" min="0" placeholder="0" class="field-input" />
+          </div>
+          <div class="field field--inline field--sm">
+            <label for="new-precio">+$ <span class="field-required">*</span></label>
+            <input [(ngModel)]="nuevoPrecioAdic" [ngModelOptions]="{standalone: true}" id="new-precio" type="number" step="0.01" min="0" placeholder="0.00" class="field-input" />
+          </div>
+          <div class="variants-add-actions">
+            <button type="button" class="btn-icon btn-icon--confirm" (click)="agregarVariante()" [disabled]="!nuevoStock && !nuevoPrecioAdic" title="Guardar variante">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button type="button" class="btn-icon" (click)="showAddVariant = false" title="Cancelar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="variants-actions">
@@ -111,24 +197,39 @@
       <!-- Generate variants inline form -->
       <div *ngIf="showGenerador" class="variants-generator">
         <div class="generator-row">
-          <div class="field">
-            <label>Tallas (separadas por coma)</label>
-            <input [(ngModel)]="genTallas" [ngModelOptions]="{standalone: true}" placeholder="XS, S, M, L, XL" class="field-input" />
-          </div>
-          <div class="field">
-            <label>Colores (separados por coma)</label>
-            <input [(ngModel)]="genColores" [ngModelOptions]="{standalone: true}" placeholder="Rojo, Azul, Negro" class="field-input" />
+          <ng-container *ngIf="isPerfumeOrDecant; else generalGeneratorFields">
+            <div class="field">
+              <label for="gen-ml">{{ variantLabel }} <span class="field-required">*</span></label>
+              <input [(ngModel)]="genTallas" [ngModelOptions]="{standalone: true}" id="gen-ml" placeholder="{{ mlOptions.length ? mlOptions.join(', ') + ' ml' : '50, 100, 200 ml' }}" class="field-input" />
+              <span class="field-hint" *ngIf="mlOptions.length">Separados por coma. Opciones: {{ mlOptions.join(', ') }} ml</span>
+              <span class="field-hint" *ngIf="!mlOptions.length">Separados por coma. Ej: 50, 100, 200</span>
+            </div>
+          </ng-container>
+          <ng-template #generalGeneratorFields>
+            <div class="field">
+              <label for="gen-tallas">Tallas / Volúmenes <span class="field-required">*</span></label>
+              <input [(ngModel)]="genTallas" [ngModelOptions]="{standalone: true}" id="gen-tallas" placeholder="XS, S, M, L, XL / 5ml, 10ml, 30ml" class="field-input" />
+              <span class="field-hint">Separadas por coma</span>
+            </div>
+            <div class="field">
+              <label for="gen-colores">Colores <span class="field-required">*</span></label>
+              <input [(ngModel)]="genColores" [ngModelOptions]="{standalone: true}" id="gen-colores" placeholder="Rojo, Azul, Negro" class="field-input" />
+              <span class="field-hint">Separados por coma</span>
+            </div>
+          </ng-template>
+          <div class="field field--sm" [class.hidden]="isPerfumeOrDecant">
+            <label for="gen-colores" *ngIf="isPerfumeOrDecant" class="visually-hidden">Colores</label>
           </div>
           <div class="field field--sm">
-            <label>Stock por defecto</label>
-            <input [(ngModel)]="genStockDefault" [ngModelOptions]="{standalone: true}" type="number" min="0" class="field-input" />
+            <label for="gen-stock">Stock por defecto <span class="field-required">*</span></label>
+            <input [(ngModel)]="genStockDefault" [ngModelOptions]="{standalone: true}" id="gen-stock" type="number" min="0" class="field-input" />
           </div>
           <div class="field field--sm">
-            <label>+$ por defecto</label>
-            <input [(ngModel)]="genPrecioDefault" [ngModelOptions]="{standalone: true}" type="number" step="0.01" min="0" class="field-input" />
+            <label for="gen-precio">+$ por defecto</label>
+            <input [(ngModel)]="genPrecioDefault" [ngModelOptions]="{standalone: true}" id="gen-precio" type="number" step="0.01" min="0" class="field-input" />
           </div>
         </div>
-        <button type="button" class="btn-primary btn-sm" (click)="generarVariantes()">Generar variantes</button>
+        <button type="button" class="btn-primary btn-sm" (click)="generarVariantes()" [disabled]="!genTallas.trim() || (!isPerfumeOrDecant && !genColores.trim()) || genStockDefault === 0">Generar variantes</button>
       </div>
     </div>
 

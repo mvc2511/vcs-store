@@ -231,6 +231,10 @@
     padding: $vyro-space-sm 0;
     gap: 0.35rem;
   }
+
+  @media (max-width: 500px) {
+    gap: 0.25rem;
+  }
 }
 
 .filter-search {
@@ -278,6 +282,10 @@
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 
+  @media (max-width: $vyro-bp-mobile) {
+    gap: $vyro-space-sm;
+  }
+
   &::-webkit-scrollbar {
     height: 4px;
   }
@@ -302,6 +310,16 @@
   flex-wrap: wrap;
   flex: 1;
   min-width: 0;
+
+  @media (max-width: $vyro-bp-mobile) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+
+    &::-webkit-scrollbar { height: 2px; }
+    &::-webkit-scrollbar-thumb { background: $vyro-border; border-radius: $vyro-radius-full; }
+  }
 }
 
 .chip {
@@ -379,6 +397,12 @@
     background: $vyro-surface;
     color: $vyro-text;
     text-transform: uppercase;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    font-size: 0.75rem;
+    padding: $vyro-space-xs $vyro-space-sm;
+    letter-spacing: 0.02em;
   }
 }
 

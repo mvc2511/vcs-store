@@ -14,6 +14,7 @@ interface Producto {
   imagen_url: string;
   categoria_id: number | null;
   categorias: { nombre: string } | null;
+  visible?: boolean;
 }
 
 @Component({
@@ -39,7 +40,9 @@ export class AdminProductosComponent implements OnInit {
 
   private cargarProductos(): void {
     this.loading = true;
-    this.http.get<{ data: Producto[] }>(`${environment.apiUrl}/api/productos`).subscribe({
+    const token = this.authService.sessionToken();
+    const headers = new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+    this.http.get<{ data: Producto[] }>(`${environment.apiUrl}/api/admin/productos`, { headers }).subscribe({
       next: (resp) => {
         this.productos = resp.data;
         this.loading = false;

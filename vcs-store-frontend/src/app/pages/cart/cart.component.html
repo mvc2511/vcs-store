@@ -34,7 +34,11 @@
                 {{ getVarianteText(item) }}
               </span>
               <span class="cart-item-price">
-                {{ getItemPrice(item) | currency:'MXN':'symbol-narrow':'1.0-0' }}
+                <ng-container *ngIf="getWholesalePrice(item.producto.id, item.cantidad) as wp; else normalPrice">
+                  <span class="price-old">{{ getBasePrice(item) | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                  <span class="price-wholesale">{{ wp | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                </ng-container>
+                <ng-template #normalPrice>{{ getItemPrice(item) | currency:'MXN':'symbol-narrow':'1.0-0' }}</ng-template>
               </span>
               <!-- Stock warning -->
               <span *ngIf="getStockWarning(item) as warning" class="stock-warning-badge">
@@ -54,6 +58,7 @@
               </div>
               <div class="cart-item-total">
                 {{ getItemPrice(item) * item.cantidad | currency:'MXN':'symbol-narrow':'1.0-0' }}
+                <span *ngIf="getWholesalePrice(item.producto.id, item.cantidad)" class="total-wholesale-hint">Mayoreo</span>
               </div>
               <button class="cart-item-remove" (click)="removeItem(item.producto.id, item.variante?.id)" [attr.aria-label]="'Eliminar ' + item.producto.nombre">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -65,11 +70,41 @@
 
       <!-- Summary sidebar -->
       <aside class="cart-summary">
+        <!-- Coupon section -->
+        <div class="summary-section coupon-section">
+          <h3 class="delivery-title">Cupón de descuento</h3>
+          <div *ngIf="!cuponAplicado()" class="coupon-form">
+            <input
+              type="text"
+              placeholder="Código"
+              [(ngModel)]="cuponCode"
+              class="coupon-input"
+              (keyup.enter)="aplicarCupon()"
+            />
+            <button class="coupon-btn" (click)="aplicarCupon()" [disabled]="cuponLoading() || !cuponCode().trim()">
+              {{ cuponLoading() ? '...' : 'Aplicar' }}
+            </button>
+          </div>
+          <div *ngIf="cuponError()" class="coupon-error">{{ cuponError() }}</div>
+          <div *ngIf="cuponAplicado() as cupon" class="coupon-applied">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Código <strong>{{ cupon.codigo }}</strong> aplicado</span>
+            <span class="coupon-discount">-{{ cupon.tipo === 'porcentaje' ? cupon.valor + '%' : (cupon.valor | currency:'MXN':'symbol-narrow':'1.0-0') }}</span>
+            <button class="coupon-remove" (click)="quitarCupon()" title="Quitar cupón">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
         <div class="summary-section">
           <h2 class="summary-title">Resumen</h2>
           <div class="summary-row">
             <span>Subtotal</span>
-            <span>{{ cartService.totalPrice() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+            <span>{{ subtotalConMayoreo() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+          <div class="summary-row" *ngIf="descuentoTotal() > 0">
+            <span>Descuento</span>
+            <span class="summary-discount">-{{ descuentoTotal() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
           </div>
           <div class="summary-row summary-divider">
             <span>Envío</span>
@@ -77,7 +112,7 @@
           </div>
           <div class="summary-total">
             <span>Total</span>
-            <span>{{ cartService.totalPrice() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+            <span>{{ totalConDescuento() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
           </div>
         </div>
 

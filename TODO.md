@@ -2,35 +2,29 @@
 
 ## 🔄 Pendiente — Plan de Implementación por Fases
 
-### Fase 2 — Experiencia Cliente (~2 semanas)
-- [ ] **2.1 Reseñas y Valoraciones** — Tabla resenas, CRUD backend, frontend estrellas (solo compradores)
-- [ ] **2.2 Wishlist / Favoritos** — Tabla favoritos, corazón en cards/detalle, página /favoritos
-- [ ] **2.3 Cupones / Descuentos** — Tabla cupones, validación backend, input en carrito, CRUD admin
-- [ ] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend, tarjeta dashboard admin, badge
+### Fase 1.5 — Mejoras Modelo de Datos Variantes ✅ COMPLETADA
+- [x] **1.5.1** Renombrar `talla` → `nombre_variante` en variantes_producto, backend y frontend
+- [x] **1.5.2** Agregar `tipo_variante` ('talla'|'volumen'|'color_solo') para semántica clara
+- [x] **1.5.3** Crear tabla `opciones_ml` con FK a categorías + CRUD admin (backend + frontend)
+- [x] **1.5.4** Eliminar hardcode de ml en frontend (antes: PERFUME_CAT_ID=5, DECANT_CAT_ID=6 hardcoded)
+- [x] **1.5.5** API dinámica: ml options se cargan desde GET /api/opciones-ml?categoria_id=X
+- [x] **1.5.6** Auto-detección tipo_variante: backend detecta Perfume/Decant por categoría
+- [x] **1.5.7** Corregir crash maybe_single() en _resolver_talla_id/_resolver_color_id (variantes 500)
 
-### Fase 3 — Validaciones Críticas (~1 semana)
-- [ ] **3.1 Backend:** race condition stock, restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex
-- [ ] **3.2 Frontend:** 401 Interceptor, refresh token Supabase, producto eliminado en carrito, alert()→Toast, refresh precios
-
-### Fase 4 — Estandarización Responsive + Accordion (~1 semana)
-- [ ] **4.1** Mixins mobile-first (min-width), migrar cart.component.scss, reemplazar raw @media en 6 componentes
-- [ ] **4.2** Mis Pedidos: convertir detalles inline en accordion expandible por orden
-
-### Fase 5 — Funcionalidades Medias (~2-3 semanas)
-- [ ] **5.1** Filtros combinados, productos relacionados, dashboard analíticas (Chart.js), carrito abandonado (email), notas del cliente, galería múltiple imágenes
-
-### Fase 6 — Mejoras Bajas (~1-2 semanas)
-- [ ] **6.1** Términos/Privacidad, multi-idioma (i18n), blog, comparación productos, compartir en redes
-
-## ✅ Completado
-
-### Fase 1 — MVP Production
+### Fase 1 — MVP Production ✅ COMPLETADA
 - [x] **1.1 Notificaciones Email** — SendGrid backend service + integración en checkout, admin, mis_ordenes
 - [x] **1.2 Variantes de Producto (Talla, Color)** — Variantes_producto table, CRUD backend, selector product-detail, carrito con variante_id, checkout con variante_id, admin inline editor
 - [x] **1.2 Extra: Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores` con valores predefinidos, FK desde variantes_producto, CRUD admin, selectores en formulario
 - [x] **1.2 Extra: Corrección doble stock** — Stock de producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe
+- [x] **1.2 Extra: Modelo de datos mejorado** — Renombrar talla→nombre_variante, tipo_variante, tabla opciones_ml, api dinámica, auto-detección por categoría
 - [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro por categoría, frontend con ProductService, "Ver más" button
 - [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito, botones checkout deshabilitados con advertencia
+
+### Fase 2 — Experiencia Cliente ✅ COMPLETADA
+- [x] **2.1 Reseñas y Valoraciones** — Tabla `resenas`, CRUD backend con verificación de compra, estrellas frontend, soporte anónimo, sección en product-detail
+- [x] **2.2 Wishlist / Favoritos** — Tabla `favoritos`, solo DB (sin localStorage), WishlistService con Signals, corazón en cards/detalle, página `/favoritos`, link navbar
+- [x] **2.3 Cupones / Descuentos + Mayoreo** — Sistema dual: cupones con código (porcentaje/fijo, filtro producto/categoría) + precios por volumen (mayoreo). Input cupón en carrito, precios mayoreo automáticos. CRUD admin para ambos.
+- [x] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend `GET /api/admin/stock-bajo?umbral=10`. Badge rojo sidebar admin con count. Actualización automática cada 60s.
 
 ### Infraestructura y Base de Datos
 - [x] Proyecto Supabase (PostgreSQL + Auth + Storage + RLS)
@@ -97,7 +91,7 @@
 - [x] Rediseño Navbar VYRO (logo, animaciones, focus rings champagne)
 - [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
 - [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
-- [x] Rediseño ProductDetail VYRO (compacto 1000px, variant pills con stock indicator)
+- [x] Rediseño ProductDetail VYRO (2-columnas desktop, stock bar, specs grid, editorial spacing)
 - [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar, stock warnings)
 - [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
@@ -139,6 +133,19 @@
 - [x] Frontend en Netlify (build automático)
 - [x] Backend en Render (Docker Compose)
 - [x] Cron-job keep-alive activo
+
+### Frontend — SEO
+- [x] JSON-LD LocalBusiness con datos reales: teléfono, área de servicio (Chapa de Mota, Jilotepec, San Andrés), precio
+- [x] Meta tags y Open Graph actualizados con branding VYRO y enfoque local
+- [x] Canonical URLs corregidas a vyro.boutique (eran vcsstore.com)
+- [x] Sitemap ampliado con todas las rutas públicas
+- [x] robots.txt apuntando a vyro.boutique
+- [x] SeoService actualizado con siteName VYRO y descripciones local-SEO
+
+### Frontend — Legal y Footer
+- [x] Footer responsive VYRO: logo, entregas locales (Chapa de Mota, Jilotepec, San Andrés), WhatsApp 55 2298 8741, links legales
+- [x] Página /privacidad: Aviso de Privacidad para negocio local (datos recabados, ARCO, contacto)
+- [x] Página /terminos: Términos y Condiciones (proceso pedido, entregas locales, pagos contra entrega, cambios)
 
 ### Documentación
 - [x] CONTEXT.md — arquitectura general actualizada

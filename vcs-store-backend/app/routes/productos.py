@@ -15,6 +15,7 @@ class ProductoCreate(BaseModel):
     stock: int
     imagen_url: str
     categoria_id: Optional[int] = None
+    visible: Optional[bool] = True
 
 
 class ProductoUpdate(BaseModel):
@@ -24,6 +25,7 @@ class ProductoUpdate(BaseModel):
     stock: Optional[int] = None
     imagen_url: Optional[str] = None
     categoria_id: Optional[int] = None
+    visible: Optional[bool] = None
 
 
 @router.get("")
@@ -36,9 +38,9 @@ async def listar_productos(
     offset: int = Query(0, ge=0),
 ):
     # Count query (without pagination)
-    count_query = supabase_admin.table("productos").select("id", count="exact")
+    count_query = supabase_admin.table("productos").select("id", count="exact").eq("visible", True)
     # Data query
-    data_query = supabase_admin.table("productos").select("*, categorias(nombre)")
+    data_query = supabase_admin.table("productos").select("*, categorias(nombre)").eq("visible", True)
 
     if search:
         count_query = count_query.ilike("nombre", f"%{search}%")
@@ -66,8 +68,31 @@ async def listar_productos(
         .execute()
     )
 
+    # Enrich each product with has_variants and stock_real
+    products = data_resp.data or []
+    for producto in products:
+        producto_id = producto.get("id")
+
+        # Get variants for this product
+        variantes_resp = (
+            supabase_admin.table("variantes_producto")
+            .select("stock")
+            .eq("producto_id", producto_id)
+            .execute()
+        )
+        variantes = variantes_resp.data or []
+
+        # Compute has_variants
+        producto["has_variants"] = len(variantes) > 0
+
+        # Compute stock_real (sum of variant stocks if variants exist, else product stock)
+        if producto["has_variants"]:
+            producto["stock_real"] = sum(v.get("stock", 0) for v in variantes)
+        else:
+            producto["stock_real"] = producto.get("stock", 0)
+
     return {
-        "data": data_resp.data or [],
+        "data": products,
         "total": total,
         "limit": limit,
         "offset": offset,
@@ -87,7 +112,16 @@ async def obtener_producto(producto_id: int):
         .execute()
     )
     producto = resp.data
-    producto["variantes"] = variantes_resp.data or []
+    variantes = variantes_resp.data or []
+    producto["variantes"] = variantes
+
+    # Compute has_variants and stock_real
+    producto["has_variants"] = len(variantes) > 0
+    if producto["has_variants"]:
+        producto["stock_real"] = sum(v.get("stock", 0) for v in variantes)
+    else:
+        producto["stock_real"] = producto.get("stock", 0)
+
     return producto
 
 
@@ -97,6 +131,8 @@ async def crear_producto(
     admin: dict = Depends(verificar_admin),
 ):
     data = producto.model_dump(exclude_none=True)
+    if "visible" not in data:
+        data["visible"] = True
     resp = supabase_admin.table("productos").insert(data).execute()
     if not resp.data:
         raise HTTPException(status_code=500, detail="Error al crear el producto")

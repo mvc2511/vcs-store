@@ -35,10 +35,23 @@
 
       <a
         *ngIf="authService.isLoggedIn()"
+        routerLink="/favoritos"
+        routerLinkActive="active"
+        class="nav-link desktop-only"
+        [attr.aria-current]="router.isActive('/favoritos', true) ? 'page' : null"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 4px; vertical-align: -2px;">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Favoritos
+      </a>
+
+      <a
+        *ngIf="authService.isLoggedIn()"
         routerLink="/mis-pedidos"
         routerLinkActive="active"
         class="nav-link desktop-only"
-        [attr.aria-current]="router.url === '/mis-pedidos' ? 'page' : null"
+        [attr.aria-current]="router.isActive('/mis-pedidos', true) ? 'page' : null"
       >
         Mis Pedidos
       </a>
@@ -112,6 +125,7 @@
       <!-- Links Mobile -->
       <a routerLink="/" class="mob-link" (click)="closeMenu()">Catálogo</a>
       <a *ngIf="authService.perfil()?.rol === 'admin'" routerLink="/admin" class="mob-link" (click)="closeMenu()">Admin</a>
+      <a *ngIf="authService.isLoggedIn()" routerLink="/favoritos" class="mob-link" (click)="closeMenu()">Favoritos</a>
       <a *ngIf="authService.isLoggedIn()" routerLink="/mis-pedidos" class="mob-link" (click)="closeMenu()">Mis Pedidos</a>
       <a *ngIf="authService.isLoggedIn()" routerLink="/perfil" class="mob-link" (click)="closeMenu()">Mi Perfil</a>
 
