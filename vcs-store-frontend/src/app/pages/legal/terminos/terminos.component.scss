@@ -1,0 +1,122 @@
+@use 'variables' as *;
+
+.legal-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 70vh;
+  padding: 3rem 1.5rem 5rem;
+  background: $vyro-bg;
+}
+
+.legal-card {
+  background: $vyro-surface;
+  padding: 3rem 3rem 3.5rem;
+  border-radius: $vyro-radius-lg;
+  box-shadow: 0 8px 32px rgba($vyro-text, 0.06);
+  max-width: 720px;
+  width: 100%;
+}
+
+.legal-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: $vyro-font-sans;
+  font-size: 0.82rem;
+  color: $vyro-text-secondary;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color $vyro-transition-fast;
+
+  &:hover {
+    color: $vyro-accent;
+  }
+}
+
+.legal-title {
+  font-family: $vyro-font-heading;
+  font-size: 2rem;
+  font-weight: 700;
+  color: $vyro-text;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.legal-date {
+  font-family: $vyro-font-sans;
+  font-size: 0.8rem;
+  color: $vyro-silver;
+  margin: 0 0 2rem;
+}
+
+.legal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+
+  section {
+    h2 {
+      font-family: $vyro-font-heading;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $vyro-text;
+      margin: 0 0 0.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      font-family: $vyro-font-sans;
+      font-size: 0.9rem;
+      color: $vyro-text-secondary;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    ul {
+      margin: 0.4rem 0 0;
+      padding-left: 1.25rem;
+
+      li {
+        font-family: $vyro-font-sans;
+        font-size: 0.9rem;
+        color: $vyro-text-secondary;
+        line-height: 1.7;
+        margin-bottom: 0.15rem;
+      }
+    }
+
+    strong {
+      color: $vyro-text;
+      font-weight: 600;
+    }
+  }
+}
+
+@media (max-width: $vyro-bp-tablet) {
+  .legal-page {
+    padding: 2rem 1rem 4rem;
+  }
+
+  .legal-card {
+    padding: 2.5rem 1.75rem;
+  }
+
+  .legal-title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: $vyro-bp-mobile) {
+  .legal-card {
+    padding: 2rem 1.25rem;
+  }
+
+  .legal-title {
+    font-size: 1.35rem;
+  }
+
+  .legal-content section h2 {
+    font-size: 1rem;
+  }
+}

@@ -146,6 +146,20 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'privacidad',
+    loadComponent: () =>
+      import('./pages/legal/privacidad/privacidad.component').then(
+        (m) => m.PrivacidadComponent
+      ),
+  },
+  {
+    path: 'terminos',
+    loadComponent: () =>
+      import('./pages/legal/terminos/terminos.component').then(
+        (m) => m.TerminosComponent
+      ),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

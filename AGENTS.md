@@ -1,6 +1,6 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-21
+**Última actualización:** 2026-05-22
 
 ## 🎯 Próximo paso inmediato
 Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh token, DAG transiciones).
@@ -47,10 +47,12 @@ Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh toke
 - [x] Ordenar productos por precio (menor→mayor, mayor→menor)
 - [x] Auth service con Signals
 - [x] AuthGuard + AdminGuard funcionales
-- [x] Rutas públicas: /, /producto/:id, /cart, /login
+- [x] Rutas públicas: /, /producto/:id, /cart, /login, /privacidad, /terminos
 - [x] Rutas protegidas: /success, /mis-pedidos, /perfil, /admin/*
 - [x] Diseño mobile-first (breakpoints 767px y 500px)
 - [x] Diseño homogéneo claro (admin y clientes mismo tema light)
+- [x] Footer responsive con datos de contacto, entregas locales y links legales
+- [x] Páginas legales: /privacidad (Aviso de Privacidad) y /terminos (Términos y Condiciones)
 
 ### Frontend — Auth y Perfil
 - [x] Login con Google OAuth + Email/Password

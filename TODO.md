@@ -134,6 +134,11 @@
 - [x] Backend en Render (Docker Compose)
 - [x] Cron-job keep-alive activo
 
+### Frontend — Legal y Footer
+- [x] Footer responsive VYRO: logo, entregas locales (Chapa de Mota, Jilotepec, San Andrés), WhatsApp 55 2298 8741, links legales
+- [x] Página /privacidad: Aviso de Privacidad para negocio local (datos recabados, ARCO, contacto)
+- [x] Página /terminos: Términos y Condiciones (proceso pedido, entregas locales, pagos contra entrega, cambios)
+
 ### Documentación
 - [x] CONTEXT.md — arquitectura general actualizada
 - [x] AGENTS.md — estado para agentes de IA

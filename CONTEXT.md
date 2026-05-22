@@ -37,6 +37,7 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Upload de imágenes:** Preview local con FileReader, subida a Storage diferida al submit del formulario (evita basura en bucket).
 - **Consumo de APIs:** JWT de Supabase en header `Authorization: Bearer <token>`.
 - **Responsive:** Navbar con hamburger menu en mobile (incluye búsqueda), tablas se convierten a cards, grids colapsan a 1 columna. Navbar desktop: sin barra de búsqueda (solo en home sticky), link "Mi Perfil" visible si logueado, avatar clickable a perfil.
+- **Footer:** Footer pegajoso con logo VYRO, zonas de entrega (Chapa de Mota, Jilotepec, San Andrés), WhatsApp 55 2298 8741, y links legales (/privacidad, /terminos).
 
 ### Rutas actuales
 
@@ -46,6 +47,8 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 | `/producto/:id` | ProductDetailComponent | - |
 | `/cart` | CartComponent (fecha/hora entrega) | - |
 | `/login` | LoginComponent (soporta ?returnUrl) | - |
+| `/privacidad` | PrivacidadComponent | - |
+| `/terminos` | TerminosComponent | - |
 | `/mis-pedidos` | MisPedidosComponent (historial + cancelar + fecha/hora + barra progreso) | AuthGuard |
 | `/success` | SuccessComponent (resumen completo con productos y entrega) | AuthGuard |
 | `/perfil` | PerfilComponent (editar nombre, cambiar contraseña, avatar) | AuthGuard |
