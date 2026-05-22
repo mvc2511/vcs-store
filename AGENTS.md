@@ -1,6 +1,6 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22
+**Última actualización:** 2026-05-22 (2)
 
 ## 🎯 Próximo paso inmediato
 Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh token, DAG transiciones).
@@ -100,6 +100,7 @@ Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh toke
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
 - [x] SCSS consistente en todos los componentes con paleta VYRO
 - [x] Toast Service + Container: Signal + Observable, 4 tipos, SVG icons, slideIn animation, responsive
+- [x] SEO completo: JSON-LD LocalBusiness, Open Graph, Twitter Cards, canonical URLs, sitemap, robots.txt
 
 ### Backend (FastAPI)
 - [x] Servicio de email con SendGrid (services/email.py): 3 templates HTML (orden creada, cambio estado, cancelación)

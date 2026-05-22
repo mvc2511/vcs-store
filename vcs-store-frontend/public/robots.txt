@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://vcsstore.com/sitemap.xml
+Sitemap: https://vyro.boutique/sitemap.xml

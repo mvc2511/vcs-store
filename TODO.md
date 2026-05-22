@@ -134,6 +134,14 @@
 - [x] Backend en Render (Docker Compose)
 - [x] Cron-job keep-alive activo
 
+### Frontend — SEO
+- [x] JSON-LD LocalBusiness con datos reales: teléfono, área de servicio (Chapa de Mota, Jilotepec, San Andrés), precio
+- [x] Meta tags y Open Graph actualizados con branding VYRO y enfoque local
+- [x] Canonical URLs corregidas a vyro.boutique (eran vcsstore.com)
+- [x] Sitemap ampliado con todas las rutas públicas
+- [x] robots.txt apuntando a vyro.boutique
+- [x] SeoService actualizado con siteName VYRO y descripciones local-SEO
+
 ### Frontend — Legal y Footer
 - [x] Footer responsive VYRO: logo, entregas locales (Chapa de Mota, Jilotepec, San Andrés), WhatsApp 55 2298 8741, links legales
 - [x] Página /privacidad: Aviso de Privacidad para negocio local (datos recabados, ARCO, contacto)

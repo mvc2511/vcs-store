@@ -36,7 +36,9 @@ Fuente única de verdad sobre el estado técnico, arquitectónico y operativo de
 - **Lazy loading:** Todas las rutas cargan asíncronamente.
 - **Upload de imágenes:** Preview local con FileReader, subida a Storage diferida al submit del formulario (evita basura en bucket).
 - **Consumo de APIs:** JWT de Supabase en header `Authorization: Bearer <token>`.
-- **Responsive:** Navbar con hamburger menu en mobile (incluye búsqueda), tablas se convierten a cards, grids colapsan a 1 columna. Navbar desktop: sin barra de búsqueda (solo en home sticky), link "Mi Perfil" visible si logueado, avatar clickable a perfil.
+- **SEO:** JSON-LD LocalBusiness con datos reales (teléfono, área de servicio Chapa de Mota/Jilotepec/San Andrés), Open Graph, Twitter Cards, canonical URLs dinámicas, sitemap.xml con 8 URLs, robots.txt optimizado. SeoService con siteName "VYRO" y descripciones local-SEO.
+
+**Responsive:** Navbar con hamburger menu en mobile (incluye búsqueda), tablas se convierten a cards, grids colapsan a 1 columna. Navbar desktop: sin barra de búsqueda (solo en home sticky), link "Mi Perfil" visible si logueado, avatar clickable a perfil.
 - **Footer:** Footer pegajoso con logo VYRO, zonas de entrega (Chapa de Mota, Jilotepec, San Andrés), WhatsApp 55 2298 8741, y links legales (/privacidad, /terminos).
 
 ### Rutas actuales
