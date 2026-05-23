@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22 (5)
+**Última actualización:** 2026-05-22 (6)
 
 ## 🎯 Próximo paso inmediato
-Perfumes por Encargo — Nueva sección en home + catálogo de perfumes bajo pedido.
+Aplicar migración `migracion-perfumes-encargo.sql` en Supabase QA y PRD.
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VYRO — E-commerce de ropa, perfumes y accesorios (mayoreo/granel)
@@ -167,12 +167,13 @@ Perfumes por Encargo — Nueva sección en home + catálogo de perfumes bajo ped
 ## 🔄 Pendiente — Plan de Implementación por Fases
 
 ### Sección Nueva — Perfumes por Encargo
-- [ ] **N.1** Agregar columna `es_encargo` y `dias_entrega` a `productos` + database.sql
-- [ ] **N.2** Backend: filtro `por_encargo` en GET /api/productos + schemas actualizados
-- [ ] **N.3** Home: nueva sección "Perfumes por Encargo" con grid/carrusel
-- [ ] **N.4** ProductCard: variante visual para productos por encargo (badge, WhatsApp CTA)
-- [ ] **N.5** ProductDetail: layout alternativo sin stock ni carrito, solo WhatsApp + info
-- [ ] **N.6** Admin ProductoForm: toggle "es encargo" + campo días entrega
+- [x] **N.1** Agregar columna `es_encargo` y `dias_entrega` a `productos` + database.sql
+- [x] **N.2** Backend: filtro `por_encargo` en GET /api/productos + schemas actualizados
+- [x] **N.3** Home: nueva sección "Perfumes por Encargo" con grid/carrusel
+- [x] **N.4** ProductCard: variante visual para productos por encargo (badge, WhatsApp CTA)
+- [x] **N.5** ProductDetail: layout alternativo sin stock ni carrito, solo WhatsApp + info
+- [x] **N.6** Admin ProductoForm: toggle "es encargo" + campo días entrega
+- [ ] **Pendiente:** Aplicar migración en Supabase QA y PRD (ver migracion-perfumes-encargo.sql)
 
 ### Fase 3 — Validaciones Críticas (~1 semana)
 - [ ] **3.1 Backend (7):** Race condition stock (UPDATE atómico), restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex.
