@@ -119,9 +119,19 @@ async def obtener_producto(producto_id: int):
         .order("id")
         .execute()
     )
+    imagenes_resp = (
+        supabase_admin.table("producto_imagenes")
+        .select("*")
+        .eq("producto_id", producto_id)
+        .order("orden")
+        .execute()
+    )
     producto = resp.data
     variantes = variantes_resp.data or []
     producto["variantes"] = variantes
+
+    # Include gallery images
+    producto["imagenes"] = imagenes_resp.data or []
 
     # Compute has_variants and stock_real
     producto["has_variants"] = len(variantes) > 0

@@ -44,8 +44,15 @@ DROP POLICY IF EXISTS "Lectura authenticated opciones_ml" ON public.opciones_ml;
 DROP POLICY IF EXISTS "Lectura authenticated resenas" ON public.resenas;
 DROP POLICY IF EXISTS "Lectura authenticated cupones" ON public.cupones;
 DROP POLICY IF EXISTS "Lectura authenticated precios_mayoreo" ON public.precios_mayoreo;
+DROP POLICY IF EXISTS "Lectura publica de producto_imagenes" ON public.producto_imagenes;
+DROP POLICY IF EXISTS "Lectura authenticated producto_imagenes" ON public.producto_imagenes;
+DROP POLICY IF EXISTS "Admin puede insertar producto_imagenes" ON public.producto_imagenes;
+DROP POLICY IF EXISTS "Admin puede actualizar producto_imagenes" ON public.producto_imagenes;
+DROP POLICY IF EXISTS "Admin puede eliminar producto_imagenes" ON public.producto_imagenes;
+
 DROP POLICY IF EXISTS "Lectura authenticated puntos_entrega" ON public.puntos_entrega;
 
+DROP TABLE IF EXISTS public.producto_imagenes CASCADE;
 DROP TABLE IF EXISTS public.variantes_producto CASCADE;
 DROP TABLE IF EXISTS public.detalles_orden;
 DROP TABLE IF EXISTS public.ordenes;
@@ -256,6 +263,17 @@ CREATE TABLE public.precios_mayoreo (
     )
 );
 
+-- producto_imagenes: Galería multi-imagen con soporte para asociación a color
+CREATE TABLE public.producto_imagenes (
+    id SERIAL PRIMARY KEY,
+    producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
+    url TEXT NOT NULL,
+    orden INT DEFAULT 0,
+    color_id INT REFERENCES public.colores(id) ON DELETE SET NULL,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX idx_producto_imagenes_producto ON public.producto_imagenes(producto_id);
+
 -- Columnas nuevas en ordenes para descuentos
 ALTER TABLE public.ordenes ADD COLUMN IF NOT EXISTS cupon_id INT REFERENCES public.cupones(id) ON DELETE SET NULL;
 ALTER TABLE public.ordenes ADD COLUMN IF NOT EXISTS descuento DECIMAL(10, 2) DEFAULT 0;
@@ -314,6 +332,7 @@ ALTER TABLE public.favoritos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.resenas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.cupones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.precios_mayoreo ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.producto_imagenes ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública de perfiles (necesario para AuthService.cargarPerfil())
 CREATE POLICY "Permitir lectura publica de perfiles"
@@ -429,6 +448,22 @@ CREATE POLICY "Lectura publica de precios mayoreo"
 CREATE POLICY "Lectura authenticated precios_mayoreo"
     ON public.precios_mayoreo FOR SELECT TO authenticated USING (true);
 
+-- producto_imagenes: lectura pública, escritura authenticated (admin check en backend)
+CREATE POLICY "Lectura publica de producto_imagenes"
+    ON public.producto_imagenes FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated producto_imagenes"
+    ON public.producto_imagenes FOR SELECT TO authenticated USING (true);
+
+CREATE POLICY "Admin puede insertar producto_imagenes"
+    ON public.producto_imagenes FOR INSERT TO authenticated WITH CHECK (true);
+
+CREATE POLICY "Admin puede actualizar producto_imagenes"
+    ON public.producto_imagenes FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
+CREATE POLICY "Admin puede eliminar producto_imagenes"
+    ON public.producto_imagenes FOR DELETE TO authenticated USING (true);
+
 -- =============================================================================
 -- 6. PRIVILEGIOS (Principio de Mínimo Privilegio)
 -- =============================================================================
@@ -445,6 +480,7 @@ GRANT SELECT ON public.opciones_ml TO anon;
 GRANT SELECT ON public.resenas TO anon;
 GRANT SELECT ON public.cupones TO anon;
 GRANT SELECT ON public.precios_mayoreo TO anon;
+GRANT SELECT ON public.producto_imagenes TO anon;
 
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT, UPDATE ON public.perfiles TO authenticated;
@@ -457,6 +493,8 @@ GRANT SELECT ON public.colores TO authenticated;
 GRANT SELECT ON public.opciones_ml TO authenticated;
 GRANT SELECT ON public.cupones TO authenticated;
 GRANT SELECT ON public.precios_mayoreo TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.producto_imagenes TO authenticated;
+GRANT USAGE ON SEQUENCE public.producto_imagenes_id_seq TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 GRANT SELECT, INSERT, DELETE ON public.favoritos TO authenticated;
@@ -494,6 +532,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO service_role;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.opciones_ml TO service_role;
 GRANT USAGE ON SEQUENCE public.opciones_ml_id_seq TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.producto_imagenes TO service_role;
+GRANT USAGE ON SEQUENCE public.producto_imagenes_id_seq TO service_role;
 
 -- =============================================================================
 -- 7. CATÁLOGO SEMILLA (Datos dummy para desarrollo)
