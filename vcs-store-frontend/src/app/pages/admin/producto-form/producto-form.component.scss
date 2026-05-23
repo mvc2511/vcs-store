@@ -207,6 +207,131 @@
   border: 1px solid var(--vyro-border);
 }
 
+// ── Gallery Section ────────────────────────────
+
+.gallery-section {
+  margin-top: $vyro-space-md;
+  padding-top: $vyro-space-md;
+  border-top: 1px solid var(--vyro-border);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: $vyro-space-md;
+  margin: $vyro-space-md 0;
+}
+
+.gallery-item {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-xs;
+  padding: $vyro-space-sm;
+  background: var(--vyro-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--vyro-border);
+
+  &--pending {
+    opacity: 0.85;
+    border-style: dashed;
+  }
+}
+
+.gallery-item-img {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--vyro-surface);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: var(--vyro-surface);
+  }
+}
+
+.gallery-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 0.75rem;
+  color: var(--vyro-accent);
+  background: var(--vyro-surface);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.gallery-color-select {
+  font-size: 0.72rem;
+  padding: 0.25rem 0.3rem;
+  border: 1px solid var(--vyro-border);
+  border-radius: var(--radius-sm);
+  background: var(--vyro-surface);
+  color: var(--vyro-text);
+  outline: none;
+  cursor: pointer;
+
+  &:focus { border-color: var(--vyro-text); }
+}
+
+.gallery-actions {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+
+  .btn-icon {
+    width: 26px;
+    height: 26px;
+
+    &[disabled] {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.gallery-add {
+  margin-top: $vyro-space-sm;
+}
+
+.gallery-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  padding: 0.5rem 1rem;
+  border: 1.5px dashed var(--vyro-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--vyro-text-secondary);
+  @include transition(all);
+
+  &:hover {
+    border-color: var(--vyro-text);
+    color: var(--vyro-text);
+    background: color-mix(in srgb, var(--vyro-text) 3%, transparent);
+  }
+
+  svg { flex-shrink: 0; }
+}
+
+@include mobile {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-sm;
+  }
+
+  .gallery-add-btn { width: 100%; justify-content: center; }
+}
+
 .msg-error {
   margin-top: 1rem;
   padding: 0.7rem 1rem;

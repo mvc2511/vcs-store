@@ -1,3 +1,12 @@
+export interface ProductoImagen {
+  id: number;
+  producto_id: number;
+  url: string;
+  orden: number;
+  color_id: number | null;
+  creado_en: string;
+}
+
 export interface Variante {
   id: number;
   producto_id: number;
@@ -34,6 +43,7 @@ export interface Producto {
   imagen_url: string;
   descripcion: string;
   variantes?: Variante[];
+  imagenes?: ProductoImagen[];
 }
 
 export interface CarritoItem {

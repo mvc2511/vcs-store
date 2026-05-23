@@ -11,7 +11,14 @@
 
     <div *ngIf="!loading && producto() as p" class="detail-content">
       <div class="detail-gallery">
-        <img [src]="p.imagen_url" [alt]="p.nombre" class="detail-image" loading="lazy" />
+        <div class="gallery-main">
+          <img [src]="selectedImageUrl()" [alt]="p.nombre" class="detail-image" loading="lazy" />
+        </div>
+        <div class="gallery-thumbs" *ngIf="galleryImages().length > 1">
+          <button *ngFor="let img of galleryImages(); let i = index" class="gallery-thumb" [class.active]="selectedImageIndex() === i" (click)="selectImage(i)" [attr.aria-label]="'Imagen ' + (i + 1)">
+            <img [src]="img.url" alt="" loading="lazy" />
+          </button>
+        </div>
       </div>
 
       <div class="detail-info">

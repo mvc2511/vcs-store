@@ -82,18 +82,24 @@
 // ── Gallery ────────────────────────────────────
 
 .detail-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-md;
   position: sticky;
   top: 100px;
+
+  @include tablet {
+    position: static;
+  }
+}
+
+.gallery-main {
   border-radius: $vyro-radius-lg;
   overflow: hidden;
   background: $vyro-surface;
   border: 1px solid $vyro-border;
   aspect-ratio: 3 / 4;
 
-  @include tablet {
-    position: static;
-    aspect-ratio: 3 / 4;
-  }
   @include mobile {
     aspect-ratio: 1 / 1.2;
   }
@@ -106,6 +112,49 @@
   object-position: center;
   display: block;
   background: $vyro-surface;
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: $vyro-space-sm;
+  overflow-x: auto;
+  padding-bottom: $vyro-space-xs;
+
+  @include tablet {
+    justify-content: center;
+  }
+}
+
+.gallery-thumb {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: $vyro-radius-sm;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: $vyro-surface;
+  cursor: pointer;
+  padding: 0;
+  @include transition(border-color);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: $vyro-surface;
+  }
+
+  &.active {
+    border-color: $vyro-accent;
+  }
+
+  &:hover {
+    border-color: $vyro-text-secondary;
+  }
+
+  @include focus-ring;
 }
 
 // ── Info Column ────────────────────────────────
