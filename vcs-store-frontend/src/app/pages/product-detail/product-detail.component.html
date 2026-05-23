@@ -66,15 +66,7 @@
         <p class="detail-description">{{ p.descripcion }}</p>
 
         <!-- Specs Grid -->
-        <div class="detail-specs" *ngIf="hasVariants() && !esEncargo()">
-          <div class="spec-item" *ngIf="hasTalla()">
-            <span class="spec-label">TALLAS</span>
-            <span class="spec-value">{{ uniqueTallas().join(', ') }}</span>
-          </div>
-          <div class="spec-item" *ngIf="hasColor()">
-            <span class="spec-label">COLORES</span>
-            <span class="spec-value">{{ uniqueColores().join(', ') }}</span>
-          </div>
+        <div class="detail-specs" *ngIf="!esEncargo()">
           <div class="spec-item">
             <span class="spec-label">CATEGORÍA</span>
             <span class="spec-value">{{ p.categoria }}</span>
@@ -84,7 +76,7 @@
         <!-- Variant Selectors -->
         <div *ngIf="hasVariants() && !esEncargo()" class="variants-section">
           <div *ngIf="hasTalla()" class="selector-group">
-            <label class="selector-label">Talla</label>
+            <label class="selector-label">{{ variantTypeLabel().selector }}</label>
             <div class="variant-pills">
               <button *ngFor="let talla of uniqueTallas()" class="variant-pill" [class.active]="selectedTalla() === talla" [class.disabled]="!isTallaAvailable(talla)" (click)="selectTalla(talla)" [disabled]="!isTallaAvailable(talla)">
                 {{ talla }}

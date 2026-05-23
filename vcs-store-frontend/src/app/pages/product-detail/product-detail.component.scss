@@ -86,7 +86,7 @@
   top: 100px;
   border-radius: $vyro-radius-lg;
   overflow: hidden;
-  background: $vyro-silver;
+  background: $vyro-surface;
   border: 1px solid $vyro-border;
   aspect-ratio: 3 / 4;
 
@@ -102,9 +102,10 @@
 .detail-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
+  background: $vyro-surface;
 }
 
 // ── Info Column ────────────────────────────────

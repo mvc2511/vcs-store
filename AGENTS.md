@@ -1,9 +1,14 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22 (6)
+**Última actualización:** 2026-05-22 (7)
 
 ## 🎯 Próximo paso inmediato
-Aplicar migración `migracion-perfumes-encargo.sql` en Supabase QA y PRD.
+Aplicar migración `migracion-perfumes-encargo.sql` en Supabase PRD.
+
+## 🐛 Hotfix (2026-05-22)
+- `maybe_single()` → `.limit(1)` en endpoints reseñas (causaba 500 /can-review)
+- Supabase getProductById no incluía `es_encargo`/`dias_entrega` → product detail no ocultaba carrito ni cantidad en encargo
+- Hero reemplazado por sección Perfumes por Encargo como nueva hero
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VYRO — E-commerce de ropa, perfumes y accesorios (mayoreo/granel)
@@ -173,7 +178,8 @@ Aplicar migración `migracion-perfumes-encargo.sql` en Supabase QA y PRD.
 - [x] **N.4** ProductCard: variante visual para productos por encargo (badge, WhatsApp CTA)
 - [x] **N.5** ProductDetail: layout alternativo sin stock ni carrito, solo WhatsApp + info
 - [x] **N.6** Admin ProductoForm: toggle "es encargo" + campo días entrega
-- [ ] **Pendiente:** Aplicar migración en Supabase QA y PRD (ver migracion-perfumes-encargo.sql)
+- [x] **Pendiente:** Aplicar migración en Supabase QA (ver migracion-perfumes-encargo.sql)
+- [ ] **Pendiente:** Aplicar migración en Supabase PRD (ver migracion-perfumes-encargo.sql)
 
 ### Fase 3 — Validaciones Críticas (~1 semana)
 - [ ] **3.1 Backend (7):** Race condition stock (UPDATE atómico), restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex.

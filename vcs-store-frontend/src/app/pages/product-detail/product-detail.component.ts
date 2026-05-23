@@ -66,6 +66,15 @@ export class ProductDetailComponent implements OnInit {
   hasVariants = computed(() => !!this.producto()?.variantes?.length);
   hasTalla = computed(() => this.uniqueTallas().length > 0);
   hasColor = computed(() => this.uniqueColores().length > 0);
+
+  variantTypeLabel = computed(() => {
+    const p = this.producto();
+    const tipo = p?.variantes?.[0]?.tipo_variante;
+    if (tipo === 'volumen') return { spec: 'VOLUMEN', selector: 'ml' };
+    if (tipo === 'talla') return { spec: 'TALLAS', selector: 'Talla' };
+    if (tipo === 'color_solo') return { spec: 'COLOR', selector: 'Color' };
+    return { spec: 'TALLAS', selector: 'Talla' };
+  });
   noVariantSelected = computed(() => !this.selectedTalla() && !this.selectedColor());
 
   tallaStock = computed(() => {

@@ -183,10 +183,11 @@
 
 .encargo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
     gap: $vyro-space-md;
   }
 
@@ -250,8 +251,13 @@
 
 .encargo-skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $vyro-space-md;
+  }
 
   @media (max-width: $vyro-bp-mobile) {
     grid-template-columns: repeat(2, 1fr);
@@ -561,11 +567,11 @@
 
 .skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: $vyro-space-md;
   }
 
@@ -659,11 +665,11 @@
 
 .productos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: $vyro-space-md;
   }
 
