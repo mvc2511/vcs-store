@@ -70,10 +70,10 @@ async def crear_resena(
         .select("id")
         .eq("producto_id", producto_id)
         .eq("user_id", usuario["user_id"])
-        .maybe_single()
+        .limit(1)
         .execute()
     )
-    if existing.data:
+    if existing.data and len(existing.data) > 0:
         raise HTTPException(status_code=400, detail="Ya has reseñado este producto")
 
     ordenes_resp = (
@@ -197,10 +197,10 @@ async def puede_resenar(
         .select("id")
         .eq("producto_id", producto_id)
         .eq("user_id", usuario["user_id"])
-        .maybe_single()
+        .limit(1)
         .execute()
     )
-    ya_reseno = existing.data is not None
+    ya_reseno = len(existing.data or []) > 0
 
     ordenes = (
         supabase_admin.table("ordenes")
