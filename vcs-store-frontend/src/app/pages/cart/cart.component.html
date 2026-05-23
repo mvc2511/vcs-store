@@ -74,7 +74,9 @@
         <div class="summary-section coupon-section">
           <h3 class="delivery-title">Cupón de descuento</h3>
           <div *ngIf="!cuponAplicado()" class="coupon-form">
+            <label for="cupon-input" class="visually-hidden">Código de cupón</label>
             <input
+              id="cupon-input"
               type="text"
               placeholder="Código"
               [(ngModel)]="cuponCode"
@@ -90,8 +92,8 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             <span>Código <strong>{{ cupon.codigo }}</strong> aplicado</span>
             <span class="coupon-discount">-{{ cupon.tipo === 'porcentaje' ? cupon.valor + '%' : (cupon.valor | currency:'MXN':'symbol-narrow':'1.0-0') }}</span>
-            <button class="coupon-remove" (click)="quitarCupon()" title="Quitar cupón">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            <button class="coupon-remove" (click)="quitarCupon()" aria-label="Quitar cupón" title="Quitar cupón">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
         </div>
@@ -118,7 +120,7 @@
 
         <!-- Login gate -->
         <div *ngIf="!authService.isLoggedIn()" class="summary-login">
-          <p class="summary-login-text">Inicia sesión para completar tu compra</p>
+          <p class="summary-login-text">Inicia sesión para completar tu pedido</p>
           <a routerLink="/login" [queryParams]="{returnUrl: '/cart'}" class="btn btn-primary">Iniciar sesión</a>
         </div>
 

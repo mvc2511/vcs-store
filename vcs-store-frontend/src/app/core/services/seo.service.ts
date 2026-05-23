@@ -17,7 +17,7 @@ export class SeoService {
   private meta = inject(Meta);
 
   private readonly siteName = 'VYRO';
-  private readonly defaultDescription = 'Venta de ropa, perfumes y electrónicos al mayoreo y granel. Entregas locales en Chapa de Mota, Jilotepec y San Andrés, Estado de México.';
+  private readonly defaultDescription = 'Venta de ropa, perfumes y accesorios al mayoreo y granel. Entregas locales en Chapa de Mota, Jilotepec y San Andrés, Estado de México.';
   private readonly defaultOgImage = 'https://vyro.boutique/og-image.jpg';
 
   update(data: SeoData): void {

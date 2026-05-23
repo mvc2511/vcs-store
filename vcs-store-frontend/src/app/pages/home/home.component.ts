@@ -35,6 +35,9 @@ export class HomeComponent implements OnInit {
   offset = 0;
   hasMore = false;
 
+  encargoProductos: Producto[] = [];
+  encargoLoading = true;
+
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const q = params['q'];
@@ -42,6 +45,7 @@ export class HomeComponent implements OnInit {
       this.cargarProductos(true);
     });
     this.cargarCategorias();
+    this.cargarEncargo();
   }
 
   private cargarCategorias(): void {
@@ -101,6 +105,28 @@ export class HomeComponent implements OnInit {
 
   onSortChange(): void {
     this.cargarProductos(true);
+  }
+
+  private cargarEncargo(): void {
+    this.encargoLoading = true;
+    this.productService.getProducts({
+      por_encargo: true,
+      limit: 20,
+      offset: 0,
+    }).subscribe({
+      next: (resp) => {
+        this.encargoProductos = resp.data;
+        this.encargoLoading = false;
+      },
+      error: () => {
+        this.encargoLoading = false;
+      },
+    });
+  }
+
+  get whatsappEncargoLink(): string {
+    const msg = encodeURIComponent('Hola, quiero información sobre perfumes por encargo.');
+    return `https://wa.me/525522988741?text=${msg}`;
   }
 
   loadMore(): void {

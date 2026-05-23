@@ -7,7 +7,8 @@
       class="card-image"
       loading="lazy"
     />
-    <span *ngIf="(producto().stock_real ?? producto().stock) <= 5" class="stock-badge">
+    <span *ngIf="producto().es_encargo" class="encargo-badge">Por encargo</span>
+    <span *ngIf="!producto().es_encargo && (producto().stock_real ?? producto().stock) <= 5" class="stock-badge">
       {{ (producto().stock_real ?? producto().stock) === 0 ? 'Agotado' : 'Últimos ' + (producto().stock_real ?? producto().stock) }}
     </span>
   </a>
@@ -15,7 +16,7 @@
       <div class="card-header-row">
         <span class="card-category">{{ producto().categoria }}</span>
         <button
-          *ngIf="isLoggedIn()"
+          *ngIf="isLoggedIn() && !producto().es_encargo"
           class="wishlist-btn"
           (click)="toggleWishlist($event)"
           [attr.aria-label]="isFavorited() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
@@ -32,6 +33,7 @@
     <div class="card-footer">
       <span class="card-price">{{ producto().precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
       <button
+        *ngIf="!producto().es_encargo"
         class="card-btn"
         (click)="addToCart()"
         [disabled]="(producto().stock_real ?? producto().stock) === 0"
