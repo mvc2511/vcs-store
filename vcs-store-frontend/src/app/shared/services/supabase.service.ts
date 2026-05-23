@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Producto, Variante } from '../models/product.model';
+import { Producto, ProductoImagen, Variante } from '../models/product.model';
 import { from, Observable } from 'rxjs';
 import { environment } from '../../../environments/environments';
 
@@ -14,6 +14,16 @@ interface ProductoFromDB {
   es_encargo?: boolean;
   dias_entrega?: number;
   categorias: { nombre: string };
+  producto_imagenes?: ProductoImagenFromDB[];
+}
+
+interface ProductoImagenFromDB {
+  id: number;
+  producto_id: number;
+  url: string;
+  orden: number;
+  color_id: number | null;
+  creado_en: string;
 }
 
 @Injectable({
@@ -29,7 +39,7 @@ export class SupabaseService {
     );
   }
 
-  private mapProducto(raw: ProductoFromDB, variantes?: Variante[]): Producto {
+  private mapProducto(raw: ProductoFromDB, variantes?: Variante[], imagenes?: ProductoImagen[]): Producto {
     return {
       id: raw.id,
       nombre: raw.nombre,
@@ -41,6 +51,7 @@ export class SupabaseService {
       dias_entrega: raw.dias_entrega,
       categoria: raw.categorias.nombre,
       variantes,
+      imagenes,
     };
   }
 
@@ -87,7 +98,8 @@ export class SupabaseService {
         if (error) throw error;
         if (!data) return null;
 
-        const producto = this.mapProducto(data as unknown as ProductoFromDB);
+        const raw = data as unknown as ProductoFromDB;
+        const producto = this.mapProducto(raw);
 
         const { data: variantes } = await this.supabase
           .from('variantes_producto')
@@ -97,6 +109,16 @@ export class SupabaseService {
 
         if (variantes && variantes.length > 0) {
           producto.variantes = variantes as Variante[];
+        }
+
+        const { data: imagenes } = await this.supabase
+          .from('producto_imagenes')
+          .select('*')
+          .eq('producto_id', id)
+          .order('orden');
+
+        if (imagenes && imagenes.length > 0) {
+          producto.imagenes = imagenes as ProductoImagen[];
         }
 
         return producto;

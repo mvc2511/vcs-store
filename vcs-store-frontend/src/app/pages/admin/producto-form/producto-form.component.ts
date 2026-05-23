@@ -9,7 +9,7 @@ import { UploadImageComponent } from '../../../shared/components/upload-image/up
 import { StorageService } from '../../../shared/services/storage.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environments';
-import { Variante, OpcionMl } from '../../../shared/models/product.model';
+import { Variante, OpcionMl, ProductoImagen } from '../../../shared/models/product.model';
 
 interface Categoria { id: number; nombre: string; }
 interface Talla { id: number; nombre: string; }
@@ -72,6 +72,12 @@ export class ProductoFormComponent implements OnInit {
   editStockValue = 0;
   editPrecioValue = 0;
 
+  // Gallery state
+  galleryImagenes: ProductoImagen[] = [];
+  galleryFiles: File[] = [];
+  galleryPreviews: string[] = [];
+  galleryColorMap: (number | null)[] = [];
+
   // ML options from API
   mlOptions: number[] = [];
   mlLoading = false;
@@ -108,6 +114,7 @@ export class ProductoFormComponent implements OnInit {
           dias_entrega: p.dias_entrega ?? 5,
         });
         this.imagenUrl = p.imagen_url || '';
+        this.galleryImagenes = (p.imagenes || []).map((img: ProductoImagen, i: number) => ({ ...img, orden: i }));
         this.loading = false;
         if (p.variantes?.length) {
           this.variantes = p.variantes;
@@ -160,6 +167,119 @@ export class ProductoFormComponent implements OnInit {
 
   onArchivoSeleccionado(file: File): void {
     this.archivoSeleccionado = file;
+  }
+
+  // ── Gallery Methods ──────────────────────────
+
+  onGalleryFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input?.files;
+    if (!files?.length) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      this.galleryFiles.push(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.galleryPreviews.push(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      this.galleryColorMap.push(null);
+    }
+
+    input.value = '';
+  }
+
+  setGalleryColor(index: number, colorIdString: string): void {
+    const colorId = (colorIdString && colorIdString !== 'null') ? Number(colorIdString) : null;
+
+    // Existing image → update immediately
+    if (index < this.galleryImagenes.length) {
+      this.galleryImagenes[index].color_id = colorId;
+      this.http.put(
+        `${environment.apiUrl}/api/productos/${this.productoId}/imagenes/${this.galleryImagenes[index].id}`,
+        { color_id: colorId },
+        { headers: this.getHeaders() }
+      ).subscribe({
+        error: () => { this.errorMsg = 'Error al actualizar el color de la imagen'; },
+      });
+    } else {
+      // New file → store for submit
+      const fi = index - this.galleryImagenes.length;
+      this.galleryColorMap[fi] = colorId;
+    }
+  }
+
+  moveGalleryImage(index: number, direction: -1 | 1): void {
+    const target = index + direction;
+    if (target < 0 || target >= this.galleryFiles.length + this.galleryImagenes.length) return;
+
+    const totalImages = [...this.galleryImagenes, ...this.galleryFiles.map((_, i) => ({ _fileIndex: i } as any))];
+
+    const isNew = index >= this.galleryImagenes.length;
+    const fileIndex = isNew ? index - this.galleryImagenes.length : -1;
+
+    if (isNew) {
+      // Swap in galleryFiles
+      [this.galleryFiles[fileIndex], this.galleryFiles[fileIndex + direction]] =
+        [this.galleryFiles[fileIndex + direction], this.galleryFiles[fileIndex]];
+      [this.galleryPreviews[fileIndex], this.galleryPreviews[fileIndex + direction]] =
+        [this.galleryPreviews[fileIndex + direction], this.galleryPreviews[fileIndex]];
+      [this.galleryColorMap[fileIndex], this.galleryColorMap[fileIndex + direction]] =
+        [this.galleryColorMap[fileIndex + direction], this.galleryColorMap[fileIndex]];
+    } else {
+      // Swap in galleryImagenes
+      const targetIdx = index + direction;
+      const isTargetNew = targetIdx >= this.galleryImagenes.length;
+
+      if (isTargetNew) {
+        // Moving an existing image to the position of a new file
+        const tfi = targetIdx - this.galleryImagenes.length;
+        const img = this.galleryImagenes.splice(index, 1)[0];
+        this.galleryImagenes.splice(targetIdx, 0, img);
+        // Update orden for the moved image
+        this.galleryImagenes.forEach((im, i) => { im.orden = i; });
+      } else {
+        [this.galleryImagenes[index], this.galleryImagenes[targetIdx]] =
+          [this.galleryImagenes[targetIdx], this.galleryImagenes[index]];
+        this.galleryImagenes.forEach((im, i) => { im.orden = i; });
+      }
+    }
+  }
+
+  removeGalleryImage(index: number): void {
+    const isExisting = index < this.galleryImagenes.length;
+    if (isExisting) {
+      const img = this.galleryImagenes[index];
+      if (!confirm(`¿Eliminar esta imagen de la galería?`)) return;
+      // Delete from storage first
+      const path = img.url.split('/').pop();
+      if (path) {
+        this.storageService.eliminarImagen(path);
+      }
+      this.http.delete(`${environment.apiUrl}/api/productos/${this.productoId}/imagenes/${img.id}`, {
+        headers: this.getHeaders(),
+      }).subscribe({
+        next: () => {
+          this.galleryImagenes.splice(index, 1);
+          this.galleryImagenes.forEach((im, i) => { im.orden = i; });
+        },
+        error: () => {
+          this.errorMsg = 'Error al eliminar la imagen';
+        },
+      });
+    } else {
+      const fi = index - this.galleryImagenes.length;
+      this.galleryFiles.splice(fi, 1);
+      this.galleryPreviews.splice(fi, 1);
+      this.galleryColorMap.splice(fi, 1);
+    }
+  }
+
+  totalGalleryImages(): number {
+    return this.galleryImagenes.length + this.galleryFiles.length;
   }
 
   private getHeaders(): HttpHeaders {
@@ -303,8 +423,10 @@ export class ProductoFormComponent implements OnInit {
     this.enviando = true;
     this.errorMsg = '';
     let imagenPath: string | null = null;
+    const uploadedPaths: string[] = [];
 
     try {
+      // Step 1: Upload main image
       if (this.archivoSeleccionado) {
         const subida = await this.storageService.subirImagen(this.archivoSeleccionado);
         this.imagenUrl = subida.url;
@@ -330,24 +452,56 @@ export class ProductoFormComponent implements OnInit {
         ? this.http.put(`${environment.apiUrl}/api/productos/${this.productoId}`, body, { headers })
         : this.http.post(`${environment.apiUrl}/api/productos`, body, { headers });
 
-      return new Promise((resolve) => {
-        request$.subscribe({
-          next: (res: any) => {
-            this.enviando = false;
-            if (!this.editMode && res?.id) { this.router.navigate(['/admin/productos', res.id, 'editar']); return; }
-            this.exito = true; resolve();
-          },
-          error: (err) => {
-            this.enviando = false;
-            this.errorMsg = err.error?.detail || 'Error al guardar el producto';
-            if (imagenPath) { this.storageService.eliminarImagen(imagenPath); this.imagenUrl = ''; }
-            resolve();
-          },
-        });
-      });
+      const res: any = await firstValueFrom(request$);
+      const pid = res?.id || this.productoId;
+      this.productoId = pid;
+
+      // Step 2: Upload gallery images
+      if (this.galleryFiles.length > 0) {
+        const baseOrden = this.galleryImagenes.length;
+        for (let i = 0; i < this.galleryFiles.length; i++) {
+          const file = this.galleryFiles[i];
+          const subida = await this.storageService.subirImagen(file);
+          uploadedPaths.push(subida.path);
+
+          await firstValueFrom(
+            this.http.post(
+              `${environment.apiUrl}/api/productos/${pid}/imagenes`,
+              {
+                url: subida.url,
+                color_id: this.galleryColorMap[i] || null,
+                orden: baseOrden + i,
+              },
+              { headers }
+            )
+          );
+        }
+        this.galleryFiles = [];
+        this.galleryPreviews = [];
+        this.galleryColorMap = [];
+      }
+
+      // Navigate on create
+      if (!this.editMode) {
+        this.enviando = false;
+        this.router.navigate(['/admin/productos', pid, 'editar']);
+        return;
+      }
+
+      this.enviando = false;
+      this.exito = true;
     } catch (err: any) {
       this.enviando = false;
-      this.errorMsg = err?.message || 'Error al subir la imagen';
+      this.errorMsg = err?.message || err?.error?.detail || 'Error al guardar el producto';
+
+      // Rollback uploaded gallery images
+      for (const path of uploadedPaths) {
+        this.storageService.eliminarImagen(path);
+      }
+      if (imagenPath) {
+        this.storageService.eliminarImagen(imagenPath);
+        this.imagenUrl = '';
+      }
     }
   }
 }
