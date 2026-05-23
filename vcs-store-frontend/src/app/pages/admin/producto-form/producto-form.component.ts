@@ -192,12 +192,10 @@ export class ProductoFormComponent implements OnInit {
     input.value = '';
   }
 
-  setGalleryColor(index: number, colorIdString: string): void {
-    const colorId = (colorIdString && colorIdString !== 'null') ? Number(colorIdString) : null;
-
+  setGalleryColor(index: number, colorId: number | null): void {
     // Existing image → update immediately
     if (index < this.galleryImagenes.length) {
-      this.galleryImagenes[index].color_id = colorId;
+      this.galleryImagenes[index] = { ...this.galleryImagenes[index], color_id: colorId };
       this.http.put(
         `${environment.apiUrl}/api/productos/${this.productoId}/imagenes/${this.galleryImagenes[index].id}`,
         { color_id: colorId },
