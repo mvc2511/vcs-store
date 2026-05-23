@@ -10,7 +10,7 @@ import { SeoService } from '../../core/services/seo.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { environment } from '../../../environments/environments';
-import { Producto, Resena, Variante } from '../../shared/models/product.model';
+import { Producto, ProductoImagen, Resena, Variante } from '../../shared/models/product.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -180,6 +180,48 @@ export class ProductDetailComponent implements OnInit {
     return '';
   });
 
+  // ── Gallery ────────────────────────────
+  selectedImageIndex = signal(0);
+
+  galleryImages = computed((): ProductoImagen[] => {
+    const p = this.producto();
+    if (!p) return [];
+
+    // Build merged list with main image first
+    const merged: ProductoImagen[] = [];
+    if (p.imagen_url) {
+      merged.push({ id: -1, producto_id: p.id, url: p.imagen_url, orden: -1, color_id: null, creado_en: '' });
+    }
+    const galleryImgs = p.imagenes ?? [];
+    merged.push(...galleryImgs);
+
+    const selectedColor = this.selectedColor();
+    if (!selectedColor) return merged;
+
+    // Find images matching selected color (excluding main image mock)
+    const mainImage = merged[0];
+    const colorImages = merged.filter(i => {
+      if (i.color_id == null) return false;
+      const color = p.variantes?.find(v => v.color_id === i.color_id);
+      return color?.color === selectedColor;
+    });
+
+    if (colorImages.length > 0) {
+      // Main image always first + color-specific images
+      return mainImage ? [mainImage, ...colorImages] : colorImages;
+    }
+
+    // Fallback: main image + general images only
+    return merged.filter(i => i.color_id == null);
+  });
+
+  selectedImageUrl = computed(() => {
+    const g = this.galleryImages();
+    const idx = this.selectedImageIndex();
+    if (g.length > 0 && idx < g.length) return g[idx].url;
+    return this.producto()?.imagen_url ?? '';
+  });
+
   isFavorited = computed(() =>
     this.wishlistService.wishlistIds().has(this.producto()?.id ?? 0)
   );
@@ -228,12 +270,17 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  selectImage(index: number): void {
+    this.selectedImageIndex.set(index);
+  }
+
   selectTalla(talla: string): void {
     this.selectedTalla.update((prev) => prev === talla ? null : talla);
   }
 
   selectColor(color: string): void {
     this.selectedColor.update((prev) => prev === color ? null : color);
+    this.selectedImageIndex.set(0);
   }
 
   isTallaAvailable(talla: string): boolean {
@@ -251,7 +298,7 @@ export class ProductDetailComponent implements OnInit {
       description: p.descripcion?.slice(0, 160) || `${p.nombre} en VYRO`,
       ogTitle: p.nombre,
       ogDescription: p.descripcion?.slice(0, 160) || `${p.nombre} - Moda urbana en VYRO`,
-      ogImage: p.imagen_url || undefined,
+      ogImage: this.selectedImageUrl() || p.imagen_url || undefined,
       ogUrl: url,
       canonicalUrl: url,
     });
