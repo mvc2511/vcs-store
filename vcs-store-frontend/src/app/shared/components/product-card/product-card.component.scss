@@ -109,6 +109,32 @@
 // Stock Badge
 // ─────────────────────────────────────────────────────────────
 
+.encargo-badge {
+  position: absolute;
+  top: $vyro-space-md;
+  left: $vyro-space-md;
+  padding: $vyro-space-xs $vyro-space-md;
+  background: $vyro-accent;
+  color: $vyro-text;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: $vyro-radius-sm;
+  z-index: 2;
+}
+
+.card-entrega {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: $vyro-text-secondary;
+  white-space: nowrap;
+}
+
+.card-footer--encargo {
+  border-top-color: rgba($vyro-accent, 0.3);
+}
+
 .stock-badge {
   position: absolute;
   top: $vyro-space-md;

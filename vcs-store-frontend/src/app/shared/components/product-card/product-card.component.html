@@ -7,7 +7,8 @@
       class="card-image"
       loading="lazy"
     />
-    <span *ngIf="(producto().stock_real ?? producto().stock) <= 5" class="stock-badge">
+    <span *ngIf="producto().es_encargo" class="encargo-badge">Por encargo</span>
+    <span *ngIf="!producto().es_encargo && (producto().stock_real ?? producto().stock) <= 5" class="stock-badge">
       {{ (producto().stock_real ?? producto().stock) === 0 ? 'Agotado' : 'Últimos ' + (producto().stock_real ?? producto().stock) }}
     </span>
   </a>
@@ -15,7 +16,7 @@
       <div class="card-header-row">
         <span class="card-category">{{ producto().categoria }}</span>
         <button
-          *ngIf="isLoggedIn()"
+          *ngIf="isLoggedIn() && !producto().es_encargo"
           class="wishlist-btn"
           (click)="toggleWishlist($event)"
           [attr.aria-label]="isFavorited() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
@@ -29,19 +30,24 @@
     <h3 class="card-title">
       <a [routerLink]="['/producto', producto().id]">{{ producto().nombre }}</a>
     </h3>
-    <div class="card-footer">
+    <div class="card-footer" [class.card-footer--encargo]="producto().es_encargo">
       <span class="card-price">{{ producto().precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-      <button
-        class="card-btn"
-        (click)="addToCart()"
-        [disabled]="(producto().stock_real ?? producto().stock) === 0"
-        [title]="(producto().stock_real ?? producto().stock) === 0 ? 'Agotado' : (producto().has_variants ? 'Seleccionar variante' : 'Agregar al carrito')"
-        aria-label="Agregar al carrito"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      </button>
+      <ng-container *ngIf="producto().es_encargo; else cartBtn">
+        <span class="card-entrega">{{ producto().dias_entrega || 5 }} días hábiles</span>
+      </ng-container>
+      <ng-template #cartBtn>
+        <button
+          class="card-btn"
+          (click)="addToCart()"
+          [disabled]="(producto().stock_real ?? producto().stock) === 0"
+          [title]="(producto().stock_real ?? producto().stock) === 0 ? 'Agotado' : (producto().has_variants ? 'Seleccionar variante' : 'Agregar al carrito')"
+          aria-label="Agregar al carrito"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </ng-template>
     </div>
   </div>
 </div>

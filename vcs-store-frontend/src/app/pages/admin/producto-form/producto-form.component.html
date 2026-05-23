@@ -20,7 +20,7 @@
       </div>
 
       <div class="field">
-        <label for="precio">Precio Base</label>
+        <label for="precio">{{ form.get('es_encargo')?.value ? 'Precio de referencia' : 'Precio Base' }}</label>
         <input 
           id="precio" 
           formControlName="precio" 
@@ -31,26 +31,28 @@
           [readonly]="variantes.length > 0"
         />
         <span *ngIf="variantes.length > 0" class="field-hint">Precio base del producto (recargo por variante en la sección abajo)</span>
+        <span *ngIf="form.get('es_encargo')?.value" class="field-hint">Precio estimado. El precio final se confirma por WhatsApp.</span>
       </div>
 
-      <div class="field" *ngIf="variantes.length === 0">
-        <label for="stock">Stock</label>
-        <input id="stock" formControlName="stock" type="number" min="0" placeholder="0" />
-        <span class="field-hint">Stock total del producto (si no hay variantes)</span>
-      </div>
-
-      <div *ngIf="variantes.length > 0" class="field field--disabled">
-        <label for="stock-disabled">Stock</label>
-        <input 
-          id="stock-disabled" 
-          formControlName="stock" 
-          type="number" 
-          min="0" 
-          placeholder="0"
-          readonly
-        />
-        <span class="field-hint">Auto-calculado: suma de stocks de variantes</span>
-      </div>
+      <ng-container *ngIf="form.get('es_encargo')?.value; else stockFields">
+        <div class="field field--disabled">
+          <label for="stock-disabled">Stock</label>
+          <input id="stock-disabled" formControlName="stock" type="number" min="0" placeholder="0" readonly />
+          <span class="field-hint">Producto por encargo — sin stock físico</span>
+        </div>
+      </ng-container>
+      <ng-template #stockFields>
+        <div class="field" *ngIf="variantes.length === 0">
+          <label for="stock">Stock</label>
+          <input id="stock" formControlName="stock" type="number" min="0" placeholder="0" />
+          <span class="field-hint">Stock total del producto (si no hay variantes)</span>
+        </div>
+        <div *ngIf="variantes.length > 0" class="field field--disabled">
+          <label for="stock-disabled">Stock</label>
+          <input id="stock-disabled" formControlName="stock" type="number" min="0" placeholder="0" readonly />
+          <span class="field-hint">Auto-calculado: suma de stocks de variantes</span>
+        </div>
+      </ng-template>
 
       <div class="field">
         <label for="categoria">Categoría</label>
@@ -72,6 +74,24 @@
         <span *ngIf="!form.get('visible')?.value" class="field-hint">Oculto: no aparece en el catálogo público</span>
       </div>
 
+      <div class="field field--toggle">
+        <label for="es-encargo">Producto por encargo</label>
+        <div class="toggle-wrap">
+          <label class="toggle" [class.toggle--off]="!form.get('es_encargo')?.value">
+            <input id="es-encargo" formControlName="es_encargo" type="checkbox" class="toggle-input" />
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">{{ form.get('es_encargo')?.value ? 'Bajo pedido' : 'En stock' }}</span>
+        </div>
+        <span *ngIf="form.get('es_encargo')?.value" class="field-hint">El producto no está en inventario, se consigue bajo pedido. Sin carrito, solo WhatsApp.</span>
+      </div>
+
+      <div class="field" *ngIf="form.get('es_encargo')?.value">
+        <label for="dias-entrega">Días de entrega estimados</label>
+        <input id="dias-entrega" formControlName="dias_entrega" type="number" min="1" placeholder="5" />
+        <span class="field-hint">Tiempo estimado en días hábiles para conseguir el producto</span>
+      </div>
+
       <div class="field full">
         <label for="descripcion">Descripción</label>
         <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Descripción del producto"></textarea>
@@ -84,8 +104,8 @@
       </div>
     </div>
 
-    <!-- Variants section (edit mode only) -->
-    <div *ngIf="editMode && productoId" class="variants-section">
+    <!-- Variants section (edit mode only, not for encargo) -->
+    <div *ngIf="editMode && productoId && !form.get('es_encargo')?.value" class="variants-section">
       <h2 class="section-title">Variantes <span class="section-sub">({{ variantLabel }}{{ showColorField ? ' / Color' : '' }})</span></h2>
 
       <div *ngIf="variantes.length === 0" class="variants-empty">

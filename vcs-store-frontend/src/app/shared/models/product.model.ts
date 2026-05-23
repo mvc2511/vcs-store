@@ -29,6 +29,8 @@ export interface Producto {
   stock_real?: number;
   has_variants?: boolean;
   visible?: boolean;
+  es_encargo?: boolean;
+  dias_entrega?: number;
   imagen_url: string;
   descripcion: string;
   variantes?: Variante[];

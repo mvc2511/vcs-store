@@ -151,6 +151,66 @@
   letter-spacing: -0.01em;
 }
 
+.encargo-ref-label {
+  font-size: 0.75rem;
+  color: $vyro-text-secondary;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.encargo-info {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-md;
+  padding: $vyro-space-lg;
+  background: color-mix(in srgb, $vyro-accent 6%, transparent);
+  border: 1px solid color-mix(in srgb, $vyro-accent 20%, transparent);
+  border-radius: $vyro-radius-md;
+  margin-bottom: $vyro-space-lg;
+}
+
+.encargo-info-item {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  font-size: 0.85rem;
+  color: $vyro-text;
+  line-height: 1.5;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: $vyro-accent;
+  }
+}
+
+.whatsapp-btn--primary {
+  background: #25D366;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  padding: $vyro-space-lg;
+  margin-top: $vyro-space-lg;
+
+  svg { width: 22px; height: 22px; }
+
+  &:hover {
+    background: #1ebe5d;
+    transform: translateY(-2px);
+    box-shadow: $vyro-shadow-lg;
+  }
+}
+
+.encargo-footer-text {
+  font-size: 0.8rem;
+  color: $vyro-text-secondary;
+  line-height: 1.6;
+  margin-top: $vyro-space-md;
+  text-align: center;
+}
+
 .wishlist-btn {
   flex-shrink: 0;
   width: 36px;

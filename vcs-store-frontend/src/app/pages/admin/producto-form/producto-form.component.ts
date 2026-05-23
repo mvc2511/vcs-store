@@ -37,6 +37,8 @@ export class ProductoFormComponent implements OnInit {
     stock: ['', [Validators.min(0)]],
     categoria_id: [null as number | null],
     visible: [true],
+    es_encargo: [false],
+    dias_entrega: [5],
   });
 
   categorias: Categoria[] = [];
@@ -102,6 +104,8 @@ export class ProductoFormComponent implements OnInit {
           stock: String(p.stock),
           categoria_id: p.categoria_id,
           visible: p.visible !== false,
+          es_encargo: p.es_encargo ?? false,
+          dias_entrega: p.dias_entrega ?? 5,
         });
         this.imagenUrl = p.imagen_url || '';
         this.loading = false;
@@ -317,6 +321,8 @@ export class ProductoFormComponent implements OnInit {
         stock: stockValue ? parseInt(stockValue, 10) : 0,
         imagen_url: this.imagenUrl,
         visible: this.form.value.visible ?? true,
+        es_encargo: !!this.form.value.es_encargo,
+        dias_entrega: this.form.value.dias_entrega ?? 5,
       };
       if (this.form.value.categoria_id) body['categoria_id'] = this.form.value.categoria_id;
 

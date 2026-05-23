@@ -124,6 +124,8 @@ CREATE TABLE public.productos (
     stock INT DEFAULT 0,
     categoria_id INT REFERENCES public.categorias(id) ON DELETE SET NULL,
     visible BOOLEAN DEFAULT true,
+    es_encargo BOOLEAN DEFAULT false,
+    dias_entrega INT DEFAULT 5,
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

@@ -16,6 +16,8 @@ class ProductoCreate(BaseModel):
     imagen_url: str
     categoria_id: Optional[int] = None
     visible: Optional[bool] = True
+    es_encargo: Optional[bool] = False
+    dias_entrega: Optional[int] = 5
 
 
 class ProductoUpdate(BaseModel):
@@ -26,12 +28,15 @@ class ProductoUpdate(BaseModel):
     imagen_url: Optional[str] = None
     categoria_id: Optional[int] = None
     visible: Optional[bool] = None
+    es_encargo: Optional[bool] = None
+    dias_entrega: Optional[int] = None
 
 
 @router.get("")
 async def listar_productos(
     search: Optional[str] = Query(None),
     categoria_id: Optional[int] = Query(None),
+    por_encargo: Optional[bool] = Query(None),
     sort_by: Optional[str] = Query("id"),
     sort_order: Optional[str] = Query("desc"),
     limit: int = Query(20, ge=1, le=100),
@@ -48,6 +53,9 @@ async def listar_productos(
     if categoria_id:
         count_query = count_query.eq("categoria_id", categoria_id)
         data_query = data_query.eq("categoria_id", categoria_id)
+    if por_encargo is not None:
+        count_query = count_query.eq("es_encargo", por_encargo)
+        data_query = data_query.eq("es_encargo", por_encargo)
 
     # Get total count
     count_resp = count_query.execute()

@@ -31,11 +31,15 @@ export class ProductDetailComponent implements OnInit {
   private toast = inject(ToastService);
   private readonly WHATSAPP_NUMBER = environment.whatsappNumber;
 
+  readonly esEncargo = computed(() => !!this.producto()?.es_encargo);
+
   readonly whatsappLink = computed(() => {
     const p = this.producto();
     if (!p) return '';
-    const text = `Hola, me interesa este producto: ${p.nombre} (ID: ${p.id}) - https://vyro.boutique/producto/${p.id}`;
-    return `https://wa.me/${this.WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    const encargoText = this.esEncargo()
+      ? `Hola, quiero pedir este perfume por encargo: ${p.nombre} ($${p.precio}) - https://vyro.boutique/producto/${p.id}`
+      : `Hola, me interesa este producto: ${p.nombre} (ID: ${p.id}) - https://vyro.boutique/producto/${p.id}`;
+    return `https://wa.me/${this.WHATSAPP_NUMBER}?text=${encodeURIComponent(encargoText)}`;
   });
 
   producto = signal<Producto | null>(null);
@@ -248,7 +252,7 @@ export class ProductDetailComponent implements OnInit {
       description: p.descripcion || '',
       image: p.imagen_url || '',
       price: this.precioActual(),
-      availability: this.stockActual() > 0,
+      availability: p.es_encargo ? false : this.stockActual() > 0,
       sku: p.id,
     });
 
