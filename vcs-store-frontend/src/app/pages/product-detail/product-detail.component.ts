@@ -10,7 +10,7 @@ import { SeoService } from '../../core/services/seo.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { environment } from '../../../environments/environments';
-import { Producto, Resena, Variante } from '../../shared/models/product.model';
+import { Producto, ProductoImagen, Resena, Variante } from '../../shared/models/product.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -31,11 +31,15 @@ export class ProductDetailComponent implements OnInit {
   private toast = inject(ToastService);
   private readonly WHATSAPP_NUMBER = environment.whatsappNumber;
 
+  readonly esEncargo = computed(() => !!this.producto()?.es_encargo);
+
   readonly whatsappLink = computed(() => {
     const p = this.producto();
     if (!p) return '';
-    const text = `Hola, me interesa este producto: ${p.nombre} (ID: ${p.id}) - https://vyro.boutique/producto/${p.id}`;
-    return `https://wa.me/${this.WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    const encargoText = this.esEncargo()
+      ? `Hola, quiero pedir este perfume por encargo: ${p.nombre} ($${p.precio}) - https://vyro.boutique/producto/${p.id}`
+      : `Hola, me interesa este producto: ${p.nombre} (ID: ${p.id}) - https://vyro.boutique/producto/${p.id}`;
+    return `https://wa.me/${this.WHATSAPP_NUMBER}?text=${encodeURIComponent(encargoText)}`;
   });
 
   producto = signal<Producto | null>(null);
@@ -62,6 +66,15 @@ export class ProductDetailComponent implements OnInit {
   hasVariants = computed(() => !!this.producto()?.variantes?.length);
   hasTalla = computed(() => this.uniqueTallas().length > 0);
   hasColor = computed(() => this.uniqueColores().length > 0);
+
+  variantTypeLabel = computed(() => {
+    const p = this.producto();
+    const tipo = p?.variantes?.[0]?.tipo_variante;
+    if (tipo === 'volumen') return { spec: 'VOLUMEN', selector: 'ml' };
+    if (tipo === 'talla') return { spec: 'TALLAS', selector: 'Talla' };
+    if (tipo === 'color_solo') return { spec: 'COLOR', selector: 'Color' };
+    return { spec: 'TALLAS', selector: 'Talla' };
+  });
   noVariantSelected = computed(() => !this.selectedTalla() && !this.selectedColor());
 
   tallaStock = computed(() => {
@@ -167,6 +180,46 @@ export class ProductDetailComponent implements OnInit {
     return '';
   });
 
+  // ── Gallery ────────────────────────────
+  selectedImageIndex = signal(0);
+
+  galleryImages = computed((): ProductoImagen[] => {
+    const p = this.producto();
+    if (!p) return [];
+
+    const selectedColor = this.selectedColor();
+
+    // No color selected → show all (main + gallery)
+    if (!selectedColor) {
+      const merged: ProductoImagen[] = [];
+      if (p.imagen_url) {
+        merged.push({ id: -1, producto_id: p.id, url: p.imagen_url, orden: -1, color_id: null, creado_en: '' });
+      }
+      const galleryImgs = p.imagenes ?? [];
+      merged.push(...galleryImgs);
+      return merged;
+    }
+
+    // Color selected → show only images tagged with that color
+    const colorImages = (p.imagenes ?? []).filter(i => {
+      if (i.color_id == null) return false;
+      const color = p.variantes?.find(v => v.color_id === i.color_id);
+      return color?.color === selectedColor;
+    });
+
+    if (colorImages.length > 0) return colorImages;
+
+    // Fallback: no images tagged for this color → show general images
+    return (p.imagenes ?? []).filter(i => i.color_id == null);
+  });
+
+  selectedImageUrl = computed(() => {
+    const g = this.galleryImages();
+    const idx = this.selectedImageIndex();
+    if (g.length > 0 && idx < g.length) return g[idx].url;
+    return this.producto()?.imagen_url ?? '';
+  });
+
   isFavorited = computed(() =>
     this.wishlistService.wishlistIds().has(this.producto()?.id ?? 0)
   );
@@ -215,12 +268,17 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  selectImage(index: number): void {
+    this.selectedImageIndex.set(index);
+  }
+
   selectTalla(talla: string): void {
     this.selectedTalla.update((prev) => prev === talla ? null : talla);
   }
 
   selectColor(color: string): void {
     this.selectedColor.update((prev) => prev === color ? null : color);
+    this.selectedImageIndex.set(0);
   }
 
   isTallaAvailable(talla: string): boolean {
@@ -232,13 +290,13 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private updateSeo(p: Producto): void {
-    const url = `https://vcsstore.com/producto/${p.id}`;
+    const url = `https://vyro.boutique/producto/${p.id}`;
     this.seo.update({
       title: p.nombre,
-      description: p.descripcion?.slice(0, 160) || `${p.nombre} en VC'S Store`,
+      description: p.descripcion?.slice(0, 160) || `${p.nombre} en VYRO`,
       ogTitle: p.nombre,
-      ogDescription: p.descripcion?.slice(0, 160) || `${p.nombre} - Moda urbana en VC'S Store`,
-      ogImage: p.imagen_url || undefined,
+      ogDescription: p.descripcion?.slice(0, 160) || `${p.nombre} - Moda urbana en VYRO`,
+      ogImage: this.selectedImageUrl() || p.imagen_url || undefined,
       ogUrl: url,
       canonicalUrl: url,
     });
@@ -248,13 +306,13 @@ export class ProductDetailComponent implements OnInit {
       description: p.descripcion || '',
       image: p.imagen_url || '',
       price: this.precioActual(),
-      availability: this.stockActual() > 0,
+      availability: p.es_encargo ? false : this.stockActual() > 0,
       sku: p.id,
     });
 
     this.seo.setBreadcrumbJsonLd([
-      { name: 'Inicio', url: 'https://vcsstore.com/' },
-      { name: p.categoria || 'Productos', url: `https://vcsstore.com/#${p.categoria}` },
+      { name: 'Inicio', url: 'https://vyro.boutique/' },
+      { name: p.categoria || 'Productos', url: `https://vyro.boutique/#${p.categoria}` },
       { name: p.nombre, url },
     ]);
   }
@@ -336,7 +394,7 @@ export class ProductDetailComponent implements OnInit {
       error: (err) => {
         if (err.status === 403) {
           this.haComprado.set(false);
-          this.toast.error('Debes comprar este producto para reseñarlo');
+          this.toast.error('Debes adquirir este producto para reseñarlo');
         } else if (err.status === 400) {
           this.toast.error(err.error?.detail || 'Ya has reseñado este producto');
         } else {

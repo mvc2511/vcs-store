@@ -152,9 +152,10 @@
       color: $vyro-text-secondary;
     }
 
-    &:focus {
+    &:focus-visible {
       border-color: $vyro-accent;
-      outline: none;
+      outline: 2px solid $vyro-accent;
+      outline-offset: 2px;
     }
 
     &:disabled {
@@ -174,8 +175,10 @@
   &.error select {
     border-color: $vyro-error;
 
-    &:focus {
+    &:focus-visible {
       border-color: $vyro-error;
+      outline: 2px solid $vyro-error;
+      outline-offset: 2px;
     }
   }
 

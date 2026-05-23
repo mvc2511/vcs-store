@@ -82,18 +82,24 @@
 // ── Gallery ────────────────────────────────────
 
 .detail-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-md;
   position: sticky;
   top: 100px;
-  border-radius: $vyro-radius-lg;
-  overflow: hidden;
-  background: $vyro-silver;
-  border: 1px solid $vyro-border;
-  aspect-ratio: 3 / 4;
 
   @include tablet {
     position: static;
-    aspect-ratio: 3 / 4;
   }
+}
+
+.gallery-main {
+  border-radius: $vyro-radius-lg;
+  overflow: hidden;
+  background: $vyro-surface;
+  border: 1px solid $vyro-border;
+  aspect-ratio: 3 / 4;
+
   @include mobile {
     aspect-ratio: 1 / 1.2;
   }
@@ -102,9 +108,53 @@
 .detail-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
+  background: $vyro-surface;
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: $vyro-space-sm;
+  overflow-x: auto;
+  padding-bottom: $vyro-space-xs;
+
+  @include tablet {
+    justify-content: center;
+  }
+}
+
+.gallery-thumb {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: $vyro-radius-sm;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: $vyro-surface;
+  cursor: pointer;
+  padding: 0;
+  @include transition(border-color);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: $vyro-surface;
+  }
+
+  &.active {
+    border-color: $vyro-accent;
+  }
+
+  &:hover {
+    border-color: $vyro-text-secondary;
+  }
+
+  @include focus-ring;
 }
 
 // ── Info Column ────────────────────────────────
@@ -149,6 +199,66 @@
   font-weight: 700;
   color: $vyro-accent;
   letter-spacing: -0.01em;
+}
+
+.encargo-ref-label {
+  font-size: 0.75rem;
+  color: $vyro-text-secondary;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.encargo-info {
+  display: flex;
+  flex-direction: column;
+  gap: $vyro-space-md;
+  padding: $vyro-space-lg;
+  background: color-mix(in srgb, $vyro-accent 6%, transparent);
+  border: 1px solid color-mix(in srgb, $vyro-accent 20%, transparent);
+  border-radius: $vyro-radius-md;
+  margin-bottom: $vyro-space-lg;
+}
+
+.encargo-info-item {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  font-size: 0.85rem;
+  color: $vyro-text;
+  line-height: 1.5;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: $vyro-accent;
+  }
+}
+
+.whatsapp-btn--primary {
+  background: #25D366;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  padding: $vyro-space-lg;
+  margin-top: $vyro-space-lg;
+
+  svg { width: 22px; height: 22px; }
+
+  &:hover {
+    background: #1ebe5d;
+    transform: translateY(-2px);
+    box-shadow: $vyro-shadow-lg;
+  }
+}
+
+.encargo-footer-text {
+  font-size: 0.8rem;
+  color: $vyro-text-secondary;
+  line-height: 1.6;
+  margin-top: $vyro-space-md;
+  text-align: center;
 }
 
 .wishlist-btn {
@@ -559,6 +669,11 @@
     outline: none;
     border-color: $vyro-accent;
     box-shadow: 0 0 0 3px rgba($vyro-accent, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
   }
 }
 

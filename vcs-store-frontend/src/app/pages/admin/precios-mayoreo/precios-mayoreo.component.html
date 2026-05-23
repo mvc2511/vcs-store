@@ -19,18 +19,18 @@
         </label>
       </div>
 
-      <select *ngIf="form.value.tipo === 'producto'" formControlName="producto_id" class="input-sm input--flex">
+      <select *ngIf="form.value.tipo === 'producto'" formControlName="producto_id" class="input-sm input--flex" aria-label="Producto">
         <option [ngValue]="null">Seleccionar producto...</option>
         <option *ngFor="let p of productos" [ngValue]="p.id">{{ p.nombre }}</option>
       </select>
 
-      <select *ngIf="form.value.tipo === 'categoria'" formControlName="categoria_id" class="input-sm input--flex">
+      <select *ngIf="form.value.tipo === 'categoria'" formControlName="categoria_id" class="input-sm input--flex" aria-label="Categoría">
         <option [ngValue]="null">Seleccionar categoría...</option>
         <option *ngFor="let c of categorias" [ngValue]="c.id">{{ c.nombre }}</option>
       </select>
 
-      <input formControlName="cantidad_minima" type="number" min="1" placeholder="Cant. mín." class="input-sm input-xs" />
-      <input formControlName="precio_unitario" type="number" step="0.01" min="0.01" placeholder="Precio unit." class="input-sm input-xs" />
+      <input formControlName="cantidad_minima" type="number" min="1" placeholder="Cant. mín." class="input-sm input-xs" aria-label="Cantidad mínima" />
+      <input formControlName="precio_unitario" type="number" step="0.01" min="0.01" placeholder="Precio unit." class="input-sm input-xs" aria-label="Precio unitario" />
       <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
         {{ creando ? 'Agregando...' : 'Agregar' }}
       </button>
@@ -59,11 +59,11 @@
           <td data-label="Precio Unitario">{{ p.precio_unitario | currency:'MXN':'symbol-narrow':'1.0-0' }}</td>
           <td class="col-acts" data-label="">
             <div class="row-acts">
-              <button class="act-btn" title="Editar" (click)="iniciarEdit(p)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <button class="act-btn" aria-label="Editar" title="Editar" (click)="iniciarEdit(p)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
-              <button class="act-btn danger" title="Eliminar" (click)="eliminarPrecio(p.id)" [disabled]="eliminandoId === p.id">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <button class="act-btn danger" aria-label="Eliminar" title="Eliminar" (click)="eliminarPrecio(p.id)" [disabled]="eliminandoId === p.id">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
           </td>
@@ -81,22 +81,22 @@
                     Cat
                   </label>
                 </div>
-                <select *ngIf="editForm.value.tipo === 'producto'" [formControl]="editForm.controls.producto_id" class="edit-input input--flex">
-                  <option [ngValue]="null">Producto...</option>
-                  <option *ngFor="let prod of productos" [ngValue]="prod.id">{{ prod.nombre }}</option>
-                </select>
-                <select *ngIf="editForm.value.tipo === 'categoria'" [formControl]="editForm.controls.categoria_id" class="edit-input input--flex">
-                  <option [ngValue]="null">Categoría...</option>
-                  <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{ cat.nombre }}</option>
-                </select>
-                <input [formControl]="editForm.controls.cantidad_minima" type="number" min="1" class="edit-input input-xs" placeholder="Cant" />
-                <input [formControl]="editForm.controls.precio_unitario" type="number" step="0.01" min="0.01" class="edit-input input-xs" placeholder="$" />
+              <select *ngIf="editForm.value.tipo === 'producto'" [formControl]="editForm.controls.producto_id" class="edit-input input--flex" aria-label="Producto">
+                <option [ngValue]="null">Producto...</option>
+                <option *ngFor="let prod of productos" [ngValue]="prod.id">{{ prod.nombre }}</option>
+              </select>
+              <select *ngIf="editForm.value.tipo === 'categoria'" [formControl]="editForm.controls.categoria_id" class="edit-input input--flex" aria-label="Categoría">
+                <option [ngValue]="null">Categoría...</option>
+                <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{ cat.nombre }}</option>
+              </select>
+              <input [formControl]="editForm.controls.cantidad_minima" type="number" min="1" class="edit-input input-xs" placeholder="Cant" aria-label="Cantidad mínima" />
+              <input [formControl]="editForm.controls.precio_unitario" type="number" step="0.01" min="0.01" class="edit-input input-xs" placeholder="$" aria-label="Precio unitario" />
                 <div class="edit-acts">
-                  <button class="act-btn" (click)="guardarEdit(p.id)" title="Guardar">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <button class="act-btn" aria-label="Guardar" title="Guardar" (click)="guardarEdit(p.id)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                   </button>
-                  <button class="act-btn" (click)="cancelarEdit()" title="Cancelar">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  <button class="act-btn" aria-label="Cancelar" title="Cancelar" (click)="cancelarEdit()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
                   </button>
                 </div>
               </div>

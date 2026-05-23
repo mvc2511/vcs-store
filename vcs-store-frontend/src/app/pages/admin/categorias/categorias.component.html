@@ -8,7 +8,8 @@
 
   <form [formGroup]="form" (ngSubmit)="crearCategoria()" class="cat-form">
     <div class="form-row">
-      <input formControlName="nombre" type="text" placeholder="Nombre de la categoría" />
+      <label for="cat-nombre" class="visually-hidden">Nombre de la categoría</label>
+      <input id="cat-nombre" formControlName="nombre" type="text" placeholder="Nombre de la categoría" />
       <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
         {{ creando ? 'Agregando...' : 'Agregar' }}
       </button>
@@ -24,7 +25,9 @@
       </div>
 
       <ng-template #editTmpl>
+        <label [for]="'edit-cat-' + cat.id" class="visually-hidden">Nombre de la categoría</label>
         <input
+          [id]="'edit-cat-' + cat.id"
           #editInput
           [value]="editNombre"
           (keyup.enter)="guardarEdit(cat.id, editInput.value)"
@@ -36,11 +39,11 @@
       </ng-template>
 
       <div class="row-acts" *ngIf="editandoId !== cat.id">
-        <button class="act-btn" title="Editar" (click)="iniciarEdit(cat)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <button class="act-btn" aria-label="Editar" title="Editar" (click)="iniciarEdit(cat)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
-        <button class="act-btn danger" title="Eliminar" (click)="eliminarCategoria(cat.id)" [disabled]="eliminandoId === cat.id">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <button class="act-btn danger" aria-label="Eliminar" title="Eliminar" (click)="eliminarCategoria(cat.id)" [disabled]="eliminandoId === cat.id">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>
       </div>
     </div>

@@ -11,154 +11,290 @@
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// HERO SECTION
+// ENCARGO HERO — Replaces old hero, now the main visual section
 // ═══════════════════════════════════════════════════════════════════
 
-.hero {
+.encargo-hero {
   position: relative;
-  background: linear-gradient(135deg, $vyro-bg 0%, rgba($vyro-gray, 0.3) 100%);
+  background: linear-gradient(160deg, $vyro-bg 0%, rgba($vyro-accent, 0.06) 40%, $vyro-bg 70%);
   overflow: hidden;
-  min-height: 80vh;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.hero-inner {
+.encargo-hero-visual {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.encargo-hero-shape {
+  position: absolute;
+  border-radius: $vyro-radius-full;
+  filter: blur(100px);
+  animation: float 10s ease-in-out infinite;
+  opacity: 0.1;
+
+  &:first-of-type {
+    width: 500px;
+    height: 500px;
+    background: $vyro-accent;
+    top: -15%;
+    right: -8%;
+  }
+}
+
+.encargo-hero-shape-2 {
+  width: 350px;
+  height: 350px;
+  background: $vyro-text;
+  bottom: 5%;
+  right: 25%;
+  animation-delay: -3s;
+  opacity: 0.06;
+}
+
+.encargo-hero-shape-3 {
+  width: 300px;
+  height: 300px;
+  background: $vyro-gray;
+  top: 25%;
+  left: -5%;
+  animation-delay: -6s;
+  opacity: 0.07;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-40px); }
+}
+
+.encargo-hero-inner {
   position: relative;
+  z-index: 2;
   max-width: 1400px;
   width: 100%;
-  padding: $vyro-space-3xl $vyro-space-lg;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $vyro-space-3xl;
-  align-items: center;
-  z-index: 2;
-
-  @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: 1fr;
-    gap: $vyro-space-2xl;
-    padding: $vyro-space-2xl $vyro-space-lg;
-  }
+  padding: $vyro-space-3xl $vyro-space-lg $vyro-space-2xl;
 
   @media (max-width: $vyro-bp-mobile) {
-    padding: $vyro-space-xl $vyro-space-md;
+    padding: $vyro-space-2xl $vyro-space-md $vyro-space-xl;
   }
 }
 
-.hero-content {
-  position: relative;
-  z-index: 3;
-
-  @media (max-width: $vyro-bp-tablet) {
-    text-align: center;
-  }
+.encargo-hero-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto $vyro-space-2xl;
 }
 
-.hero-badge {
+.encargo-hero-tag {
   display: inline-block;
   padding: $vyro-space-xs $vyro-space-lg;
   background: color-mix(in srgb, $vyro-accent 15%, transparent);
   color: $vyro-accent;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   border-radius: $vyro-radius-full;
   border: 1px solid color-mix(in srgb, $vyro-accent 30%, transparent);
-  margin-bottom: $vyro-space-xl;
-  @include transition(all);
-
-  &:hover {
-    background: color-mix(in srgb, $vyro-accent 25%, transparent);
-  }
+  margin-bottom: $vyro-space-lg;
 }
 
-.hero-title {
+.encargo-hero-title {
   font-family: $vyro-font-heading;
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
   color: $vyro-text;
-  margin-bottom: $vyro-space-xl;
-  word-spacing: 100vw;
+  margin-bottom: $vyro-space-lg;
 }
 
-.hero-accent {
+.encargo-hero-accent {
   color: $vyro-accent;
-  display: block;
 }
 
-.hero-subtitle {
-  font-size: 1.1rem;
+.encargo-hero-subtitle {
+  font-size: 1.05rem;
   font-weight: 400;
-  line-height: 1.8;
+  line-height: 1.7;
   color: $vyro-text-secondary;
-  max-width: 480px;
   margin-bottom: $vyro-space-2xl;
 
-  @media (max-width: $vyro-bp-tablet) {
-    margin: 0 auto $vyro-space-2xl;
+  @media (max-width: $vyro-bp-mobile) {
+    font-size: 0.95rem;
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Hero Visual — Geometric Shapes (Subtle, Modern)
-// ─────────────────────────────────────────────────────────────
-
-.hero-visual {
-  position: relative;
-  height: 500px;
-
-  @media (max-width: $vyro-bp-tablet) {
-    display: none;
-  }
-}
-
-.hero-shape {
-  position: absolute;
+.encargo-hero-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  padding: $vyro-space-sm $vyro-space-xl;
+  background: #25D366;
+  color: white;
   border-radius: $vyro-radius-full;
-  filter: blur(80px);
-  animation: float 8s ease-in-out infinite;
-  opacity: 0.08;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  @include transition(all);
 
-  &:first-of-type {
-    width: 400px;
-    height: 400px;
-    background: $vyro-accent;
-    top: -20%;
-    right: -10%;
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: darken(#25D366, 8%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(#25D366, 0.35);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    width: 100%;
+    justify-content: center;
   }
 }
 
-.hero-shape-2 {
-  width: 300px;
-  height: 300px;
-  background: $vyro-text;
-  bottom: 10%;
-  right: 20%;
-  animation-delay: -2s;
-  opacity: 0.05;
+// ─── Grid wrapper (hero bottom) ────────────
+
+.encargo-hero-grid-wrap {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  width: 100%;
+  padding: 0 $vyro-space-lg $vyro-space-3xl;
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: 0 $vyro-space-md $vyro-space-2xl;
+  }
 }
 
-.hero-shape-3 {
-  width: 250px;
-  height: 250px;
-  background: $vyro-gray;
-  top: 30%;
-  left: 0;
-  animation-delay: -4s;
-  opacity: 0.06;
+.encargo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $vyro-space-md;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-sm;
+  }
+
+  > * {
+    animation: fadeInUp 0.6s ease both;
+  }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+.encargo-more-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 280px;
+  border: 2px dashed $vyro-border;
+  border-radius: $vyro-radius-lg;
+  background: rgba($vyro-accent, 0.03);
+  @include transition(all);
+
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $vyro-space-md;
+    padding: $vyro-space-2xl;
+    text-decoration: none;
+    color: $vyro-text-secondary;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.5;
+    @include transition(all);
+
+    svg {
+      color: $vyro-accent;
+    }
   }
-  50% {
-    transform: translateY(-30px);
+
+  &:hover {
+    border-color: $vyro-accent;
+    background: rgba($vyro-accent, 0.06);
+    a { color: $vyro-text; }
   }
+
+  &:focus-within {
+    border-color: $vyro-accent;
+    box-shadow: 0 0 0 2px rgba($vyro-accent, 0.2);
+  }
+}
+
+// ─── Skeleton Loading ───────────────
+
+.encargo-loading {
+  padding: $vyro-space-md 0;
+}
+
+.encargo-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $vyro-space-md;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-sm;
+  }
+}
+
+.encargo-skeleton-card {
+  background: $vyro-surface;
+  border-radius: $vyro-radius-lg;
+  overflow: hidden;
+  border: 1px solid $vyro-border;
+}
+
+.encargo-skeleton-img {
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+}
+
+.encargo-skeleton-body {
+  padding: $vyro-space-md;
+}
+
+.encargo-skeleton-line {
+  height: 12px;
+  background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: $vyro-radius-sm;
+  margin-bottom: $vyro-space-md;
+
+  &:last-child { margin-bottom: 0; }
+
+  &.w-40 { width: 40%; }
+  &.w-60 { width: 60%; }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -257,11 +393,20 @@
   input {
     border: none;
     background: transparent;
-    outline: none;
     font-size: 0.85rem;
     color: $vyro-text;
     width: 100%;
     font-family: inherit;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $vyro-accent;
+      outline-offset: 4px;
+      border-radius: $vyro-radius-sm;
+    }
 
     &::placeholder {
       color: $vyro-text-secondary;
@@ -393,6 +538,12 @@
     box-shadow: 0 0 0 3px rgba($vyro-accent, 0.08);
   }
 
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-radius: $vyro-radius-sm;
+  }
+
   option {
     background: $vyro-surface;
     color: $vyro-text;
@@ -416,11 +567,11 @@
 
 .skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: $vyro-space-md;
   }
 
@@ -514,11 +665,11 @@
 
 .productos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: $vyro-space-lg;
 
   @media (max-width: $vyro-bp-tablet) {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: $vyro-space-md;
   }
 

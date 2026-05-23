@@ -4,7 +4,7 @@ from fastapi.responses import PlainTextResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import settings
-from app.routes import checkout, webhooks, productos, categorias, puntos_entrega, admin_ordenes, mis_ordenes, carrito, variantes, tallas, colores, opciones_ml, cupones, precios_mayoreo, favoritos, resenas, admin_stock, admin_productos
+from app.routes import checkout, webhooks, productos, categorias, puntos_entrega, admin_ordenes, mis_ordenes, carrito, variantes, tallas, colores, opciones_ml, cupones, precios_mayoreo, favoritos, resenas, admin_stock, admin_productos, producto_imagenes
 from app.core.supabase_client import supabase_admin
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
@@ -53,6 +53,7 @@ app.include_router(favoritos.router)
 app.include_router(resenas.router)
 app.include_router(admin_stock.router)
 app.include_router(admin_productos.router)
+app.include_router(producto_imagenes.router)
 
 
 @app.get("/")

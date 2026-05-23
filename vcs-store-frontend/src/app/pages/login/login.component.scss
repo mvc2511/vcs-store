@@ -118,6 +118,12 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, $vyro-accent 12%, transparent);
   }
 
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-radius: $vyro-radius-sm;
+  }
+
   &::placeholder {
     color: $vyro-text-secondary;
     opacity: 0.6;
