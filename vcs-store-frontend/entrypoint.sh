@@ -1,5 +1,5 @@
-#!/bin/bash
-set -Eeuo pipefail
+#!/bin/sh
+set -euo pipefail
 
 log_info() {
   echo "[$(date +'%Y-%m-%d %H:%M:%S')] INFO: $*" >&2
@@ -11,18 +11,18 @@ log_error() {
 
 trap 'log_error "Script failed on line $LINENO"' ERR
 
-if [[ -n "${API_URL:-}" ]]; then
+if [ -n "${API_URL:-}" ]; then
   log_info "Reemplazando API_URL por ${API_URL}"
 
   html_dir="/usr/share/nginx/html"
-  if [[ ! -d "$html_dir" ]]; then
+  if [ ! -d "$html_dir" ]; then
     log_error "Directorio no encontrado: $html_dir"
     exit 1
   fi
 
   for url in "https://api.vyro.boutique" "https://api-qa.vyro.boutique" "http://localhost:8000"; do
     files=$(find "$html_dir" -type f \( -name "*.js" -o -name "*.html" \) 2>/dev/null)
-    if [[ -z "$files" ]]; then
+    if [ -z "$files" ]; then
       log_info "No se encontraron archivos .js ni .html en $html_dir, se omite reemplazo para $url"
       continue
     fi
