@@ -187,32 +187,30 @@ export class ProductDetailComponent implements OnInit {
     const p = this.producto();
     if (!p) return [];
 
-    // Build merged list with main image first
-    const merged: ProductoImagen[] = [];
-    if (p.imagen_url) {
-      merged.push({ id: -1, producto_id: p.id, url: p.imagen_url, orden: -1, color_id: null, creado_en: '' });
-    }
-    const galleryImgs = p.imagenes ?? [];
-    merged.push(...galleryImgs);
-
     const selectedColor = this.selectedColor();
-    if (!selectedColor) return merged;
 
-    // Find images matching selected color (excluding main image mock)
-    const mainImage = merged[0];
-    const colorImages = merged.filter(i => {
+    // No color selected → show all (main + gallery)
+    if (!selectedColor) {
+      const merged: ProductoImagen[] = [];
+      if (p.imagen_url) {
+        merged.push({ id: -1, producto_id: p.id, url: p.imagen_url, orden: -1, color_id: null, creado_en: '' });
+      }
+      const galleryImgs = p.imagenes ?? [];
+      merged.push(...galleryImgs);
+      return merged;
+    }
+
+    // Color selected → show only images tagged with that color
+    const colorImages = (p.imagenes ?? []).filter(i => {
       if (i.color_id == null) return false;
       const color = p.variantes?.find(v => v.color_id === i.color_id);
       return color?.color === selectedColor;
     });
 
-    if (colorImages.length > 0) {
-      // Main image always first + color-specific images
-      return mainImage ? [mainImage, ...colorImages] : colorImages;
-    }
+    if (colorImages.length > 0) return colorImages;
 
-    // Fallback: main image + general images only
-    return merged.filter(i => i.color_id == null);
+    // Fallback: no images tagged for this color → show general images
+    return (p.imagenes ?? []).filter(i => i.color_id == null);
   });
 
   selectedImageUrl = computed(() => {
