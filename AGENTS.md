@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22 (7)
+**Última actualización:** 2026-05-23 (8)
 
 ## 🎯 Próximo paso inmediato
-Aplicar migración `migracion-perfumes-encargo.sql` en Supabase PRD.
+Aplicar migraciones en Supabase QA y PRD (`migracion-perfumes-encargo.sql` + `migracion-producto-imagenes.sql`).
 
 ## 🐛 Hotfix (2026-05-22)
 - `maybe_single()` → `.limit(1)` en endpoints reseñas (causaba 500 /can-review)
@@ -43,6 +43,7 @@ Aplicar migración `migracion-perfumes-encargo.sql` en Supabase PRD.
 - [x] Columna `visible` en productos (control admin de visibilidad en catálogo)
 - [x] Columna `cupon_id` + `descuento` en ordenes
 - [x] Columna `anonima` en resenas
+- [x] Tabla `producto_imagenes` + RLS (lectura pública, CRUD admin, asociación a color)
 
 ### Frontend — Navegación y Layout
 - [x] Arquitectura Standalone con Signals
@@ -126,6 +127,13 @@ Aplicar migración `migracion-perfumes-encargo.sql` en Supabase PRD.
 - [x] bash-defensive-patterns: entrypoint.sh hardening (strict mode, trap, logging, validación)
 - [x] Dockerfile: limpieza de sed innecesario en entrypoint
 
+### Galería Multi-Imagen (2026-05-23)
+- [x] Migración SQL `migracion-producto-imagenes.sql` — tabla `producto_imagenes` con color_id opcional
+- [x] Backend: CRUD completo de imágenes por producto (POST/PUT/DELETE/reordenar)
+- [x] Backend: GET /api/productos/{id} incluye array `imagenes`
+- [x] Frontend ProductoForm: galería con upload multiple, ↑/↓ reordenar, dropdown de color, eliminar
+- [x] Frontend ProductDetail: thumbs + imagen grande + filtrado por color seleccionado
+
 ### Infraestructura — Entornos
 - [x] environment.prod.ts con Supabase producción y anon key real
 - [x] environment.qa.ts con apiUrl de QA
@@ -178,7 +186,7 @@ Aplicar migración `migracion-perfumes-encargo.sql` en Supabase PRD.
 - [x] **N.4** ProductCard: variante visual para productos por encargo (badge, WhatsApp CTA)
 - [x] **N.5** ProductDetail: layout alternativo sin stock ni carrito, solo WhatsApp + info
 - [x] **N.6** Admin ProductoForm: toggle "es encargo" + campo días entrega
-- [x] **Pendiente:** Aplicar migración en Supabase QA (ver migracion-perfumes-encargo.sql)
+- [ ] **Pendiente:** Aplicar migración en Supabase QA (ver migracion-perfumes-encargo.sql)
 - [ ] **Pendiente:** Aplicar migración en Supabase PRD (ver migracion-perfumes-encargo.sql)
 
 ### Fase 3 — Validaciones Críticas (~1 semana)
@@ -190,7 +198,8 @@ Aplicar migración `migracion-perfumes-encargo.sql` en Supabase PRD.
 - [ ] **4.2** Mis Pedidos: convertir detalles inline en accordion expandible por orden.
 
 ### Fase 5 — Funcionalidades Medias (~2-3 semanas)
-- [ ] **5.1** Filtros combinados (rango precio, stock, sort server-side), productos relacionados, dashboard analíticas (Chart.js), carrito abandonado (email), notas del cliente, galería múltiple imágenes.
+- [ ] **5.1** Filtros combinados (rango precio, stock, sort server-side), productos relacionados, dashboard analíticas (Chart.js), carrito abandonado (email), notas del cliente.
+- [x] **5.1g** Galería múltiple imágenes + imágenes por variante de color.
 
 ### Fase 6 — Mejoras Bajas (~1-2 semanas)
 - [ ] **6.1** Términos/Privacidad (rutas + footer), multi-idioma (Angular i18n, español/inglés), blog (CRUD admin), comparación productos, compartir en redes.
