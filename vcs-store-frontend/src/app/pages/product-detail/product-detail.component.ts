@@ -232,12 +232,12 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private updateSeo(p: Producto): void {
-    const url = `https://vcsstore.com/producto/${p.id}`;
+    const url = `https://vyro.boutique/producto/${p.id}`;
     this.seo.update({
       title: p.nombre,
-      description: p.descripcion?.slice(0, 160) || `${p.nombre} en VC'S Store`,
+      description: p.descripcion?.slice(0, 160) || `${p.nombre} en VYRO`,
       ogTitle: p.nombre,
-      ogDescription: p.descripcion?.slice(0, 160) || `${p.nombre} - Moda urbana en VC'S Store`,
+      ogDescription: p.descripcion?.slice(0, 160) || `${p.nombre} - Moda urbana en VYRO`,
       ogImage: p.imagen_url || undefined,
       ogUrl: url,
       canonicalUrl: url,
@@ -253,8 +253,8 @@ export class ProductDetailComponent implements OnInit {
     });
 
     this.seo.setBreadcrumbJsonLd([
-      { name: 'Inicio', url: 'https://vcsstore.com/' },
-      { name: p.categoria || 'Productos', url: `https://vcsstore.com/#${p.categoria}` },
+      { name: 'Inicio', url: 'https://vyro.boutique/' },
+      { name: p.categoria || 'Productos', url: `https://vyro.boutique/#${p.categoria}` },
       { name: p.nombre, url },
     ]);
   }
@@ -336,7 +336,7 @@ export class ProductDetailComponent implements OnInit {
       error: (err) => {
         if (err.status === 403) {
           this.haComprado.set(false);
-          this.toast.error('Debes comprar este producto para reseñarlo');
+          this.toast.error('Debes adquirir este producto para reseñarlo');
         } else if (err.status === 400) {
           this.toast.error(err.error?.detail || 'Ya has reseñado este producto');
         } else {

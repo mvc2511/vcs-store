@@ -118,7 +118,7 @@
 
         <!-- Login gate -->
         <div *ngIf="!authService.isLoggedIn()" class="summary-login">
-          <p class="summary-login-text">Inicia sesión para completar tu compra</p>
+          <p class="summary-login-text">Inicia sesión para completar tu pedido</p>
           <a routerLink="/login" [queryParams]="{returnUrl: '/cart'}" class="btn btn-primary">Iniciar sesión</a>
         </div>
 

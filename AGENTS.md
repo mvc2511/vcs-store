@@ -1,12 +1,12 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22 (3)
+**Última actualización:** 2026-05-22 (4)
 
 ## 🎯 Próximo paso inmediato
 Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh token, DAG transiciones).
 
 ## 📍 Contexto del Proyecto
-- **Proyecto:** VYRO — E-commerce de ropa, perfumes y electrónicos (mayoreo/granel)
+- **Proyecto:** VYRO — E-commerce de ropa, perfumes y accesorios (mayoreo/granel)
 - **Frontend:** Angular 18 (Standalone, Signals, lazy loading, guards, responsive mobile-first)
 - **Backend:** Python 3.11+ / FastAPI (Docker)
 - **Infra:** Supabase (PostgreSQL + Auth + Storage + RLS)

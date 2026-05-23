@@ -35,14 +35,25 @@ DROP POLICY IF EXISTS "Usuarios pueden actualizar su propio perfil" ON public.pe
 DROP POLICY IF EXISTS "Subir imagenes a productos" ON storage.objects;
 DROP POLICY IF EXISTS "Leer imagenes de productos" ON storage.objects;
 
+DROP POLICY IF EXISTS "Lectura authenticated productos" ON public.productos;
+DROP POLICY IF EXISTS "Lectura authenticated categorias" ON public.categorias;
+DROP POLICY IF EXISTS "Lectura authenticated variantes" ON public.variantes_producto;
+DROP POLICY IF EXISTS "Lectura authenticated tallas" ON public.tallas;
+DROP POLICY IF EXISTS "Lectura authenticated colores" ON public.colores;
+DROP POLICY IF EXISTS "Lectura authenticated opciones_ml" ON public.opciones_ml;
+DROP POLICY IF EXISTS "Lectura authenticated resenas" ON public.resenas;
+DROP POLICY IF EXISTS "Lectura authenticated cupones" ON public.cupones;
+DROP POLICY IF EXISTS "Lectura authenticated precios_mayoreo" ON public.precios_mayoreo;
+DROP POLICY IF EXISTS "Lectura authenticated puntos_entrega" ON public.puntos_entrega;
+
 DROP TABLE IF EXISTS public.variantes_producto CASCADE;
 DROP TABLE IF EXISTS public.detalles_orden;
 DROP TABLE IF EXISTS public.ordenes;
 DROP TABLE IF EXISTS public.carrito;
 DROP TABLE IF EXISTS public.puntos_entrega;
 DROP TABLE IF EXISTS public.carrito;
-DROP TABLE IF EXISTS public.productos;
-DROP TABLE IF EXISTS public.categorias;
+DROP TABLE IF EXISTS public.productos CASCADE;
+DROP TABLE IF EXISTS public.categorias CASCADE;
 DROP TABLE IF EXISTS public.tallas;
 DROP TABLE IF EXISTS public.colores;
 DROP TABLE IF EXISTS public.favoritos CASCADE;
@@ -310,29 +321,50 @@ CREATE POLICY "Permitir lectura publica de perfiles"
 CREATE POLICY "Usuarios pueden actualizar su propio perfil"
     ON public.perfiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
--- Lectura pública de puntos de entrega
+-- Lectura pública de puntos de entrega (anon + authenticated)
 CREATE POLICY "Permitir lectura publica de puntos de entrega"
     ON public.puntos_entrega FOR SELECT TO anon USING (true);
 
--- Lectura pública de catálogo (rol anónimo)
+CREATE POLICY "Lectura authenticated puntos_entrega"
+    ON public.puntos_entrega FOR SELECT TO authenticated USING (true);
+
+-- Lectura pública de catálogo (rol anónimo + authenticated)
 CREATE POLICY "Permitir lectura publica de categorias"
     ON public.categorias FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated categorias"
+    ON public.categorias FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "Permitir lectura publica de productos"
     ON public.productos FOR SELECT TO anon USING (true);
 
+CREATE POLICY "Lectura authenticated productos"
+    ON public.productos FOR SELECT TO authenticated USING (true);
+
 CREATE POLICY "Permitir lectura publica de variantes"
     ON public.variantes_producto FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated variantes"
+    ON public.variantes_producto FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "Permitir lectura publica de tallas"
     ON public.tallas FOR SELECT TO anon USING (true);
 
+CREATE POLICY "Lectura authenticated tallas"
+    ON public.tallas FOR SELECT TO authenticated USING (true);
+
 CREATE POLICY "Permitir lectura publica de colores"
     ON public.colores FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated colores"
+    ON public.colores FOR SELECT TO authenticated USING (true);
 
 -- Lectura pública de opciones de ml
 CREATE POLICY "Permitir lectura publica de opciones ml"
     ON public.opciones_ml FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated opciones_ml"
+    ON public.opciones_ml FOR SELECT TO authenticated USING (true);
 
 -- Aislamiento: cada usuario ve solo sus órdenes
 CREATE POLICY "Usuarios pueden ver solo sus propias ordenes"
@@ -369,6 +401,9 @@ CREATE POLICY "Usuarios pueden eliminar sus propios favoritos"
 CREATE POLICY "Lectura publica de resenas"
     ON public.resenas FOR SELECT TO anon USING (true);
 
+CREATE POLICY "Lectura authenticated resenas"
+    ON public.resenas FOR SELECT TO authenticated USING (true);
+
 CREATE POLICY "Usuarios pueden insertar sus propias resenas"
     ON public.resenas FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
@@ -378,13 +413,19 @@ CREATE POLICY "Usuarios pueden actualizar sus propias resenas"
 CREATE POLICY "Usuarios pueden eliminar sus propias resenas"
     ON public.resenas FOR DELETE TO authenticated USING (auth.uid() = user_id);
 
--- Cupones: solo admin (service_role) puede CRUD
+-- Cupones: lectura pública (anon + authenticated)
 CREATE POLICY "Lectura publica de cupones para validacion"
     ON public.cupones FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated cupones"
+    ON public.cupones FOR SELECT TO authenticated USING (true);
 
 -- Precios mayoreo: lectura pública
 CREATE POLICY "Lectura publica de precios mayoreo"
     ON public.precios_mayoreo FOR SELECT TO anon USING (true);
+
+CREATE POLICY "Lectura authenticated precios_mayoreo"
+    ON public.precios_mayoreo FOR SELECT TO authenticated USING (true);
 
 -- =============================================================================
 -- 6. PRIVILEGIOS (Principio de Mínimo Privilegio)
@@ -406,10 +447,14 @@ GRANT SELECT ON public.precios_mayoreo TO anon;
 -- authenticated (frontend - usuario logueado)
 GRANT SELECT, UPDATE ON public.perfiles TO authenticated;
 GRANT SELECT ON public.puntos_entrega TO authenticated;
+GRANT SELECT ON public.productos TO authenticated;
+GRANT SELECT ON public.categorias TO authenticated;
 GRANT SELECT ON public.variantes_producto TO authenticated;
 GRANT SELECT ON public.tallas TO authenticated;
 GRANT SELECT ON public.colores TO authenticated;
 GRANT SELECT ON public.opciones_ml TO authenticated;
+GRANT SELECT ON public.cupones TO authenticated;
+GRANT SELECT ON public.precios_mayoreo TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.carrito TO authenticated;
 GRANT USAGE ON SEQUENCE public.carrito_id_seq TO authenticated;
 GRANT SELECT, INSERT, DELETE ON public.favoritos TO authenticated;
@@ -421,7 +466,7 @@ GRANT USAGE ON SEQUENCE public.resenas_id_seq TO authenticated;
 GRANT SELECT, UPDATE ON public.perfiles TO service_role;
 GRANT SELECT, INSERT, DELETE ON public.categorias TO service_role;
 GRANT USAGE ON SEQUENCE public.categorias_id_seq TO service_role;
-GRANT SELECT, INSERT, UPDATE ON public.productos TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.productos TO service_role;
 GRANT USAGE ON SEQUENCE public.productos_id_seq TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.variantes_producto TO service_role;
 GRANT USAGE ON SEQUENCE public.variantes_producto_id_seq TO service_role;

@@ -27,8 +27,8 @@ export class AppComponent implements OnInit {
         } else if (url.startsWith('/producto/')) {
         } else if (url === '/cart') {
           this.seo.update({
-            title: 'Carrito de Compras',
-            description: 'Revisa tu carrito en VYRO. Ropa, perfumes y electrónicos al mayoreo y granel. Entregas en Chapa de Mota, Jilotepec y San Andrés.',
+            title: 'Carrito',
+            description: 'Revisa tu carrito en VYRO. Ropa, perfumes y accesorios al mayoreo y granel. Entregas en Chapa de Mota, Jilotepec y San Andrés.',
             ogUrl: `https://vyro.boutique${url}`,
             canonicalUrl: `https://vyro.boutique${url}`,
           });
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
         } else if (url === '/favoritos') {
           this.seo.update({
             title: 'Mis Favoritos',
-            description: 'Tus productos favoritos en VYRO. Guarda ropa, perfumes y más para comprar después.',
+            description: 'Tus productos favoritos en VYRO. Guarda ropa, perfumes y más para después.',
             ogUrl: `https://vyro.boutique${url}`,
             canonicalUrl: `https://vyro.boutique${url}`,
           });
@@ -63,14 +63,14 @@ export class AppComponent implements OnInit {
         } else if (url === '/success') {
           this.seo.update({
             title: 'Pedido Confirmado',
-            description: 'Tu pedido en VYRO ha sido confirmado. Gracias por tu compra.',
+            description: 'Tu pedido en VYRO ha sido confirmado. Gracias por tu pedido.',
             ogUrl: `https://vyro.boutique${url}`,
             canonicalUrl: `https://vyro.boutique${url}`,
           });
         } else if (url === '/terminos') {
           this.seo.update({
             title: 'Términos y Condiciones',
-            description: 'Términos y condiciones de compra en VYRO. Entregas locales en Chapa de Mota, Jilotepec y San Andrés, Estado de México.',
+            description: 'Términos y condiciones de VYRO. Entregas locales en Chapa de Mota, Jilotepec y San Andrés, Estado de México.',
             ogUrl: `https://vyro.boutique${url}`,
             canonicalUrl: `https://vyro.boutique${url}`,
           });
