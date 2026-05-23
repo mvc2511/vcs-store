@@ -11,6 +11,8 @@ interface ProductoFromDB {
   stock: number;
   imagen_url: string;
   descripcion: string;
+  es_encargo?: boolean;
+  dias_entrega?: number;
   categorias: { nombre: string };
 }
 
@@ -35,6 +37,8 @@ export class SupabaseService {
       stock: raw.stock,
       imagen_url: raw.imagen_url,
       descripcion: raw.descripcion,
+      es_encargo: raw.es_encargo,
+      dias_entrega: raw.dias_entrega,
       categoria: raw.categorias.nombre,
       variantes,
     };
@@ -44,7 +48,7 @@ export class SupabaseService {
     return from(
       this.supabase
         .from('productos')
-        .select('id, nombre, precio, stock, imagen_url, descripcion, categorias!inner(nombre)')
+        .select('id, nombre, precio, stock, imagen_url, descripcion, es_encargo, dias_entrega, categorias!inner(nombre)')
         .order('id', { ascending: false })
         .then(({ data, error }) => {
           if (error) throw error;
@@ -59,7 +63,7 @@ export class SupabaseService {
     return from(
       this.supabase
         .from('productos')
-        .select('id, nombre, precio, stock, imagen_url, descripcion, categorias!inner(nombre)')
+        .select('id, nombre, precio, stock, imagen_url, descripcion, es_encargo, dias_entrega, categorias!inner(nombre)')
         .eq('categorias.nombre', category)
         .order('id', { ascending: false })
         .then(({ data, error }) => {
@@ -76,7 +80,7 @@ export class SupabaseService {
       (async () => {
         const { data, error } = await this.supabase
           .from('productos')
-          .select('id, nombre, precio, stock, imagen_url, descripcion, categorias!inner(nombre)')
+          .select('id, nombre, precio, stock, imagen_url, descripcion, es_encargo, dias_entrega, categorias!inner(nombre)')
           .eq('id', id)
           .single();
 
