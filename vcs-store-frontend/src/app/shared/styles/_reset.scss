@@ -93,6 +93,7 @@ ul, ol {
   font-weight: 600;
   font-size: 0.9rem;
   border-radius: 0 0 $vyro-radius-sm 0;
+  @include transition(top);
 
   &:focus {
     top: 0;
@@ -108,6 +109,22 @@ ul, ol {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .skip-link {
+    transition: none;
+
+    &:focus {
+      top: 0;
+    }
+  }
+}
+
+// ─── High Contrast Mode ────────────────────────
+@media (prefers-contrast: more) {
+  :focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
   }
 }
 

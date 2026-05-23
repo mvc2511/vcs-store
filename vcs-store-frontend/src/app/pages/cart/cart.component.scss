@@ -370,6 +370,12 @@
   &:focus {
     border-color: $vyro-accent;
   }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-radius: $vyro-radius-sm;
+  }
 }
 
 .delivery-row {
@@ -621,6 +627,12 @@
 
     &:focus {
       border-color: $vyro-text;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $vyro-accent;
+      outline-offset: 2px;
+      border-radius: $vyro-radius-sm;
     }
   }
 

@@ -112,7 +112,7 @@
 
       <div class="reviews-summary">
         <div class="rating-stars">
-          <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= Math.round(promedio())">
+          <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= Math.round(promedio())" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
             </svg>
@@ -125,13 +125,14 @@
       <div class="review-form" *ngIf="authService.isLoggedIn() && haComprado() && !miResena()">
         <h3 class="review-form-title">ESCRIBE UNA RESEÑA</h3>
         <div class="star-selector">
-          <span *ngFor="let i of [1,2,3,4,5]" class="star clickable" [class.filled]="i <= (hoverPuntuacion() || newPuntuacion())" (click)="newPuntuacion.set(i)" (mouseenter)="hoverPuntuacion.set(i)" (mouseleave)="hoverPuntuacion.set(0)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+          <span *ngFor="let i of [1,2,3,4,5]" class="star clickable" [class.filled]="i <= (hoverPuntuacion() || newPuntuacion())" (click)="newPuntuacion.set(i)" (mouseenter)="hoverPuntuacion.set(i)" (mouseleave)="hoverPuntuacion.set(0)" role="radio" [attr.aria-checked]="i <= newPuntuacion()" [attr.aria-label]="i + ' estrella' + (i > 1 ? 's' : '')" tabindex="0" (keydown)="i <= (hoverPuntuacion() || newPuntuacion()) ? null : null">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" aria-hidden="true">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
             </svg>
           </span>
         </div>
-        <textarea class="review-textarea" [(ngModel)]="newComentario" placeholder="Comparte tu experiencia con este producto..." rows="4"></textarea>
+        <label for="new-review" class="visually-hidden">Tu reseña</label>
+        <textarea id="new-review" class="review-textarea" [(ngModel)]="newComentario" placeholder="Comparte tu experiencia con este producto..." rows="4"></textarea>
         <label class="anonima-toggle">
           <input type="checkbox" [(ngModel)]="newAnonima" />
           <span class="toggle-label">Publicar anónimamente</span>
@@ -142,13 +143,14 @@
       <div class="review-form edit" *ngIf="miResena() as r">
         <h3 class="review-form-title">TU RESEÑA</h3>
         <div class="star-selector">
-          <span *ngFor="let i of [1,2,3,4,5]" class="star clickable" [class.filled]="i <= editPuntuacion()" (click)="editPuntuacion.set(i)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
+          <span *ngFor="let i of [1,2,3,4,5]" class="star clickable" [class.filled]="i <= editPuntuacion()" (click)="editPuntuacion.set(i)" role="radio" [attr.aria-checked]="i <= editPuntuacion()" [attr.aria-label]="i + ' estrella' + (i > 1 ? 's' : '')" tabindex="0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" aria-hidden="true">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
             </svg>
           </span>
         </div>
-        <textarea class="review-textarea" [(ngModel)]="editComentario" placeholder="Comparte tu experiencia con este producto..." rows="4"></textarea>
+        <label for="edit-review" class="visually-hidden">Editar reseña</label>
+        <textarea id="edit-review" class="review-textarea" [(ngModel)]="editComentario" placeholder="Comparte tu experiencia con este producto..." rows="4"></textarea>
         <label class="anonima-toggle">
           <input type="checkbox" [(ngModel)]="editAnonima" />
           <span class="toggle-label">Publicar anónimamente</span>
@@ -174,7 +176,7 @@
             <span class="review-date">{{ r.created_at | date:'longDate' }}</span>
           </div>
           <div class="review-stars">
-            <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= r.puntuacion">
+            <span *ngFor="let i of [1,2,3,4,5]" class="star" [class.filled]="i <= r.puntuacion" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
               </svg>

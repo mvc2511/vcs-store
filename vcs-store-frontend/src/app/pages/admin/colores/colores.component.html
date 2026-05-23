@@ -8,8 +8,10 @@
 
   <form [formGroup]="form" (ngSubmit)="crearColor()" class="cat-form">
     <div class="form-row">
-      <input formControlName="nombre" type="text" placeholder="Nombre del color (ej: Rojo)" />
-      <input formControlName="hex" type="text" placeholder="Hex (ej: #FF0000)" class="input-sm" />
+      <label for="color-nombre" class="visually-hidden">Nombre del color</label>
+      <input id="color-nombre" formControlName="nombre" type="text" placeholder="Nombre del color (ej: Rojo)" />
+      <label for="color-hex" class="visually-hidden">Hex</label>
+      <input id="color-hex" formControlName="hex" type="text" placeholder="Hex (ej: #FF0000)" class="input-sm" />
       <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
         {{ creando ? 'Agregando...' : 'Agregar' }}
       </button>
@@ -27,17 +29,19 @@
 
       <ng-template #editTmpl>
         <div class="edit-group">
-          <input #nameInput [value]="editNombre" (keyup.enter)="guardarEdit(c.id)" (keyup.escape)="cancelarEdit()" (blur)="guardarEdit(c.id)" class="edit-input" autofocus />
-          <input #hexInput [value]="editHex" (keyup.enter)="guardarEdit(c.id)" (keyup.escape)="cancelarEdit()" class="edit-input input-sm" placeholder="#HEX" />
+          <label [for]="'edit-color-nombre-' + c.id" class="visually-hidden">Nombre del color</label>
+          <input [id]="'edit-color-nombre-' + c.id" #nameInput [value]="editNombre" (keyup.enter)="guardarEdit(c.id)" (keyup.escape)="cancelarEdit()" (blur)="guardarEdit(c.id)" class="edit-input" autofocus />
+          <label [for]="'edit-color-hex-' + c.id" class="visually-hidden">Hex</label>
+          <input [id]="'edit-color-hex-' + c.id" #hexInput [value]="editHex" (keyup.enter)="guardarEdit(c.id)" (keyup.escape)="cancelarEdit()" class="edit-input input-sm" placeholder="#HEX" />
         </div>
       </ng-template>
 
       <div class="row-acts" *ngIf="editandoId !== c.id">
-        <button class="act-btn" title="Editar" (click)="iniciarEdit(c)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <button class="act-btn" aria-label="Editar" title="Editar" (click)="iniciarEdit(c)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
-        <button class="act-btn danger" title="Eliminar" (click)="eliminarColor(c.id)" [disabled]="eliminandoId === c.id">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <button class="act-btn danger" aria-label="Eliminar" title="Eliminar" (click)="eliminarColor(c.id)" [disabled]="eliminandoId === c.id">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>
       </div>
     </div>

@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-22 (4)
+**Última actualización:** 2026-05-22 (5)
 
 ## 🎯 Próximo paso inmediato
-Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh token, DAG transiciones).
+Perfumes por Encargo — Nueva sección en home + catálogo de perfumes bajo pedido.
 
 ## 📍 Contexto del Proyecto
 - **Proyecto:** VYRO — E-commerce de ropa, perfumes y accesorios (mayoreo/granel)
@@ -96,7 +96,6 @@ Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh toke
 - [x] Rediseño Home VYRO (hero editorial, skeleton shimmer, stagger animations)
 - [x] Rediseño ProductCard VYRO (aspect-ratio 4/5, hover overlay, SVG plus icon)
 - [x] Rediseño ProductDetail VYRO (2-columnas desktop, stock bar, specs grid, editorial spacing)
-- [x] Selector de variantes (talla pills + color pills), precio/stock dinámico según variante seleccionada
 - [x] Rediseño Cart VYRO (editorial grid, payment methods, summary sidebar)
 - [x] Rediseño Login/Signup VYRO (password strength, Google OAuth, alerts)
 - [x] Sistema de diseño VYRO completo: _variables.scss, _typography.scss, _components.scss, _mixins.scss, _animations.scss
@@ -105,6 +104,22 @@ Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh toke
 - [x] SEO completo: JSON-LD LocalBusiness, Open Graph, Twitter Cards, canonical URLs, sitemap, robots.txt
 - [x] Footer responsive con datos de contacto, entregas locales y links legales
 - [x] Páginas legales: /privacidad (Aviso de Privacidad) y /terminos (Términos y Condiciones)
+
+### Accesibilidad (WCAG 2.2 AA)
+- [x] Audit completa de 27+ templates HTML, SCSS y TypeScript
+- [x] Alt text dinámico en preview de producto (producto-form)
+- [x] Labels con `visually-hidden` en 41 controles de formulario (admin CRUD, carrito, reseñas)
+- [x] `aria-label` en 29 botones icon-only (editar, eliminar, guardar, cancelar)
+- [x] `aria-hidden="true"` en 30+ SVGs decorativos
+- [x] `:focus-visible` con outline champagne en todos los componentes
+- [x] Navegación por teclado: Escape → cerrar menú, Enter/Space → upload
+- [x] Skip link con animación smooth
+- [x] `prefers-reduced-motion` y `prefers-contrast: more`
+- [x] Rating stars con `role="radio"`, `aria-checked`, `tabindex`
+
+### Infraestructura
+- [x] bash-defensive-patterns: entrypoint.sh hardening (strict mode, trap, logging, validación)
+- [x] Dockerfile: limpieza de sed innecesario en entrypoint
 
 ### Infraestructura — Entornos
 - [x] environment.prod.ts con Supabase producción y anon key real
@@ -151,20 +166,13 @@ Fase 3 — Validaciones Críticas (stock atómico, 401 interceptor, refresh toke
 
 ## 🔄 Pendiente — Plan de Implementación por Fases
 
-### Fase 1 — MVP Production ✅ COMPLETADA
-- [x] **1.1 Notificaciones Email** — SendGrid. Eventos: orden creada, cambio estado, cancelación. Servicio: `services/email.py` con 3 templates HTML inline. Integrado en checkout.py, admin_ordenes.py, mis_ordenes.py.
-- [x] **1.2 Variantes de Producto (Talla, Color)** — Nueva tabla variantes_producto, CRUD backend, selector en product-detail, carrito con clave compuesta, checkout con variante_id. 3-5 días.
-- [x] **1.2b Estandarización Tallas/Colores** — Lookup tables `tallas` y `colores`, FK desde variantes_producto, CRUD admin, selects en formulario.
-- [x] **1.2c Corrección doble stock** — Stock producto readonly cuando hay variantes; checkout solo decrementa variante.stock si variante_id existe.
-- [x] **1.2d Modelo de datos mejorado** — Renombrar `talla` → `nombre_variante`, agregar `tipo_variante` (talla/volumen/color_solo), crear tabla `opciones_ml` con CRUD admin, eliminar hardcode ml del frontend, api dinámica, auto-detección tipo_variante por categoría.
-- [x] **1.3 Paginación Catálogo** — Backend con LIMIT/OFFSET + sort + filtro categoría, frontend ProductService con "Ver más".
-- [x] **1.4 Stock Agotado Visual** — Badge "Agotado" en pills de variantes sin stock (ProductDetail), badge en items de carrito + advertencia + botones checkout deshabilitados.
-
-### Fase 2 — Experiencia Cliente ✅ COMPLETADA
-- [x] **2.1 Reseñas y Valoraciones** — Tabla `resenas` con puntuación 1-5, comentario y soporte anónimo. CRUD backend con verificación de compra (solo compradores pueden reseñar). Sección de valoraciones en product-detail con estrellas interactivas, formulario de reseña con toggle anónimo, y lista de reseñas. Backend verifica compra via ordenes+detalles_orden.
-- [x] **2.2 Wishlist / Favoritos** — Tabla `favoritos`, solo DB (sin localStorage). WishlistService con Signals. Corazón en product-card y product-detail. Página `/favoritos` protegida con grid de productos. Link en navbar para logueados. CRUD backend completo con endpoints listar/agregar/eliminar/check.
-- [x] **2.3 Cupones / Descuentos + Mayoreo** — Sistema dual: (a) Cupones con código (porcentaje/fijo, fechas, usos, filtro producto/categoría) con validación backend y CRUD admin; (b) Precios por volumen (mayoreo) por producto o categoría. Input de cupón en carrito con validación en tiempo real. Precios mayoreo se aplican automáticamente al alcanzar cantidad mínima. Descuento integrado en checkout COD con columnas `cupon_id` y `descuento` en ordenes.
-- [x] **2.4 Alertas Stock Bajo (Admin)** — Endpoint backend `GET /api/admin/stock-bajo?umbral=10`. Badge rojo en sidebar admin con count de productos con stock bajo. Actualización automática cada 60s.
+### Sección Nueva — Perfumes por Encargo
+- [ ] **N.1** Agregar columna `es_encargo` y `dias_entrega` a `productos` + database.sql
+- [ ] **N.2** Backend: filtro `por_encargo` en GET /api/productos + schemas actualizados
+- [ ] **N.3** Home: nueva sección "Perfumes por Encargo" con grid/carrusel
+- [ ] **N.4** ProductCard: variante visual para productos por encargo (badge, WhatsApp CTA)
+- [ ] **N.5** ProductDetail: layout alternativo sin stock ni carrito, solo WhatsApp + info
+- [ ] **N.6** Admin ProductoForm: toggle "es encargo" + campo días entrega
 
 ### Fase 3 — Validaciones Críticas (~1 semana)
 - [ ] **3.1 Backend (7):** Race condition stock (UPDATE atómico), restaurar stock al cancelar, Idempotency-Key COD, transiciones DAG, stock≥0, precio>0, teléfono regex.

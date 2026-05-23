@@ -257,11 +257,20 @@
   input {
     border: none;
     background: transparent;
-    outline: none;
     font-size: 0.85rem;
     color: $vyro-text;
     width: 100%;
     font-family: inherit;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $vyro-accent;
+      outline-offset: 4px;
+      border-radius: $vyro-radius-sm;
+    }
 
     &::placeholder {
       color: $vyro-text-secondary;
@@ -391,6 +400,12 @@
   &:focus {
     border-color: $vyro-accent;
     box-shadow: 0 0 0 3px rgba($vyro-accent, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+    border-radius: $vyro-radius-sm;
   }
 
   option {

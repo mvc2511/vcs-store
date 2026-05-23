@@ -560,6 +560,11 @@
     border-color: $vyro-accent;
     box-shadow: 0 0 0 3px rgba($vyro-accent, 0.15);
   }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
 }
 
 .anonima-toggle {

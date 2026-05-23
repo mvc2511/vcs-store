@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, HostListener, ElementRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { CartService } from '../../services/cart.service';
@@ -15,12 +15,24 @@ export class NavbarComponent implements OnInit {
   cartService = inject(CartService);
   authService = inject(AuthService);
   router = inject(Router);
+  private el = inject(ElementRef);
 
   menuOpen = signal(false);
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
       this.authService.cargarPerfil();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.menuOpen()) {
+      this.closeMenu();
+      const hamburger = this.el.nativeElement.querySelector('.hamburger');
+      if (hamburger) {
+        hamburger.focus();
+      }
     }
   }
 

@@ -2,7 +2,8 @@
   <div class="header">
     <h1>Órdenes</h1>
     <div class="filtros">
-      <select [(ngModel)]="filtroEstado" (change)="cargarOrdenes()" class="filtro-select">
+      <label for="filtro-estado" class="visually-hidden">Filtrar por estado</label>
+      <select id="filtro-estado" [(ngModel)]="filtroEstado" (change)="cargarOrdenes()" class="filtro-select">
         <option value="">Todos los estados</option>
         <option *ngFor="let est of ESTADOS" [value]="est">{{ est }}</option>
       </select>
@@ -27,7 +28,7 @@
         <div class="orden-punto" *ngIf="orden.puntos_entrega">
           {{ orden.puntos_entrega.nombre }}
         </div>
-        <svg class="expand-icon" [class.rotated]="expandedId() === orden.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="expand-icon" [class.rotated]="expandedId() === orden.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <polyline points="6 9 12 15 18 9"/>
         </svg>
       </div>
@@ -67,8 +68,10 @@
           </ng-container>
           <ng-template #editEntrega>
             <div class="entrega-edit">
-              <input type="date" [(ngModel)]="editFecha" class="date-input" />
-              <select [(ngModel)]="editHora" class="hora-select">
+              <label for="edit-fecha" class="visually-hidden">Fecha de entrega</label>
+              <input id="edit-fecha" type="date" [(ngModel)]="editFecha" class="date-input" />
+              <label for="edit-hora" class="visually-hidden">Horario de entrega</label>
+              <select id="edit-hora" [(ngModel)]="editHora" class="hora-select">
                 <option value="">Seleccionar horario</option>
                 <option value="Mañana (9:00 - 12:00)">Mañana (9:00 - 12:00)</option>
                 <option value="Tarde (12:00 - 17:00)">Tarde (12:00 - 17:00)</option>
