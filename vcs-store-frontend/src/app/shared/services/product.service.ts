@@ -15,6 +15,7 @@ export interface ProductQuery {
   search?: string;
   categoria_id?: number;
   por_encargo?: boolean;
+  genero?: string;
   sort_by?: string;
   sort_order?: string;
   limit?: number;
@@ -30,6 +31,7 @@ export class ProductService {
     if (query.search) params['search'] = query.search;
     if (query.categoria_id) params['categoria_id'] = query.categoria_id;
     if (query.por_encargo != null) params['por_encargo'] = query.por_encargo ? 'true' : 'false';
+    if (query.genero) params['genero'] = query.genero;
     if (query.sort_by) params['sort_by'] = query.sort_by;
     if (query.sort_order) params['sort_order'] = query.sort_order;
     params['limit'] = query.limit ?? 20;

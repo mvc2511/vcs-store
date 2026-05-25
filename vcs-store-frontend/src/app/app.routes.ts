@@ -130,6 +130,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'horarios-entrega',
+        loadComponent: () =>
+          import('./pages/admin/horarios-entrega/horarios-entrega.component').then(
+            (m) => m.HorariosEntregaComponent
+          ),
+      },
+      {
         path: 'cupones',
         loadComponent: () =>
           import('./pages/admin/cupones/cupones.component').then(
@@ -144,6 +151,13 @@ export const routes: Routes = [
           ),
       },
     ],
+  },
+  {
+    path: 'sobre-pedido',
+    loadComponent: () =>
+      import('./pages/sobre-pedido/sobre-pedido.component').then(
+        (m) => m.SobrePedidoComponent
+      ),
   },
   {
     path: 'privacidad',

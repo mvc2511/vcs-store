@@ -185,7 +185,7 @@ async def generar_variantes(
                 "nombre_variante": talla.strip(),
                 "color": color.strip(),
                 "stock": body.stock_default,
-                "precio_adicional": body.precio_adicional_default,
+                "precio": body.precio_default,
             }
             # Auto-detect tipo_variante
             data["tipo_variante"] = _detectar_tipo_variante(body.producto_id)

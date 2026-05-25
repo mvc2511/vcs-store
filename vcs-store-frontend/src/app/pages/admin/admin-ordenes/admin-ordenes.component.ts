@@ -43,14 +43,49 @@ export class AdminOrdenesComponent implements OnInit {
   filtroEstado = signal('');
   expandedId = signal<number | null>(null);
   updatingId = signal<number | null>(null);
+  horariosEntrega = signal<{ id: number; dia_semana: number; hora_inicio: string; hora_fin: string; activo: boolean }[]>([]);
   editingEntregaId = signal<number | null>(null);
   editFecha = signal('');
   editHora = signal('');
+
+  private readonly DIAS: Record<number, string> = { 6: 'Sábado', 7: 'Domingo' };
+
+  formatHorario(h: { dia_semana: number; hora_inicio: string; hora_fin: string }): string {
+    const dia = this.DIAS[h.dia_semana] || '';
+    const inicio = h.hora_inicio.slice(0, 5);
+    const fin = h.hora_fin.slice(0, 5);
+    return `${dia} ${inicio} - ${fin}`;
+  }
 
   readonly ESTADOS = ['pendiente', 'confirmado', 'preparando', 'enviado', 'entregado', 'cancelado'];
 
   ngOnInit(): void {
     this.cargarOrdenes();
+    this.http.get<{ id: number; dia_semana: number; hora_inicio: string; hora_fin: string; activo: boolean }[]>(`${environment.apiUrl}/api/horarios-entrega`).subscribe({
+      next: (data) => this.horariosEntrega.set(data.filter(h => h.activo)),
+    });
+  }
+
+  minWeekend(): string {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = day === 6 ? 1 : day === 0 ? 6 : 6 - day;
+    const d = new Date(today);
+    d.setDate(d.getDate() + diff);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  }
+
+  onFechaChange(): void {
+    const val = this.editFecha();
+    if (!val) return;
+    const d = new Date(val + 'T12:00:00');
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) {
+      this.editFecha.set('');
+    }
   }
 
   private getHeaders() {

@@ -12,6 +12,41 @@
     </a>
   </div>
 
+  <div class="admin-bar">
+    <div class="admin-bar-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Buscar productos..."
+        aria-label="Buscar productos"
+      />
+    </div>
+
+    <div class="admin-bar-chips" role="group" aria-label="Filtrar por género">
+      <span class="admin-bar-label">Género:</span>
+      <button
+        *ngFor="let g of generoOptions"
+        class="chip"
+        [class.chip-active]="selectedGenero === g"
+        (click)="selectedGenero = selectedGenero === g ? '' : g"
+        [attr.aria-pressed]="selectedGenero === g"
+      >
+        {{ g === 'hombre' ? 'Hombre' : g === 'mujer' ? 'Mujer' : 'Unisex' }}
+      </button>
+    </div>
+
+    <div class="admin-bar-select" *ngIf="categorias.length > 0">
+      <label for="admin-cat-select" class="visually-hidden">Categoría</label>
+      <select id="admin-cat-select" class="filter-select-sm" [(ngModel)]="selectedCategoria" aria-label="Filtrar por categoría">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
+      </select>
+    </div>
+  </div>
+
   <div *ngIf="loading" class="load-state">
     <div class="spinner"></div>
     <span>Cargando productos...</span>
@@ -19,8 +54,8 @@
 
   <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
 
-  <div class="table-wrap" *ngIf="!loading && productos.length > 0">
-    <table class="data-table" *ngIf="productos.length > 0">
+  <div class="table-wrap" *ngIf="!loading && filteredProductos.length > 0">
+    <table class="data-table">
       <thead>
         <tr>
           <th class="col-img"></th>
@@ -29,11 +64,12 @@
           <th>Stock</th>
           <th>Visible</th>
           <th>Categoría</th>
+          <th>Género</th>
           <th class="col-acts"></th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let p of productos">
+        <tr *ngFor="let p of filteredProductos">
           <td class="col-img" data-label="">
             <div class="thumb" *ngIf="p.imagen_url; else noImg">
               <img [src]="p.imagen_url" [alt]="p.nombre" loading="lazy" />
@@ -60,6 +96,7 @@
             </span>
           </td>
           <td class="col-cat" data-label="Categoría">{{ p.categorias?.nombre || '—' }}</td>
+          <td class="col-genero" data-label="Género">{{ p.genero ? (p.genero === 'hombre' ? 'Hombre' : p.genero === 'mujer' ? 'Mujer' : 'Unisex') : '—' }}</td>
           <td class="col-acts" data-label="">
             <div class="row-acts">
               <a [routerLink]="['/admin/productos', p.id, 'editar']" class="act-btn" aria-label="Editar" title="Editar">
@@ -75,10 +112,11 @@
     </table>
   </div>
 
-  <div *ngIf="!loading && productos.length === 0" class="empty-state">
+  <div *ngIf="!loading && filteredProductos.length === 0" class="empty-state">
     <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
     <h3>No hay productos</h3>
-    <p>Agregá tu primer producto al catálogo.</p>
+    <p *ngIf="!searchQuery && !selectedGenero && !selectedCategoria">Agregá tu primer producto al catálogo.</p>
+    <p *ngIf="searchQuery || selectedGenero || selectedCategoria">Ningún producto coincide con los filtros aplicados.</p>
     <a routerLink="/admin/productos/nuevo" class="btn-primary">Agregar Producto</a>
   </div>
 </div>

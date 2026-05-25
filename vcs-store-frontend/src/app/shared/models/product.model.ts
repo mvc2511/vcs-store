@@ -16,7 +16,7 @@ export interface Variante {
   talla_id?: number | null;
   color_id?: number | null;
   stock: number;
-  precio_adicional: number;
+  precio?: number | null;
   imagen_url?: string | null;
 }
 
@@ -37,6 +37,7 @@ export interface Producto {
   stock: number;
   stock_real?: number;
   has_variants?: boolean;
+  min_precio_variante?: number | null;
   visible?: boolean;
   es_encargo?: boolean;
   dias_entrega?: number;

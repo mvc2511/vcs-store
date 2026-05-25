@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { ProductService } from '../../shared/services/product.service';
 import { Producto } from '../../shared/models/product.model';
@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   private productService = inject(ProductService);
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   productos: Producto[] = [];
   categorias: Categoria[] = [];
@@ -28,6 +29,16 @@ export class HomeComponent implements OnInit {
   selectedCategoriaId: number | null = null;
   searchQuery = '';
   sortOrder = '';
+  generoOptions = ['hombre', 'mujer', 'unisex'];
+  selectedGenero = '';
+  filterModalOpen = false;
+
+  sortOptions = [
+    { label: 'Más recientes', value: '' },
+    { label: 'Precio: menor a mayor', value: 'price-asc' },
+    { label: 'Precio: mayor a menor', value: 'price-desc' },
+  ];
+
   loading = true;
   loadingMore = false;
   total = 0;
@@ -49,9 +60,15 @@ export class HomeComponent implements OnInit {
   }
 
   private cargarCategorias(): void {
-    this.http.get<Categoria[]>(`${environment.apiUrl}/api/categorias`).subscribe({
+    this.http.get<Categoria[]>(`${environment.apiUrl}/api/categorias?con_productos=true`).subscribe({
       next: (data) => (this.categorias = data),
     });
+  }
+
+  onCategoriaChange(): void {
+    const cat = this.categorias.find(c => c.nombre === this.selectedCategoria);
+    this.selectedCategoriaId = cat ? cat.id : null;
+    this.cargarProductos(true);
   }
 
   cargarProductos(reset: boolean = false): void {
@@ -64,6 +81,7 @@ export class HomeComponent implements OnInit {
     this.productService.getProducts({
       search: this.searchQuery || undefined,
       categoria_id: this.selectedCategoriaId ?? undefined,
+      genero: this.selectedGenero || undefined,
       sort_by: 'precio',
       sort_order: this.sortOrder === 'price-asc' ? 'asc' : this.sortOrder === 'price-desc' ? 'desc' : undefined,
       limit: this.limit,
@@ -88,6 +106,20 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  get hasActiveFilters(): boolean {
+    return !!(this.selectedCategoria || this.selectedGenero || this.sortOrder);
+  }
+
+  openFilterModal(): void {
+    this.filterModalOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeFilterModal(): void {
+    this.filterModalOpen = false;
+    document.body.style.overflow = '';
+  }
+
   filterBy(categoria: Categoria): void {
     if (this.selectedCategoria === categoria.nombre) {
       this.selectedCategoria = '';
@@ -97,6 +129,20 @@ export class HomeComponent implements OnInit {
       this.selectedCategoriaId = categoria.id;
     }
     this.cargarProductos(true);
+  }
+
+  filterByGenero(genero: string): void {
+    this.selectedGenero = this.selectedGenero === genero ? '' : genero;
+    this.cargarProductos(true);
+  }
+
+  clearAllFilters(): void {
+    this.selectedCategoria = '';
+    this.selectedCategoriaId = null;
+    this.selectedGenero = '';
+    this.sortOrder = '';
+    this.cargarProductos(true);
+    this.closeFilterModal();
   }
 
   onSearchChange(): void {
@@ -111,7 +157,7 @@ export class HomeComponent implements OnInit {
     this.encargoLoading = true;
     this.productService.getProducts({
       por_encargo: true,
-      limit: 20,
+      limit: 5,
       offset: 0,
     }).subscribe({
       next: (resp) => {
@@ -124,8 +170,12 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  irAEncargo(): void {
+    this.router.navigate(['/sobre-pedido']);
+  }
+
   get whatsappEncargoLink(): string {
-    const msg = encodeURIComponent('Hola, quiero información sobre perfumes por encargo.');
+    const msg = encodeURIComponent('Hola, quiero información sobre perfumes sobre pedido.');
     return `https://wa.me/525522988741?text=${msg}`;
   }
 

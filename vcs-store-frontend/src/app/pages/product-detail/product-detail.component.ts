@@ -124,7 +124,8 @@ export class ProductDetailComponent implements OnInit {
     const p = this.producto();
     if (!p) return 0;
     const v = this.selectedVariant();
-    if (v) return p.precio + v.precio_adicional;
+    if (v) return v.precio ?? p.precio;
+    if (p.has_variants) return 0;
     return p.precio;
   });
 

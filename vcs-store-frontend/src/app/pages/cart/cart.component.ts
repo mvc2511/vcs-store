@@ -41,15 +41,22 @@ export class CartComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
 
-  loading = signal(false);
   loadingCOD = signal(false);
   puntosEntrega = signal<{ id: number; nombre: string }[]>([]);
+  horariosEntrega = signal<{ id: number; dia_semana: number; hora_inicio: string; hora_fin: string; activo: boolean }[]>([]);
   selectedPunto = signal<number | null>(null);
   telefono = '';
   fechaEntrega = signal('');
   horaEntrega = signal('');
 
-  readonly FRANJAS = ['Mañana (9:00 - 12:00)', 'Tarde (12:00 - 17:00)', 'Noche (17:00 - 20:00)'];
+  private readonly DIAS: Record<number, string> = { 6: 'Sábado', 7: 'Domingo' };
+
+  formatHorario(h: { dia_semana: number; hora_inicio: string; hora_fin: string }): string {
+    const dia = this.DIAS[h.dia_semana] || '';
+    const inicio = h.hora_inicio.slice(0, 5);
+    const fin = h.hora_fin.slice(0, 5);
+    return `${dia} ${inicio} - ${fin}`;
+  }
 
   // Coupon state
   cuponCode = signal('');
@@ -64,7 +71,7 @@ export class CartComponent implements OnInit {
     let total = 0;
     for (const item of this.cartService.cartItems()) {
       const wp = this.getWholesalePrice(item.producto.id, item.cantidad);
-      const precio = wp ?? (item.producto.precio + (item.variante?.precio_adicional ?? 0));
+      const precio = wp ?? (item.variante?.precio ?? item.producto.precio);
       total += precio * item.cantidad;
     }
     return total;
@@ -81,10 +88,26 @@ export class CartComponent implements OnInit {
     return Math.max(0, this.subtotalConMayoreo() - this.descuentoTotal());
   });
 
-  tomorrow(): string {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
+  minWeekend(): string {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = day === 6 ? 1 : day === 0 ? 6 : 6 - day;
+    const d = new Date(today);
+    d.setDate(d.getDate() + diff);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  }
+
+  onFechaChange(): void {
+    const val = this.fechaEntrega();
+    if (!val) return;
+    const d = new Date(val + 'T12:00:00');
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) {
+      this.fechaEntrega.set('');
+    }
   }
 
   private readonly WHATSAPP_NUMBER = environment.whatsappNumber;
@@ -92,6 +115,9 @@ export class CartComponent implements OnInit {
   ngOnInit(): void {
     this.checkoutService.getPuntosEntrega().subscribe({
       next: (data) => this.puntosEntrega.set(data),
+    });
+    this.http.get<{ id: number; dia_semana: number; hora_inicio: string; hora_fin: string; activo: boolean }[]>(`${environment.apiUrl}/api/horarios-entrega`).subscribe({
+      next: (data) => this.horariosEntrega.set(data.filter(h => h.activo)),
     });
     this.cargarPreciosMayoreo();
   }
@@ -108,8 +134,8 @@ export class CartComponent implements OnInit {
     });
   }
 
-  getItemPrice(item: { producto: { id: number; precio: number }; variante?: { precio_adicional?: number } | null; cantidad: number }): number {
-    const basePrice = item.producto.precio + (item.variante?.precio_adicional ?? 0);
+  getItemPrice(item: { producto: { id: number; precio: number }; variante?: { precio?: number | null } | null; cantidad: number }): number {
+    const basePrice = item.variante?.precio ?? item.producto.precio;
     const wp = this.getWholesalePrice(item.producto.id, item.cantidad);
     return wp ?? basePrice;
   }
@@ -123,8 +149,8 @@ export class CartComponent implements OnInit {
     return null;
   }
 
-  getBasePrice(item: { producto: { precio: number }; variante?: { precio_adicional?: number } | null }): number {
-    return item.producto.precio + (item.variante?.precio_adicional ?? 0);
+  getBasePrice(item: { producto: { precio: number }; variante?: { precio?: number | null } | null }): number {
+    return item.variante?.precio ?? item.producto.precio;
   }
 
   aplicarCupon(): void {
@@ -240,38 +266,5 @@ export class CartComponent implements OnInit {
           this.loadingCOD.set(false);
         },
       });
-  }
-
-  async onCheckout(): Promise<void> {
-    this.loading.set(true);
-    try {
-      const carrito = this.cartService.cartItems().map((item) => ({
-        producto_id: item.producto.id,
-        nombre: item.producto.nombre,
-        precio: this.getItemPrice(item),
-        cantidad: item.cantidad,
-        variante_id: item.variante?.id ?? null,
-      }));
-
-      this.checkoutService.enviarCarritoAlBackend(carrito).subscribe({
-        next: (res: any) => {
-          if (res.url) {
-            window.location.href = res.url;
-          } else {
-            this.router.navigate(['/success']);
-          }
-          this.loading.set(false);
-        },
-        error: (err) => {
-          console.error('Error en checkout:', err);
-          alert('Error al procesar el pago. Intenta de nuevo.');
-          this.loading.set(false);
-        },
-      });
-    } catch (err) {
-      console.error('Error en checkout:', err);
-      alert('Error al procesar el pago. Intenta de nuevo.');
-      this.loading.set(false);
-    }
   }
 }

@@ -31,7 +31,8 @@
       <a [routerLink]="['/producto', producto().id]">{{ producto().nombre }}</a>
     </h3>
     <div class="card-footer">
-      <span class="card-price">{{ producto().precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+      <span class="card-price" *ngIf="producto().has_variants && producto().min_precio_variante != null">Desde {{ producto().min_precio_variante! | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+      <span class="card-price" *ngIf="!producto().has_variants">{{ producto().precio | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
       <button
         *ngIf="!producto().es_encargo"
         class="card-btn"
