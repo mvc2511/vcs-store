@@ -18,6 +18,7 @@ class ProductoCreate(BaseModel):
     visible: Optional[bool] = True
     es_encargo: Optional[bool] = False
     dias_entrega: Optional[int] = 5
+    genero: Optional[str] = None
 
 
 class ProductoUpdate(BaseModel):
@@ -30,6 +31,7 @@ class ProductoUpdate(BaseModel):
     visible: Optional[bool] = None
     es_encargo: Optional[bool] = None
     dias_entrega: Optional[int] = None
+    genero: Optional[str] = None
 
 
 @router.get("")
@@ -37,6 +39,7 @@ async def listar_productos(
     search: Optional[str] = Query(None),
     categoria_id: Optional[int] = Query(None),
     por_encargo: Optional[bool] = Query(None),
+    genero: Optional[str] = Query(None),
     sort_by: Optional[str] = Query("id"),
     sort_order: Optional[str] = Query("desc"),
     limit: int = Query(20, ge=1, le=100),
@@ -56,6 +59,9 @@ async def listar_productos(
     if por_encargo is not None:
         count_query = count_query.eq("es_encargo", por_encargo)
         data_query = data_query.eq("es_encargo", por_encargo)
+    if genero:
+        count_query = count_query.eq("genero", genero)
+        data_query = data_query.eq("genero", genero)
 
     # Get total count
     count_resp = count_query.execute()
@@ -84,7 +90,7 @@ async def listar_productos(
         # Get variants for this product
         variantes_resp = (
             supabase_admin.table("variantes_producto")
-            .select("stock")
+            .select("stock, precio")
             .eq("producto_id", producto_id)
             .execute()
         )
@@ -96,6 +102,8 @@ async def listar_productos(
         # Compute stock_real (sum of variant stocks if variants exist, else product stock)
         if producto["has_variants"]:
             producto["stock_real"] = sum(v.get("stock", 0) for v in variantes)
+            precios = [v["precio"] for v in variantes if v.get("precio") is not None]
+            producto["min_precio_variante"] = min(precios) if precios else None
         else:
             producto["stock_real"] = producto.get("stock", 0)
 

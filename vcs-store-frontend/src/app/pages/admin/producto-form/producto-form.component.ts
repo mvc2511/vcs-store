@@ -33,7 +33,7 @@ export class ProductoFormComponent implements OnInit {
   form = this.fb.group({
     nombre: ['', Validators.required],
     descripcion: ['', Validators.required],
-    precio: ['', [Validators.required, Validators.min(0.01)]],
+    precio: ['', [Validators.min(0.01)]],
     stock: ['', [Validators.min(0)]],
     categoria_id: [null as number | null],
     visible: [true],
@@ -60,12 +60,12 @@ export class ProductoFormComponent implements OnInit {
   nuevoNombreVariante: string = '';
   nuevoColorId: number | null = null;
   nuevoStock = 0;
-  nuevoPrecioAdic = 0;
+  nuevoPrecio = 0;
   showGenerador = false;
   genTallas = '';
   genColores = '';
   genStockDefault = 0;
-  genPrecioDefault = 0;
+  genPrecioValue = 0;
 
   // Inline edit state
   editandoVarianteId: number | null = null;
@@ -325,7 +325,7 @@ export class ProductoFormComponent implements OnInit {
     if (!this.productoId) return;
     if (!this.nuevaTallaId && !this.nuevoNombreVariante.trim() && !this.nuevoColorId) return;
     try {
-      const body: Record<string, unknown> = { producto_id: this.productoId, stock: this.nuevoStock, precio_adicional: this.nuevoPrecioAdic };
+      const body: Record<string, unknown> = { producto_id: this.productoId, stock: this.nuevoStock, precio: this.nuevoPrecio || null };
       if (this.nuevaTallaId) {
         const talla = this.tallas.find(t => t.id === this.nuevaTallaId);
         body['nombre_variante'] = talla?.nombre;
@@ -349,7 +349,7 @@ export class ProductoFormComponent implements OnInit {
       this.nuevoNombreVariante = '';
       this.nuevoColorId = null;
       this.nuevoStock = 0;
-      this.nuevoPrecioAdic = 0;
+      this.nuevoPrecio = 0;
       this.showAddVariant = false;
     } catch (err: any) {
       this.errorMsg = err.error?.detail || 'Error al crear variante';
@@ -369,7 +369,7 @@ export class ProductoFormComponent implements OnInit {
   iniciarEdicion(v: Variante): void {
     this.editandoVarianteId = v.id;
     this.editStockValue = v.stock;
-    this.editPrecioValue = v.precio_adicional;
+    this.editPrecioValue = v.precio ?? 0;
   }
 
   cancelarEdicion(): void {
@@ -381,7 +381,7 @@ export class ProductoFormComponent implements OnInit {
       const resp = await firstValueFrom(
         this.http.put(`${environment.apiUrl}/api/variantes/${varianteId}`, {
           stock: this.editStockValue,
-          precio_adicional: this.editPrecioValue,
+          precio: this.editPrecioValue || null,
         }, { headers: this.getHeaders() })
       );
       this.variantes = this.variantes.map(v => v.id === varianteId ? (resp as Variante) : v);
@@ -401,7 +401,7 @@ export class ProductoFormComponent implements OnInit {
       const resp = await firstValueFrom(
         this.http.post(`${environment.apiUrl}/api/variantes/generate`, {
           producto_id: this.productoId, tallas, colores,
-          stock_default: this.genStockDefault, precio_adicional_default: this.genPrecioDefault,
+          stock_default: this.genStockDefault, precio_default: this.genPrecioValue || null,
         }, { headers: this.getHeaders() })
       );
       const updatedVariants = [...this.variantes, ...(resp as Variante[])];
@@ -437,7 +437,7 @@ export class ProductoFormComponent implements OnInit {
       const body: Record<string, unknown> = {
         nombre: this.form.value.nombre,
         descripcion: this.form.value.descripcion,
-        precio: parseFloat(this.form.value.precio ?? '0'),
+        precio: this.form.value.precio ? parseFloat(this.form.value.precio) : 0,
         stock: stockValue ? parseInt(stockValue, 10) : 0,
         imagen_url: this.imagenUrl,
         visible: this.form.value.visible ?? true,

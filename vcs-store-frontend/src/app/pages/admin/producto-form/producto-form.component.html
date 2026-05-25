@@ -30,7 +30,7 @@
           placeholder="0.00"
           [readonly]="variantes.length > 0"
         />
-        <span *ngIf="variantes.length > 0" class="field-hint">Precio base del producto (recargo por variante en la sección abajo)</span>
+        <span *ngIf="variantes.length > 0" class="field-hint">Solo aplica si el producto no tiene variantes</span>
         <span *ngIf="form.get('es_encargo')?.value" class="field-hint">Precio estimado. El precio final se confirma por WhatsApp.</span>
       </div>
 
@@ -176,7 +176,7 @@
           <span>{{ variantLabel }}</span>
           <span *ngIf="showColorField">Color</span>
           <span>Stock</span>
-          <span>Precio +</span>
+          <span>Precio</span>
           <span>Acciones</span>
         </div>
         <div *ngFor="let v of variantes" class="variants-table-row" [class.variants-table-row--editing]="editandoVarianteId === v.id" [class.variants-table-row--no-color]="!showColorField">
@@ -184,7 +184,7 @@
           <span *ngIf="showColorField"><span class="color-dot" *ngIf="v.color_id" [style.background]="getColorHex(v.color_id)"></span>{{ v.color || colorNombre(v.color_id) || '—' }}</span>
           <ng-container *ngIf="editandoVarianteId !== v.id; else editMode">
             <span>{{ v.stock }}</span>
-            <span>{{ v.precio_adicional | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+            <span>{{ (v.precio ?? 0) | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
             <span class="variants-table-actions">
               <button type="button" class="btn-icon" (click)="iniciarEdicion(v)" aria-label="Editar variante" title="Editar variante">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -199,7 +199,7 @@
               <input [(ngModel)]="editStockValue" [ngModelOptions]="{standalone: true}" type="number" min="0" class="edit-input" aria-label="Stock de variante" />
             </span>
             <span>
-              <input [(ngModel)]="editPrecioValue" [ngModelOptions]="{standalone: true}" type="number" step="0.01" min="0" class="edit-input" aria-label="Precio adicional de variante" />
+              <input [(ngModel)]="editPrecioValue" [ngModelOptions]="{standalone: true}" type="number" step="0.01" min="0" class="edit-input" aria-label="Precio de variante" />
             </span>
             <span class="variants-table-actions">
               <button type="button" class="btn-icon btn-icon--confirm" (click)="guardarEdicion(v.id)" aria-label="Guardar" title="Guardar">
@@ -248,11 +248,11 @@
             <input [(ngModel)]="nuevoStock" [ngModelOptions]="{standalone: true}" id="new-stock" type="number" min="0" placeholder="0" class="field-input" />
           </div>
           <div class="field field--inline field--sm">
-            <label for="new-precio">+$ <span class="field-required">*</span></label>
-            <input [(ngModel)]="nuevoPrecioAdic" [ngModelOptions]="{standalone: true}" id="new-precio" type="number" step="0.01" min="0" placeholder="0.00" class="field-input" />
+            <label for="new-precio">$</label>
+            <input [(ngModel)]="nuevoPrecio" [ngModelOptions]="{standalone: true}" id="new-precio" type="number" step="0.01" min="0" placeholder="Precio" class="field-input" />
           </div>
           <div class="variants-add-actions">
-            <button type="button" class="btn-icon btn-icon--confirm" (click)="agregarVariante()" [disabled]="!nuevoStock && !nuevoPrecioAdic" aria-label="Guardar variante" title="Guardar variante">
+            <button type="button" class="btn-icon btn-icon--confirm" (click)="agregarVariante()" [disabled]="!nuevoStock" aria-label="Guardar variante" title="Guardar variante">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
             <button type="button" class="btn-icon" (click)="showAddVariant = false" aria-label="Cancelar" title="Cancelar">
@@ -304,8 +304,8 @@
             <input [(ngModel)]="genStockDefault" [ngModelOptions]="{standalone: true}" id="gen-stock" type="number" min="0" class="field-input" />
           </div>
           <div class="field field--sm">
-            <label for="gen-precio">+$ por defecto</label>
-            <input [(ngModel)]="genPrecioDefault" [ngModelOptions]="{standalone: true}" id="gen-precio" type="number" step="0.01" min="0" class="field-input" />
+            <label for="gen-precio">$ por defecto</label>
+            <input [(ngModel)]="genPrecioValue" [ngModelOptions]="{standalone: true}" id="gen-precio" type="number" step="0.01" min="0" class="field-input" />
           </div>
         </div>
         <button type="button" class="btn-primary btn-sm" (click)="generarVariantes()" [disabled]="!genTallas.trim() || (!isPerfumeOrDecant && !genColores.trim()) || genStockDefault === 0">Generar variantes</button>

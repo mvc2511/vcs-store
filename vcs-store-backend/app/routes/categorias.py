@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.security import verificar_admin
 from app.core.supabase_client import supabase_anon, supabase_admin
@@ -17,8 +17,15 @@ class CategoriaUpdate(BaseModel):
 
 
 @router.get("")
-async def listar_categorias():
-    resp = supabase_anon.table("categorias").select("id, nombre").order("id").execute()
+async def listar_categorias(con_productos: Optional[bool] = Query(False)):
+    if con_productos:
+        prod_cats = supabase_anon.table("productos").select("categoria_id").not_.is_("categoria_id", "null").execute()
+        cat_ids = list({p["categoria_id"] for p in prod_cats.data if p["categoria_id"] is not None})
+        if not cat_ids:
+            return []
+        resp = supabase_anon.table("categorias").select("id, nombre").in_("id", cat_ids).order("id").execute()
+    else:
+        resp = supabase_anon.table("categorias").select("id, nombre").order("id").execute()
     return resp.data
 
 

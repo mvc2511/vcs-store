@@ -68,14 +68,12 @@
           </ng-container>
           <ng-template #editEntrega>
             <div class="entrega-edit">
-              <label for="edit-fecha" class="visually-hidden">Fecha de entrega</label>
-              <input id="edit-fecha" type="date" [(ngModel)]="editFecha" class="date-input" />
+              <label for="edit-fecha" class="visually-hidden">Fecha de entrega (sáb/dom)</label>
+              <input id="edit-fecha" type="date" [min]="minWeekend()" [(ngModel)]="editFecha" (ngModelChange)="onFechaChange()" class="date-input" />
               <label for="edit-hora" class="visually-hidden">Horario de entrega</label>
               <select id="edit-hora" [(ngModel)]="editHora" class="hora-select">
                 <option value="">Seleccionar horario</option>
-                <option value="Mañana (9:00 - 12:00)">Mañana (9:00 - 12:00)</option>
-                <option value="Tarde (12:00 - 17:00)">Tarde (12:00 - 17:00)</option>
-                <option value="Noche (17:00 - 20:00)">Noche (17:00 - 20:00)</option>
+                <option *ngFor="let h of horariosEntrega()" [value]="formatHorario(h)">{{ formatHorario(h) }}</option>
               </select>
               <div class="entrega-actions">
                 <button class="btn-save" (click)="guardarEntrega(orden.id)">Guardar</button>

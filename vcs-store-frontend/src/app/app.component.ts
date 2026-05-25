@@ -32,6 +32,13 @@ export class AppComponent implements OnInit {
             ogUrl: `https://vyro.boutique${url}`,
             canonicalUrl: `https://vyro.boutique${url}`,
           });
+        } else if (url === '/sobre-pedido') {
+          this.seo.update({
+            title: 'Perfumes Sobre Pedido',
+            description: 'Catálogo completo de perfumes sobre pedido en VYRO. Fragancias que conseguimos especialmente para ti. Entrega los fines de semana.',
+            ogUrl: `https://vyro.boutique${url}`,
+            canonicalUrl: `https://vyro.boutique${url}`,
+          });
         } else if (url === '/login') {
           this.seo.update({
             title: 'Iniciar Sesión',

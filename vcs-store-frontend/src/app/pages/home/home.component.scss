@@ -212,7 +212,7 @@
   background: rgba($vyro-accent, 0.03);
   @include transition(all);
 
-  a {
+  a, button {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -231,10 +231,19 @@
     }
   }
 
+  button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+  }
+
   &:hover {
     border-color: $vyro-accent;
     background: rgba($vyro-accent, 0.06);
-    a { color: $vyro-text; }
+    a, button { color: $vyro-text; }
   }
 
   &:focus-within {
@@ -352,7 +361,7 @@
   top: 70px;
   z-index: 20;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: $vyro-space-sm;
   margin-bottom: $vyro-space-2xl;
   padding: $vyro-space-md 0;
@@ -377,6 +386,7 @@
   display: flex;
   align-items: center;
   gap: $vyro-space-sm;
+  flex: 1;
   padding: $vyro-space-sm $vyro-space-md;
   border: 1px solid $vyro-border;
   border-radius: $vyro-radius-md;
@@ -419,52 +429,192 @@
   }
 }
 
-.filter-bar-inner {
+.filter-toggle {
   display: flex;
   align-items: center;
-  gap: $vyro-space-md;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: $vyro-space-sm $vyro-space-lg;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-md;
+  background: $vyro-surface;
+  font-family: $vyro-font-sans;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $vyro-text;
+  cursor: pointer;
+  position: relative;
+  @include transition(all);
 
-  @media (max-width: $vyro-bp-mobile) {
-    gap: $vyro-space-sm;
+  svg {
+    color: $vyro-text-secondary;
   }
 
-  &::-webkit-scrollbar {
-    height: 4px;
+  &:hover {
+    border-color: $vyro-accent;
+    background: color-mix(in srgb, $vyro-accent 4%, transparent);
   }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: $vyro-border;
-    border-radius: $vyro-radius-full;
-
-    &:hover {
-      background: $vyro-text;
-    }
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
   }
 }
 
-.categoria-chips {
+.filter-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
   display: flex;
-  gap: $vyro-space-sm;
-  flex-wrap: wrap;
-  flex: 1;
-  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  background: $vyro-accent;
+  color: $vyro-text;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 50%;
+  line-height: 1;
+}
 
-  @media (max-width: $vyro-bp-mobile) {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
+// ─────────────────────────────────────────────────────────────
+// Filter Modal / Drawer
+// ─────────────────────────────────────────────────────────────
 
-    &::-webkit-scrollbar { height: 2px; }
-    &::-webkit-scrollbar-thumb { background: $vyro-border; border-radius: $vyro-radius-full; }
+.filter-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: filterFadeIn 0.2s ease;
+
+  @media (min-width: 768px) {
+    align-items: center;
   }
+}
+
+@keyframes filterFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.filter-drawer {
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  background: $vyro-bg;
+  border-radius: $vyro-radius-lg $vyro-radius-lg 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: filterSlideUp 0.3s ease;
+
+  @media (min-width: 768px) {
+    border-radius: $vyro-radius-lg;
+    max-height: 80vh;
+  }
+}
+
+@keyframes filterSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-overlay { animation: none; }
+  .filter-drawer { animation: none; }
+}
+
+.filter-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $vyro-space-lg $vyro-space-xl;
+  border-bottom: 1px solid $vyro-border;
+  flex-shrink: 0;
+}
+
+.filter-drawer-title {
+  font-family: $vyro-font-heading;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $vyro-text;
+  margin: 0;
+}
+
+.filter-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: $vyro-surface;
+  border-radius: $vyro-radius-full;
+  color: $vyro-text-secondary;
+  cursor: pointer;
+  @include transition(all);
+
+  &:hover {
+    background: $vyro-border;
+    color: $vyro-text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+}
+
+.filter-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $vyro-space-lg $vyro-space-xl;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-group {
+  margin-bottom: $vyro-space-xl;
+  &:last-child { margin-bottom: 0; }
+}
+
+.filter-group-title {
+  font-family: $vyro-font-sans;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $vyro-text-secondary;
+  margin-bottom: $vyro-space-md;
+}
+
+.filter-select {
+  width: 100%;
+  padding: $vyro-space-md $vyro-space-lg;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-sm;
+  background: $vyro-surface;
+  font-family: $vyro-font-sans;
+  font-size: 0.9rem;
+  color: $vyro-text;
+  cursor: pointer;
+  @include transition(border-color);
+  appearance: auto;
+
+  &:focus-visible {
+    border-color: $vyro-accent;
+    outline: 2px solid rgba($vyro-accent, 0.25);
+    outline-offset: 1px;
+  }
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $vyro-space-sm;
 }
 
 .chip {
@@ -499,61 +649,90 @@
     color: $vyro-text;
     font-weight: 600;
   }
+}
 
-  &.chip-clear {
-    border-color: $vyro-text-secondary;
-    color: $vyro-text-secondary;
-    font-size: 0.8rem;
+.filter-sort {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
 
-    &:hover {
-      border-color: $vyro-error;
-      color: $vyro-error;
-      background: color-mix(in srgb, $vyro-error 5%, transparent);
-    }
+.filter-radio {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  padding: $vyro-space-sm 0;
+  cursor: pointer;
+  font-family: $vyro-font-sans;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $vyro-text-secondary;
+  @include transition(color);
+
+  &:hover { color: $vyro-text; }
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: $vyro-accent;
+    flex-shrink: 0;
+    cursor: pointer;
   }
 }
 
-.sort-select {
+.filter-drawer-footer {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  padding: $vyro-space-lg $vyro-space-xl;
+  border-top: 1px solid $vyro-border;
   flex-shrink: 0;
-  padding: $vyro-space-sm $vyro-space-md;
-  border: 1px solid $vyro-border;
-  background: $vyro-surface;
-  border-radius: $vyro-radius-md;
-  font-size: 0.85rem;
+}
+
+.filter-clear-all {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: $vyro-font-sans;
+  font-size: 0.8rem;
   font-weight: 500;
-  color: $vyro-text;
-  font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  color: $vyro-text-secondary;
   cursor: pointer;
-  outline: none;
-  @include transition(all);
+  white-space: nowrap;
+  @include transition(color);
 
-  &:hover {
-    border-color: $vyro-accent;
-  }
-
-  &:focus {
-    border-color: $vyro-accent;
-    box-shadow: 0 0 0 3px rgba($vyro-accent, 0.08);
-  }
-
+  &:hover { color: $vyro-error; }
   &:focus-visible {
     outline: 2px solid $vyro-accent;
     outline-offset: 2px;
     border-radius: $vyro-radius-sm;
   }
+}
 
-  option {
-    background: $vyro-surface;
+.filter-apply-btn {
+  flex: 1;
+  padding: $vyro-space-md $vyro-space-xl;
+  border: none;
+  border-radius: $vyro-radius-sm;
+  background: $vyro-text;
+  color: $vyro-surface;
+  font-family: $vyro-font-sans;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  @include transition(all);
+
+  &:hover {
+    background: $vyro-accent;
     color: $vyro-text;
-    text-transform: uppercase;
   }
 
-  @media (max-width: $vyro-bp-mobile) {
-    font-size: 0.75rem;
-    padding: $vyro-space-xs $vyro-space-sm;
-    letter-spacing: 0.02em;
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
   }
 }
 

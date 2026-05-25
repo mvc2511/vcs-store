@@ -22,7 +22,7 @@ interface CartDBItem {
     tipo_variante: string | null;
     color: string | null;
     stock: number;
-    precio_adicional: number;
+    precio: number | null;
     imagen_url: string | null;
   } | null;
 }
@@ -65,7 +65,7 @@ export class CartService {
   readonly totalPrice = computed(() =>
     this.cartItemsSignal().reduce(
       (sum, item) => {
-        const precio = item.producto.precio + (item.variante?.precio_adicional ?? 0);
+        const precio = item.variante?.precio ?? item.producto.precio;
         return sum + precio * item.cantidad;
       },
       0
@@ -94,7 +94,7 @@ export class CartService {
         tipo_variante: item.variantes_producto.tipo_variante,
         color: item.variantes_producto.color,
         stock: item.variantes_producto.stock,
-        precio_adicional: item.variantes_producto.precio_adicional,
+        precio: item.variantes_producto.precio,
         imagen_url: item.variantes_producto.imagen_url,
       };
     }

@@ -1,0 +1,399 @@
+@import '../../shared/styles/variables';
+@import '../../shared/styles/mixins';
+
+.sobre-pedido-page {
+  overflow-x: hidden;
+  background: $vyro-bg;
+}
+
+.sobre-pedido-hero {
+  position: relative;
+  background: linear-gradient(160deg, $vyro-bg 0%, rgba($vyro-accent, 0.06) 40%, $vyro-bg 70%);
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sobre-pedido-hero-visual {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sobre-pedido-hero-shape {
+  position: absolute;
+  border-radius: $vyro-radius-full;
+  filter: blur(100px);
+  animation: float 10s ease-in-out infinite;
+  opacity: 0.1;
+
+  &:first-of-type {
+    width: 500px;
+    height: 500px;
+    background: $vyro-accent;
+    top: -15%;
+    right: -8%;
+  }
+}
+
+.sobre-pedido-hero-shape-2 {
+  width: 350px;
+  height: 350px;
+  background: $vyro-text;
+  bottom: 5%;
+  right: 25%;
+  animation-delay: -3s;
+  opacity: 0.06;
+}
+
+.sobre-pedido-hero-shape-3 {
+  width: 300px;
+  height: 300px;
+  background: $vyro-gray;
+  top: 25%;
+  left: -5%;
+  animation-delay: -6s;
+  opacity: 0.07;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-40px); }
+}
+
+.sobre-pedido-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  width: 100%;
+  padding: $vyro-space-3xl $vyro-space-lg $vyro-space-2xl;
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: $vyro-space-2xl $vyro-space-md $vyro-space-xl;
+  }
+}
+
+.sobre-pedido-hero-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto $vyro-space-2xl;
+}
+
+.sobre-pedido-hero-tag {
+  display: inline-block;
+  padding: $vyro-space-xs $vyro-space-lg;
+  background: color-mix(in srgb, $vyro-accent 15%, transparent);
+  color: $vyro-accent;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: $vyro-radius-full;
+  border: 1px solid color-mix(in srgb, $vyro-accent 30%, transparent);
+  margin-bottom: $vyro-space-lg;
+}
+
+.sobre-pedido-hero-title {
+  font-family: $vyro-font-heading;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: $vyro-text;
+  margin-bottom: $vyro-space-lg;
+}
+
+.sobre-pedido-hero-accent {
+  color: $vyro-accent;
+}
+
+.sobre-pedido-hero-subtitle {
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: $vyro-text-secondary;
+  margin-bottom: $vyro-space-2xl;
+
+  @media (max-width: $vyro-bp-mobile) {
+    font-size: 0.95rem;
+  }
+}
+
+.sobre-pedido-hero-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  padding: $vyro-space-sm $vyro-space-xl;
+  background: #25D366;
+  color: white;
+  border-radius: $vyro-radius-full;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  @include transition(all);
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: darken(#25D366, 8%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(#25D366, 0.35);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $vyro-accent;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// ─── Search bar + chips ────────────
+
+.sobre-pedido-bar {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-md;
+  margin-bottom: $vyro-space-xl;
+  flex-wrap: wrap;
+
+  @media (max-width: $vyro-bp-mobile) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.sobre-pedido-bar-search {
+  display: flex;
+  align-items: center;
+  gap: $vyro-space-sm;
+  flex: 1;
+  min-width: 200px;
+  padding: $vyro-space-sm $vyro-space-md;
+  background: $vyro-surface;
+  border: 1px solid $vyro-border;
+  border-radius: $vyro-radius-full;
+  @include transition(all);
+
+  svg {
+    flex-shrink: 0;
+    color: $vyro-text-secondary;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 0.9rem;
+    color: $vyro-text;
+    outline: none;
+
+    &::placeholder { color: $vyro-text-secondary; }
+  }
+
+  &:focus-within {
+    border-color: $vyro-accent;
+    box-shadow: 0 0 0 2px rgba($vyro-accent, 0.15);
+    svg { color: $vyro-accent; }
+  }
+}
+
+.sobre-pedido-bar-chips {
+  display: flex;
+  gap: $vyro-space-sm;
+}
+
+.chip {
+  padding: $vyro-space-xs $vyro-space-lg;
+  border-radius: $vyro-radius-full;
+  border: 1px solid $vyro-border;
+  background: $vyro-surface;
+  color: $vyro-text-secondary;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  @include transition(all);
+
+  &:hover {
+    border-color: $vyro-accent;
+    color: $vyro-text;
+  }
+
+  &.chip-active {
+    background: $vyro-accent;
+    border-color: $vyro-accent;
+    color: $vyro-text;
+  }
+}
+
+.sobre-pedido-empty {
+  text-align: center;
+  padding: $vyro-space-3xl $vyro-space-lg;
+  color: $vyro-text-secondary;
+  font-size: 0.95rem;
+
+  a {
+    color: $vyro-accent;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}
+
+// ─── Grid wrapper ────────────
+
+.sobre-pedido-hero-grid-wrap {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  width: 100%;
+  padding: 0 $vyro-space-lg $vyro-space-3xl;
+
+  @media (max-width: $vyro-bp-mobile) {
+    padding: 0 $vyro-space-md $vyro-space-2xl;
+  }
+}
+
+.sobre-pedido-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $vyro-space-md;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-sm;
+  }
+
+  > * {
+    animation: fadeInUp 0.6s ease both;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ─── More card ────────────
+
+.sobre-pedido-more-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 280px;
+  border: 2px dashed $vyro-border;
+  border-radius: $vyro-radius-lg;
+  background: rgba($vyro-accent, 0.03);
+  @include transition(all);
+
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $vyro-space-md;
+    padding: $vyro-space-2xl;
+    text-decoration: none;
+    color: $vyro-text-secondary;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.5;
+    @include transition(all);
+
+    svg {
+      color: $vyro-accent;
+    }
+  }
+
+  &:hover {
+    border-color: $vyro-accent;
+    background: rgba($vyro-accent, 0.06);
+    a { color: $vyro-text; }
+  }
+
+  &:focus-within {
+    border-color: $vyro-accent;
+    box-shadow: 0 0 0 2px rgba($vyro-accent, 0.2);
+  }
+}
+
+// ─── Loading skeleton ────────────
+
+.sobre-pedido-loading {
+  padding: $vyro-space-md 0;
+}
+
+.sobre-pedido-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $vyro-space-lg;
+
+  @media (max-width: $vyro-bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $vyro-space-md;
+  }
+
+  @media (max-width: $vyro-bp-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $vyro-space-sm;
+  }
+}
+
+.sobre-pedido-skeleton-card {
+  background: $vyro-surface;
+  border-radius: $vyro-radius-lg;
+  overflow: hidden;
+  border: 1px solid $vyro-border;
+}
+
+.sobre-pedido-skeleton-img {
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+}
+
+.sobre-pedido-skeleton-body {
+  padding: $vyro-space-md;
+}
+
+.sobre-pedido-skeleton-line {
+  height: 12px;
+  background: linear-gradient(90deg, $vyro-border 25%, rgba(white, 0.2) 50%, $vyro-border 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: $vyro-radius-sm;
+  margin-bottom: $vyro-space-md;
+
+  &:last-child { margin-bottom: 0; }
+
+  &.w-40 { width: 40%; }
+  &.w-60 { width: 60%; }
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

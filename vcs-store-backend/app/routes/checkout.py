@@ -56,7 +56,7 @@ async def crear_orden_cod(
         if item.variante_id is not None:
             var_resp = (
                 supabase_admin.table("variantes_producto")
-                .select("stock, precio_adicional")
+                .select("stock")
                 .eq("id", item.variante_id)
                 .single()
                 .execute()
@@ -74,6 +74,14 @@ async def crear_orden_cod(
                     status_code=400,
                     detail=f"Stock insuficiente para '{prod['nombre']}'. Disponible: {prod['stock']}",
                 )
+
+    if req.fecha_entrega:
+        try:
+            fecha = datetime.strptime(req.fecha_entrega, "%Y-%m-%d")
+            if fecha.weekday() not in (5, 6):
+                raise HTTPException(status_code=400, detail="La fecha de entrega debe ser sábado o domingo")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD")
 
     total = 0.0
     detalles = []
@@ -118,18 +126,18 @@ async def crear_orden_cod(
 
     for item in req.items:
         prod = productos_bd[item.producto_id]
-        precio_adicional = 0
+        precio_variante = None
         variante_text = ""
         if item.variante_id is not None:
             var_resp = (
                 supabase_admin.table("variantes_producto")
-                .select("precio_adicional, nombre_variante, tipo_variante, color")
+                .select("precio, nombre_variante, tipo_variante, color")
                 .eq("id", item.variante_id)
                 .single()
                 .execute()
             )
             if var_resp.data:
-                precio_adicional = var_resp.data["precio_adicional"]
+                precio_variante = var_resp.data.get("precio")
                 partes = []
                 if var_resp.data.get("nombre_variante"):
                     tipo = var_resp.data.get("tipo_variante", "talla")
@@ -152,7 +160,7 @@ async def crear_orden_cod(
         if precio_mayoreo is not None:
             precio_total = precio_mayoreo
         else:
-            precio_total = prod["precio"] + precio_adicional
+            precio_total = precio_variante if precio_variante is not None else prod["precio"]
 
         subtotal = precio_total * item.cantidad
         total += subtotal

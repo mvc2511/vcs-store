@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Horarios de Entrega</h1>
+      <p class="page-desc">Gestioná las franjas horarias disponibles para entregas (solo fines de semana).</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="crear()" class="cat-form">
+    <div class="form-row">
+      <label for="horario-dia" class="visually-hidden">Día</label>
+      <select id="horario-dia" formControlName="dia_semana" class="input-select">
+        <option [value]="6">Sábado</option>
+        <option [value]="7">Domingo</option>
+      </select>
+      <label for="horario-inicio" class="visually-hidden">Hora inicio</label>
+      <input id="horario-inicio" formControlName="hora_inicio" type="time" class="input-time" />
+      <label for="horario-fin" class="visually-hidden">Hora fin</label>
+      <input id="horario-fin" formControlName="hora_fin" type="time" class="input-time" />
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="activo" />
+        <span>Activo</span>
+      </label>
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || creando">
+        {{ creando ? 'Agregando...' : 'Agregar' }}
+      </button>
+    </div>
+    <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+  </form>
+
+  <div class="cat-list">
+    <div *ngFor="let h of horarios" class="cat-item">
+      <div *ngIf="editandoId !== h.id; else editTmpl" class="cat-info">
+        <span class="cat-name">{{ diaLabel[h.dia_semana] }} {{ h.hora_inicio.slice(0,5) }} - {{ h.hora_fin.slice(0,5) }}</span>
+        <span class="cat-id">#{{ h.id }} · {{ h.activo ? 'Activo' : 'Inactivo' }}</span>
+      </div>
+
+      <ng-template #editTmpl>
+        <label [for]="'edit-dia-' + h.id" class="visually-hidden">Día</label>
+        <select [id]="'edit-dia-' + h.id" [value]="editDia" (change)="editDia = +$any($event.target).value" class="edit-select">
+          <option [value]="6">Sábado</option>
+          <option [value]="7">Domingo</option>
+        </select>
+        <label [for]="'edit-inicio-' + h.id" class="visually-hidden">Hora inicio</label>
+        <input [id]="'edit-inicio-' + h.id" type="time" [value]="editInicio" (change)="editInicio = $any($event.target).value" class="edit-time" />
+        <label [for]="'edit-fin-' + h.id" class="visually-hidden">Hora fin</label>
+        <input [id]="'edit-fin-' + h.id" type="time" [value]="editFin" (change)="editFin = $any($event.target).value" class="edit-time" />
+        <label class="checkbox-label checkbox-label--sm">
+          <input type="checkbox" [checked]="editActivo" (change)="editActivo = $any($event.target).checked" />
+          <span>Activo</span>
+        </label>
+        <button class="btn-save-sm" (click)="guardarEdit(h.id)" aria-label="Guardar">✓</button>
+        <button class="btn-cancel-sm" (click)="cancelarEdit()" aria-label="Cancelar">✕</button>
+      </ng-template>
+
+      <div class="row-acts" *ngIf="editandoId !== h.id">
+        <button class="act-btn" aria-label="Editar" title="Editar" (click)="iniciarEdit(h)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="act-btn danger" aria-label="Eliminar" title="Eliminar" (click)="eliminar(h.id)" [disabled]="eliminandoId === h.id">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="horarios.length === 0" class="empty-state">
+      No hay horarios de entrega. Creá el primero.
+    </div>
+  </div>
+</div>

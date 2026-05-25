@@ -136,6 +136,26 @@ CREATE TABLE public.productos (
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- horarios_entrega: Franjas horarias para entregas (solo fines de semana, 6=sáb, 7=dom)
+CREATE TABLE public.horarios_entrega (
+    id SERIAL PRIMARY KEY,
+    dia_semana INT NOT NULL CHECK (dia_semana IN (6, 7)),
+    hora_inicio TIME WITHOUT TIME ZONE NOT NULL,
+    hora_fin TIME WITHOUT TIME ZONE NOT NULL,
+    activo BOOLEAN DEFAULT true,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Seed por defecto
+INSERT INTO public.horarios_entrega (dia_semana, hora_inicio, hora_fin, activo) VALUES
+    (6, '09:00', '12:00', true),
+    (6, '12:00', '15:00', true),
+    (6, '15:00', '18:00', true),
+    (7, '09:00', '12:00', true),
+    (7, '12:00', '15:00', true),
+    (7, '15:00', '18:00', true)
+ON CONFLICT DO NOTHING;
+
 -- ordenes: Cabecera transaccional de compras
 CREATE TABLE public.ordenes (
     id SERIAL PRIMARY KEY,
@@ -167,12 +187,13 @@ CREATE TABLE public.variantes_producto (
     id SERIAL PRIMARY KEY,
     producto_id INT NOT NULL REFERENCES public.productos(id) ON DELETE CASCADE,
     nombre_variante VARCHAR(50),   -- Renamed from talla; stores "S", "M", "50ml", "100ml", etc.
-    tipo_variante VARCHAR(20) DEFAULT 'talla', -- 'talla' | 'volumen' | 'color_solo'
+    tipo_variante VARCHAR(20),    -- 'talla', 'volumen', 'color_solo'
     color VARCHAR(50),
     talla_id INT REFERENCES public.tallas(id) ON DELETE SET NULL,
     color_id INT REFERENCES public.colores(id) ON DELETE SET NULL,
     stock INT DEFAULT 0,
     precio_adicional DECIMAL(10, 2) DEFAULT 0,
+    precio DECIMAL(10, 2),        -- Precio absoluto de la variante (independiente del base)
     imagen_url TEXT,
     creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

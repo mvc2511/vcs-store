@@ -10,7 +10,7 @@ class VarianteCreate(BaseModel):
     talla_id: Optional[int] = None
     color_id: Optional[int] = None
     stock: int = 0
-    precio_adicional: float = 0
+    precio: Optional[float] = None
     imagen_url: Optional[str] = None
 
 
@@ -21,7 +21,7 @@ class VarianteUpdate(BaseModel):
     talla_id: Optional[int] = None
     color_id: Optional[int] = None
     stock: Optional[int] = None
-    precio_adicional: Optional[float] = None
+    precio: Optional[float] = None
     imagen_url: Optional[str] = None
 
 
@@ -34,7 +34,7 @@ class VarianteOut(BaseModel):
     talla_id: Optional[int] = None
     color_id: Optional[int] = None
     stock: int
-    precio_adicional: float
+    precio: Optional[float] = None
     imagen_url: Optional[str] = None
 
 
@@ -43,4 +43,4 @@ class VarianteGenerateRequest(BaseModel):
     tallas: list[str]
     colores: list[str]
     stock_default: int = 0
-    precio_adicional_default: float = 0
+    precio_default: Optional[float] = None

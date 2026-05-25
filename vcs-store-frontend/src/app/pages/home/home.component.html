@@ -1,6 +1,6 @@
 <div class="home">
   <!-- ═════════════════════════════════════════════════════
-       PERFUMES POR ENCARGO — Sección Hero
+       PERFUMES SOBRE PEDIDO — Sección Hero
        ═════════════════════════════════════════════════════ -->
   <section class="encargo-hero" *ngIf="encargoProductos.length > 0 || encargoLoading">
     <div class="encargo-hero-visual">
@@ -12,14 +12,15 @@
     <div class="encargo-hero-inner">
       <div class="encargo-hero-header">
         <span class="encargo-hero-tag">✦ Catálogo Exclusivo</span>
-        <h1 class="encargo-hero-title">Perfumes por<br/><span class="encargo-hero-accent">Encargo</span></h1>
+        <h1 class="encargo-hero-title">Perfumes<br /><span class="encargo-hero-accent">Sobre Pedido</span></h1>
         <p class="encargo-hero-subtitle">
-          Fragancias que conseguimos especialmente para ti.<br/>
-          Entrega los fines de semana en tu punto de recogida.
+          Fragancias sobre pedido, especialmente para ti.<br />
+          Entrega los fines de semana en tu punto de entrega.
         </p>
         <a [href]="whatsappEncargoLink" target="_blank" rel="noopener" class="encargo-hero-wa">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
           </svg>
           Consultar todo por WhatsApp
         </a>
@@ -40,14 +41,18 @@
       </div>
 
       <div *ngIf="!encargoLoading" class="encargo-grid">
-        <app-product-card *ngFor="let p of encargoProductos; let i = index" [producto]="p" [attr.style]="'animation-delay: ' + (i * 0.05) + 's'" />
+        <app-product-card *ngFor="let p of encargoProductos; let i = index" [producto]="p"
+          [attr.style]="'animation-delay: ' + (i * 0.05) + 's'" />
         <div class="encargo-more-card">
-          <a [href]="whatsappEncargoLink" target="_blank" rel="noopener">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+          <button (click)="irAEncargo()" class="encargo-more-btn">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="16" />
+              <line x1="8" y1="12" x2="16" y2="12" />
             </svg>
-            <span>¿No encuentras tu fragancia?<br/>Pregunta por WhatsApp</span>
-          </a>
+            <span>Ver más</span>
+          </button>
         </div>
       </div>
     </div>
@@ -66,46 +71,84 @@
       </div>
     </div>
 
-    <!-- Filter & Sort Bar (Sticky) -->
+    <!-- Filter & Search Bar (Sticky) -->
     <div class="filter-bar-sticky">
       <div class="filter-search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <input
-          type="text"
-          placeholder="Buscar en colección..."
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearchChange()"
-          aria-label="Buscar productos"
-        />
+        <input type="text" placeholder="Buscar en colección..." [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()" aria-label="Buscar productos" />
       </div>
-      <div class="filter-bar-inner">
-        <div class="categoria-chips">
-          <button
-            *ngFor="let cat of categorias"
-            class="chip"
-            [class.chip-active]="selectedCategoria === cat.nombre"
-            (click)="filterBy(cat)"
-            [attr.aria-pressed]="selectedCategoria === cat.nombre"
-          >
-            {{ cat.nombre }}
-          </button>
-          <button
-            *ngIf="selectedCategoria"
-            class="chip chip-clear"
-            (click)="selectedCategoria = ''; selectedCategoriaId = null; cargarProductos(true)"
-            aria-label="Limpiar filtro"
-          >
-            ✕ Limpiar
+      <button class="filter-toggle" (click)="openFilterModal()" aria-label="Abrir filtros">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="8" y1="12" x2="20" y2="12" />
+          <line x1="12" y1="18" x2="20" y2="18" />
+          <circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="10" cy="12" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="14" cy="18" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+        <span>Filtrar</span>
+        <span *ngIf="hasActiveFilters" class="filter-badge">{{ 1 }}</span>
+      </button>
+    </div>
+
+    <!-- Filter Modal -->
+    <div *ngIf="filterModalOpen" class="filter-overlay" (click)="closeFilterModal()"
+      (keydown.escape)="closeFilterModal()" tabindex="-1" role="dialog" aria-modal="true" aria-label="Filtros">
+      <div class="filter-drawer" (click)="$event.stopPropagation()" role="document">
+        <div class="filter-drawer-header">
+          <h3 class="filter-drawer-title">Filtros</h3>
+          <button class="filter-drawer-close" (click)="closeFilterModal()" aria-label="Cerrar filtros">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
-        <select [(ngModel)]="sortOrder" (ngModelChange)="onSortChange()" class="sort-select" aria-label="Ordenar productos">
-          <option value="">Más recientes</option>
-          <option value="price-asc">Precio: menor a mayor</option>
-          <option value="price-desc">Precio: mayor a menor</option>
-        </select>
+        <div class="filter-drawer-body">
+          <!-- Gender -->
+          <div class="filter-group">
+            <h4 class="filter-group-title">Género</h4>
+            <div class="filter-chips" role="group" aria-label="Filtrar por género">
+              <button *ngFor="let g of generoOptions" class="chip" [class.chip-active]="selectedGenero === g"
+                (click)="filterByGenero(g)" [attr.aria-pressed]="selectedGenero === g">
+                {{ g === 'hombre' ? 'Hombre' : g === 'mujer' ? 'Mujer' : 'Unisex' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="filter-group">
+            <h4 class="filter-group-title">Categoría</h4>
+            <select class="filter-select" [(ngModel)]="selectedCategoria" (change)="onCategoriaChange()"
+              aria-label="Filtrar por categoría">
+              <option value="">Todas las categorías</option>
+              <option *ngFor="let cat of categorias" [value]="cat.nombre">{{ cat.nombre }}</option>
+            </select>
+          </div>
+
+          <!-- Order -->
+          <div class="filter-group">
+            <h4 class="filter-group-title">Ordenar por</h4>
+            <div class="filter-sort" role="group" aria-label="Ordenar productos">
+              <label class="filter-radio" *ngFor="let opt of sortOptions">
+                <input type="radio" name="sort" [value]="opt.value" [(ngModel)]="sortOrder" (change)="onSortChange()" />
+                <span>{{ opt.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-drawer-footer">
+          <button class="filter-clear-all" (click)="clearAllFilters()">Limpiar filtros</button>
+          <button class="filter-apply-btn" (click)="closeFilterModal()">Aplicar</button>
+        </div>
       </div>
     </div>
 
@@ -126,24 +169,24 @@
     <!-- Empty State -->
     <div *ngIf="!loading && productos.length === 0" class="empty-state">
       <div class="empty-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
       </div>
       <h3 class="empty-title">No hay productos</h3>
       <p class="empty-text">No encontramos productos que coincidan con tu búsqueda.</p>
-      <button (click)="selectedCategoria = ''; selectedCategoriaId = null; searchQuery = ''; cargarProductos(true)" class="btn btn-secondary">
+      <button (click)="selectedCategoria = ''; selectedCategoriaId = null; searchQuery = ''; cargarProductos(true)"
+        class="btn btn-secondary">
         Limpiar filtros
       </button>
     </div>
 
     <!-- Productos Grid — Responsive 4-3-2-1 -->
     <div *ngIf="!loading && productos.length > 0" class="productos-grid">
-      <app-product-card
-        *ngFor="let p of productos; let i = index"
-        [producto]="p"
-        [attr.style]="'animation-delay: ' + (i * 0.05) + 's'"
-      />
+      <app-product-card *ngFor="let p of productos; let i = index" [producto]="p"
+        [attr.style]="'animation-delay: ' + (i * 0.05) + 's'" />
     </div>
 
     <!-- Load More -->

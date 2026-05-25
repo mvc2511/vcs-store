@@ -1,0 +1,190 @@
+@import 'index';
+
+.page-head {
+  margin-bottom: 1.5rem;
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.2rem; }
+}
+
+.page-desc { color: var(--vyro-text-secondary); font-size: 0.9rem; }
+
+.cat-form {
+  background: var(--vyro-surface);
+  border: 1px solid var(--vyro-border);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+
+  input, select {
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid var(--vyro-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--vyro-bg);
+    color: var(--vyro-text);
+    outline: none;
+    @include transition(border-color);
+
+    &:focus { border-color: var(--vyro-text); }
+  }
+
+  .input-select { min-width: 120px; cursor: pointer; }
+  .input-time { width: 110px; }
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--vyro-text);
+  cursor: pointer;
+  white-space: nowrap;
+
+  input { width: 16px; height: 16px; accent-color: var(--vyro-text); }
+}
+
+.checkbox-label--sm { font-size: 0.8rem; }
+
+.btn-primary {
+  padding: 0.6rem 1.2rem;
+  background: var(--vyro-text);
+  color: var(--vyro-bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  cursor: pointer;
+  @include transition(opacity);
+
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+  &:hover:not(:disabled) { opacity: 0.85; }
+}
+
+.msg-error {
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--vyro-error);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.cat-list {
+  background: var(--vyro-surface);
+  border: 1px solid var(--vyro-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.cat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1.15rem;
+  border-bottom: 1px solid var(--vyro-border);
+  @include transition(background);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(17, 17, 17, 0.02); }
+}
+
+.cat-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.cat-name { font-weight: 500; font-size: 0.9rem; }
+.cat-id { font-size: 0.75rem; color: var(--vyro-text-secondary); font-weight: 500; }
+
+.edit-select, .edit-time {
+  padding: 0.3rem 0.5rem;
+  border: 1.5px solid var(--vyro-text);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: rgba(17, 17, 17, 0.04);
+  color: var(--vyro-text);
+  outline: none;
+}
+.edit-select { width: 100px; cursor: pointer; }
+.edit-time { width: 100px; }
+
+.btn-save-sm, .btn-cancel-sm {
+  width: 28px; height: 28px;
+  border: none; border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  @include transition(all);
+  font-size: 0.85rem;
+}
+.btn-save-sm {
+  background: var(--vyro-text);
+  color: var(--vyro-bg);
+  &:hover { opacity: 0.85; }
+}
+.btn-cancel-sm {
+  background: transparent;
+  color: var(--vyro-text-secondary);
+  &:hover { background: rgba(239, 68, 68, 0.08); color: var(--vyro-error); }
+}
+
+.row-acts { display: flex; gap: 0.15rem; flex-shrink: 0; }
+
+.act-btn {
+  width: 30px; height: 30px;
+  border: none; border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include transition(all);
+  cursor: pointer;
+  background: transparent;
+  color: var(--vyro-text-secondary);
+
+  &:hover { background: rgba(17, 17, 17, 0.04); color: var(--vyro-text); }
+  &:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  &.danger:hover {
+    background: rgba(239, 68, 68, 0.08);
+    color: var(--vyro-error);
+  }
+}
+
+.empty-state {
+  padding: 1.75rem;
+  text-align: center;
+  color: var(--vyro-text-secondary);
+  font-size: 0.88rem;
+}
+
+@include tablet {
+  .page-head h1 { font-size: 1.2rem; }
+  .cat-form { padding: 0.85rem; }
+
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+
+    input, select, .btn-primary { width: 100%; }
+    .input-select, .input-time { width: 100%; }
+  }
+
+  .cat-item { padding: 0.65rem 0.85rem; flex-wrap: wrap; }
+  .cat-name { font-size: 0.85rem; }
+}

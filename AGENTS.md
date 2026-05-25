@@ -1,9 +1,9 @@
 # Estado del Proyecto - VC'S Store
 
-**Última actualización:** 2026-05-23 (8)
+**Última actualización:** 2026-05-25 (9)
 
 ## 🎯 Próximo paso inmediato
-Aplicar migraciones en Supabase QA y PRD (`migracion-perfumes-encargo.sql` + `migracion-producto-imagenes.sql`).
+Aplicar migraciones en Supabase QA y PRD (`migracion-perfumes-encargo.sql` + `migracion-producto-imagenes.sql` + `migracion-horarios-entrega.sql` + `migracion-variante-precio-propio.sql`).
 
 ## 🐛 Hotfix (2026-05-22)
 - `maybe_single()` → `.limit(1)` en endpoints reseñas (causaba 500 /can-review)
@@ -134,6 +134,28 @@ Aplicar migraciones en Supabase QA y PRD (`migracion-perfumes-encargo.sql` + `mi
 - [x] Frontend ProductoForm: galería con upload multiple, ↑/↓ reordenar, dropdown de color, eliminar
 - [x] Frontend ProductDetail: thumbs + imagen grande + filtrado por color seleccionado
 
+### Mejoras Filtros Home (2026-05-25)
+- [x] Home: modal de filtros (drawer) con género, categoría y orden
+- [x] Home: filtro género (hombre/mujer/unisex) + backend `genero` query param
+- [x] Home: categorías como dropdown con solo categorías con productos (`?con_productos=true`)
+- [x] Admin: filter bar sticky + dropdowns de categoría con solo productos con stock
+- [x] Sección encargo: limitada a 5 productos + tarjeta "Ver más" → /sobre-pedido
+
+### Horarios de Entrega CRUD (2026-05-25)
+- [x] Migración SQL `migracion-horarios-entrega.sql` — RLS + sequence grant
+- [x] Backend: GET /api/horarios-entrega público, POST/PUT/DELETE admin (horarios_entrega.py)
+- [x] Frontend: Admin HorariosEntregaComponent CRUD (dia_semana, hora_inicio, hora_fin, activo)
+- [x] Ruta /admin/horarios-entrega + nav item
+- [x] Carrito + admin-ordenes: dropdowns estilizados desde API, minWeekend local
+
+### Precio Absoluto en Variantes (2026-05-25)
+- [x] Migración SQL `migracion-variante-precio-propio.sql` — ADD COLUMN `precio` + migración datos
+- [x] Backend: schema `precio` reemplaza `precio_adicional`, generate usa `precio_default`
+- [x] Backend checkout: calcula `precio_total` desde `v.precio` o fallback a `prod["precio"]`
+- [x] Frontend: ProductDetail `precioActual` usa `v.precio ?? p.precio`, 0 si hay variantes sin seleccionar
+- [x] Frontend: ProductCard muestra "Desde $X" con `min_precio_variante` si tiene variantes
+- [x] Frontend: Admin ProductoForm precio opcional + hint "solo aplica sin variantes"
+
 ### Infraestructura — Entornos
 - [x] environment.prod.ts con Supabase producción y anon key real
 - [x] environment.qa.ts con apiUrl de QA
@@ -216,7 +238,7 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `productos` — id (SERIAL PK), nombre, descripcion, precio (DECIMAL), imagen_url, stock, categoria_id (FK→categorias), creado_en
 - `tallas` — id (SERIAL PK), nombre (UNIQUE), orden (INT), creado_en
 - `colores` — id (SERIAL PK), nombre (UNIQUE), hex (VARCHAR), creado_en
-- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), nombre_variante (VARCHAR, renamed from talla), tipo_variante (VARCHAR, 'talla'|'volumen'|'color_solo'), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio_adicional, imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(nombre_variante,'') + COALESCE(color,''))
+- `variantes_producto` — id (SERIAL PK), producto_id (FK→productos CASCADE), nombre_variante (VARCHAR, renamed from talla), tipo_variante (VARCHAR, 'talla'|'volumen'|'color_solo'), color (VARCHAR), talla_id (FK→tallas), color_id (FK→colores), stock, precio (DECIMAL, nullable), imagen_url, creado_en (UNIQUE INDEX on producto_id + COALESCE(nombre_variante,'') + COALESCE(color,''))
 - `opciones_ml` — id (SERIAL PK), categoria_id (FK→categorias), ml (INT), orden (INT), creado_en
 - `opciones_ml` — id (SERIAL PK), categoria_id (FK→categorias), ml (INT), orden (INT), creado_en
 - `ordenes` — id (SERIAL PK), user_id (UUID), user_email, total (DECIMAL), estado (orden_estado), punto_entrega_id (FK), telefono_contacto, fecha_entrega (DATE), hora_entrega (VARCHAR), stripe_session_id (nullable), creado_en, updated_at
@@ -226,6 +248,7 @@ Schema completo re-ejecutable en: `vcs-store-database/database.sql`
 - `resenas` — id (SERIAL PK), producto_id (FK→productos CASCADE), user_id (UUID), puntuacion (INT 1-5), comentario (TEXT), anonima (BOOLEAN), created_at (UNIQUE producto_id+user_id)
 - `cupones` — id (SERIAL PK), codigo (UNIQUE), tipo (porcentaje/fijo), valor, minimo_compra, usos_maximos, usos_actuales, fecha_expiracion, activo, producto_id (FK), categoria_id (FK)
 - `precios_mayoreo` — id (SERIAL PK), producto_id (FK), categoria_id (FK), cantidad_minima (INT >=2), precio_unitario (DECIMAL) — validación: exactamente uno de producto_id/categoria_id
+- `horarios_entrega` — id (SERIAL PK), dia_semana (INT 6 o 7), hora_inicio (TIME), hora_fin (TIME), activo (BOOLEAN), creado_en
 
 **Secuencias:** Service_role tiene USAGE en todas las secuencias SERIAL.
 
