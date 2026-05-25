@@ -41,6 +41,7 @@ export interface Producto {
   visible?: boolean;
   es_encargo?: boolean;
   dias_entrega?: number;
+  genero?: string | null;
   imagen_url: string;
   descripcion: string;
   variantes?: Variante[];

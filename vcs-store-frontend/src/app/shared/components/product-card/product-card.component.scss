@@ -269,6 +269,15 @@
   letter-spacing: -0.01em;
 }
 
+.card-price--variants {
+  font-family: $vyro-font-sans;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $vyro-text-secondary;
+}
+
 // ─────────────────────────────────────────────────────────────
 // Add to Cart Button
 // ─────────────────────────────────────────────────────────────

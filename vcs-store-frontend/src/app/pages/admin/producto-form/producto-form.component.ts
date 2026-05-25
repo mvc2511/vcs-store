@@ -39,6 +39,7 @@ export class ProductoFormComponent implements OnInit {
     visible: [true],
     es_encargo: [false],
     dias_entrega: [5],
+    genero: [''],
   });
 
   categorias: Categoria[] = [];
@@ -112,6 +113,7 @@ export class ProductoFormComponent implements OnInit {
           visible: p.visible !== false,
           es_encargo: p.es_encargo ?? false,
           dias_entrega: p.dias_entrega ?? 5,
+          genero: p.genero || '',
         });
         this.imagenUrl = p.imagen_url || '';
         this.galleryImagenes = (p.imagenes || []).map((img: ProductoImagen, i: number) => ({ ...img, orden: i }));
@@ -443,6 +445,7 @@ export class ProductoFormComponent implements OnInit {
         visible: this.form.value.visible ?? true,
         es_encargo: !!this.form.value.es_encargo,
         dias_entrega: this.form.value.dias_entrega ?? 5,
+        genero: this.form.value.genero || null,
       };
       if (this.form.value.categoria_id) body['categoria_id'] = this.form.value.categoria_id;
 

@@ -92,6 +92,16 @@
         <span class="field-hint">Tiempo estimado en días hábiles para conseguir el producto</span>
       </div>
 
+      <div class="field">
+        <label for="genero">Género</label>
+        <select id="genero" formControlName="genero">
+          <option value="">Todos</option>
+          <option value="hombre">Hombre</option>
+          <option value="mujer">Mujer</option>
+          <option value="unisex">Unisex</option>
+        </select>
+      </div>
+
       <div class="field full">
         <label for="descripcion">Descripción</label>
         <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Descripción del producto"></textarea>
